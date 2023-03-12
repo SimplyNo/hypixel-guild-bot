@@ -1,0 +1,42 @@
+{
+  "name": "hypixel-guild-bot-v2",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "engines": {
+    "node": "^16.x"
+  },
+  "dependencies": {
+    "@discordjs/builders": "^1.1.0",
+    "@discordjs/rest": "^1.0.1",
+    "better-sqlite3": "^7.4.1",
+    "canvas": "^2.8.0",
+    "chalk": "^4.1.1",
+    "discord.js": "^13.11.0",
+    "enmap": "^5.8.5",
+    "google-spreadsheet": "^3.1.15",
+    "html-table-to-json": "^1.0.0",
+    "moment": "^2.29.1",
+    "moment-timezone": "^0.5.33",
+    "mongodb": "^3.6.9",
+    "mongoose": "^6.5.2",
+    "node-fetch": "^2.6.1",
+    "nodemon": "^2.0.7"
+  },
+  "scripts": {
+    "start-dev": "nodemon index.js",
+    "start": "node index.js",
+    "deploy": "node deploy-commands.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SimplyNo/hypixel-guild-bot/"
+  },
+  "keywords": [],
+  "author": "SimplyNo",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/SimplyNo/hypixel-guild-bot/issues"
+  },
+  "homepage": " "
+}

@@ -1,0 +1,466 @@
+{
+    "ranks": {
+        "APPLE": [
+            "<:apple1:742605730976366672>",
+            "<:apple2:742605731018309652>",
+            "<:apple3:742605730800074793>",
+            "<:apple4:742605730778972241>"
+        ],
+        "ANGUS": [
+            "<:angus1:742605713062363289>",
+            "<:angus2:742605713339056178>",
+            "<:angus3:742605713154637905>",
+            "<:angus4:742605713053974549>"
+        ],
+        "SLOTH": [
+            "<:sloth1:742605951856672799>",
+            "<:sloth2:742605951991021578>",
+            "<:sloth3:742605951634374697>",
+            "<:sloth4:742605952053805056>"
+        ],
+        "OWNER": [
+            "<:owner1:742605927005421628>",
+            "<:owner2:742605926644580403>",
+            "<:owner3:742605926586122291>",
+            "<:owner4:742605927001358439>"
+        ],
+        "ADMIN": [
+            "<:admin1:742605691575074896>",
+            "<:admin2:742605691306377237>",
+            "<:admin3:742605691591589948>",
+            "<:admin4:742605691667218452>"
+        ],
+        "MOD": [
+            "<:mod1:742605803286036531>",
+            "<:mod2:742605803638358116>",
+            "<:mod3:742605803407540265>"
+        ],
+        "HELPER": [
+            "<:helper1:742605782972891228>",
+            "<:helper2:742605783073554494>",
+            "<:helper3:742605783073816649>",
+            "<:helper4:742605783107371029>",
+            "<:helper5:742605783346315334>"
+        ],
+        "BUILD TEAM": [
+            "<:buildteam1:742605756477735016>",
+            "<:buildteam2:742605756045590621>",
+            "<:buildteam3:742605756410626048>",
+            "<:buildteam4:742605756087402588>",
+            "<:buildteam5:742605756150448189>",
+            "<:buildteam6:742605756217688136>",
+            "<:buildteam7:742605756473540709>"
+        ],
+        "PIG+++": [
+            "<:pig1:742120857085804595>",
+            "<:pig2:742120857454772224>",
+            "<:pig3:742120857307971755>",
+            "<:pig4:742120857266290713>"
+        ],
+        "YOUTUBE": [
+            "<:yt1:742606002901352508>",
+            "<:yt2:742606002872123412>",
+            "<:yt3:742606003056541736>",
+            "<:yt4:742606002884575232>",
+            "<:yt5:742606002909741056>"
+        ],
+        "MOJANG": [],
+        "EVENTS": [
+            "<:e1:771785275294351370>",
+            "<:e2:771785275214004275>",
+            "<:e3:771785274879377469>",
+            "<:e4:771785275214659584>"
+        ],
+        "MVP++": {
+            "GOLD": {
+                "START": [
+                    "<:gmvp:804902018530410496>",
+                    "<:gmvp2:804902018523070464>"
+                ],
+                "DARK_BLUE": [
+                    "<:gmvpdarkblue:804902018262368267>",
+                    "<:gmvpdarkblue2:804902018870411274>"
+                ],
+                "RED": [
+                    "<:gmvpred:804902018623340594>",
+                    "<:gmvpred2:804902018367619094>"
+                ],
+                "GOLD": [
+                    "<:gmvporange:804902018602631188>",
+                    "<:gmvporange2:804902018262106134>"
+                ],
+                "GREEN": [
+                    "<:gmvpgreen:804902018627141652>",
+                    "<:gmvpgreen2:804902018618884137>"
+                ],
+                "YELLOW": [
+                    "<:gmvpyellow:804902018610757702>",
+                    "<:gmvpyellow2:804902018594504744>"
+                ],
+                "LIGHT_PURPLE": [
+                    "<:gmvppink:804902018774073384>",
+                    "<:gmvppink2:804902018614820954>"
+                ],
+                "WHITE": [
+                    "<:gmvpwhite:804902018313486419>",
+                    "<:gmvpwhite2:804902018716139531>"
+                ],
+                "BLUE": [
+                    "<:gmvpblue:804902018560163860>",
+                    "<:gmvpblue2:804902018610102322>"
+                ],
+                "DARK_GREEN": [
+                    "<:gmvpdarkgreen:804902018346647595>",
+                    "<:gmvpdarkgreen2:804902018652176404>"
+                ],
+                "DARK_RED": [
+                    "<:gmvpdarkred:804902018841575434>",
+                    "<:gmvpdarkred2:804902018615083038>"
+                ],
+                "DARK_AQUA": [
+                    "<:gmvpaqua:804902018653224982>",
+                    "<:gmvpaqua2:804902018635792414>"
+                ],
+                "DARK_PURPLE": [
+                    "<:gmvppurple:804902018614951976>",
+                    "<:gmvppurple2:804902018262368257>"
+                ],
+                "DARK_GRAY": [
+                    "<:gmvpgray:804902018715484170>",
+                    "<:gmvpgray2:804902018673410078>"
+                ],
+                "BLACK": [
+                    "<:gmvpblack:804902018258042892>",
+                    "<:gmvpblack2:804902018606301194>"
+                ]
+            },
+            "AQUA": {
+                "START": [
+                    "<:bmvp1:805585372087582740>",
+                    "<:bmvp2:805585371882717194>"
+                ],
+                "DARK_BLUE": [
+                    "<:bmvpdarkblue:804902062340177940>",
+                    "<:bmvpdarkblue2:804902062377926656>"
+                ],
+                "RED": [
+                    "<:bmvpred:804902062499299368>",
+                    "<:bmvpred2:804902062441103360>"
+                ],
+                "GOLD": [
+                    "<:bmvporange:804902062059814943>",
+                    "<:bmvporange2:804902062080000032>"
+                ],
+                "GREEN": [
+                    "<:bmvpgreen:804902062370062386>",
+                    "<:bmvpgreen2:804902062218936381>"
+                ],
+                "YELLOW": [
+                    "<:bmvpyellow:804902062143045653>",
+                    "<:bmvpyellow2:804902062063484989>"
+                ],
+                "LIGHT_PURPLE": [
+                    "<:bmvppink:804902062415937577>",
+                    "<:bmvppink2:804902062373470298>"
+                ],
+                "WHITE": [
+                    "<:bmvpwhite:804902062428913714>",
+                    "<:bmvpwhite2:804902062063484989>"
+                ],
+                "BLUE": [
+                    "<:bmvpblue:804902062314749976>",
+                    "<:bmvpblue2:804902062432845824>"
+                ],
+                "DARK_GREEN": [
+                    "<:bmvpdarkgreen:804902062365081650>",
+                    "<:bmvpdarkgreen2:804902062587510784>"
+                ],
+                "DARK_RED": [
+                    "<:bmvpdarkred:804902062365737010>",
+                    "<:bmvpdarkred2:804902062408204298>"
+                ],
+                "DARK_AQUA": [
+                    "<:bmvpaqua:804902062399291412>",
+                    "<:bmvpaqua2:804902062344765500>"
+                ],
+                "DARK_PURPLE": [
+                    "<:bmvppurple:804902062407942175>",
+                    "<:bmvppurple2:804902062508867594>"
+                ],
+                "DARK_GRAY": [
+                    "<:bmvpgray:804902062193770538>",
+                    "<:bmvpgray2:804902062365868062>"
+                ],
+                "BLACK": [
+                    "<:bmvpblack:804902062081048607>",
+                    "<:bmvpblack2:804902062345289818>"
+                ]
+            }
+        },
+        "MVP+": {
+            "START": [
+                "<:mvp1:804902062416592896>",
+                "<:mvp2:804902062470856714>",
+                "<:mvp3:804902062445690910>"
+            ],
+            "DARK_BLUE": [
+                "<:bmvpdarkblue2:804902062377926656>"
+            ],
+            "RED": [
+                "<:bmvpred2:804902062441103360>"
+            ],
+            "GOLD": [
+                "<:bmvporange2:804902062080000032>"
+            ],
+            "GREEN": [
+                "<:bmvpgreen2:804902062218936381>"
+            ],
+            "YELLOW": [
+                "<:bmvpyellow2:804902062181056523>"
+            ],
+            "LIGHT_PURPLE": [
+                "<:bmvppink2:804902062373470298>"
+            ],
+            "WHITE": [
+                "<:bmvpwhite2:804902062063484989>"
+            ],
+            "BLUE": [
+                "<:bmvpblue2:804902062432845824>"
+            ],
+            "DARK_GREEN": [
+                "<:bmvpdarkgreen2:804902062587510784>"
+            ],
+            "DARK_RED": [
+                "<:bmvpdarkred2:804902062408204298>"
+            ],
+            "DARK_AQUA": [
+                "<:bmvpaqua2:804902062344765500>"
+            ],
+            "DARK_PURPLE": [
+                "<:bmvppurple2:804902062508867594>"
+            ],
+            "DARK_GRAY": [
+                "<:bmvpgray2:804902062365868062>"
+            ],
+            "BLACK": [
+                "<:bmvpblack2:804902062345289818>"
+            ]
+        },
+        "MVP": [
+            "<:mvp1:804901937547575316>",
+            "<:mvp2:804901937513234462>",
+            "<:mvp3:804901937455562773>"
+        ],
+        "VIP+": [
+            "<:vip1:804902062588297226>",
+            "<:vip2:804902062479376394>",
+            "<:vip3:804902062210154529>"
+        ],
+        "VIP": [
+            "<:vip1:804901937052647425>",
+            "<:vip2:804901937547313163>",
+            "<:vip3:804901937296179231>"
+        ],
+        "NON": [
+            ""
+        ]
+    },
+    "emotes": {
+        "format": {
+            "obfuscated": [
+                "<a:Obfuscated1:746737988188241940>",
+                "<a:Obfuscated2:746738056253669506>",
+                "<a:Obfuscated3:746738105146409021>",
+                "<a:Obfuscated4:746738143738200074>",
+                "<a:Obfuscated5:746738198763536535>"
+            ],
+            "bold": [
+                "<:Bold1:746745587671498782>",
+                "<:Bold2:746745587680149614>",
+                "<:Bold3:746745587654721586>",
+                "<:Bold4:746745587260457031>",
+                "<:Bold5:746745587671760956>"
+            ],
+            "strikethrough": [
+                "<:Strike1:746735529365864449>",
+                "<:Strike2:746735529353281649>",
+                "<:Strike3:746735529411871133>",
+                "<:Strike4:746735529684369598>",
+                "<:Strike5:746735529671786607>"
+            ],
+            "underline": [
+                "<:Line1:746736313738199081>",
+                "<:Line2:746736313734004846>",
+                "<:Line3:746736313579077743>",
+                "<:Line4:746736313679478794>",
+                "<:Line5:746736313624952914>"
+            ],
+            "italic": [
+                "<:Italic1:746736774726025217>",
+                "<:Italic2:746736774998655017>",
+                "<:Italic3:746736774960644116>",
+                "<:Italic4:746736774562316329>",
+                "<:Italic5:746736774633488386>"
+            ],
+            "reset": [
+                "<:Default1:746737325333151794>",
+                "<:Default2:746737324968247348>",
+                "<:Default3:746737325244940389>",
+                "<:Default4:746737325224231063>",
+                "<:Default5:746737325257785354>"
+            ]
+        },
+        "skyblock": {
+            "weapons": "<:Weapons:738704053596586044>",
+            "misc": "<:Misc:738704053584003132>",
+            "consumables": "<:Consumables:738704053512568901>",
+            "blocks": "<:Blocks:738704053378351237>",
+            "armor": "<:Armor:738704053558706269>",
+            "accessories": "<:Accessories:738704053231681598>"
+        },
+        "socials": {
+            "discord": "<:Discord:737967209363800125>",
+            "twitter": "<:Twitter:737967209241903145>",
+            "instagram": "<:Instagram:737967209363669062>",
+            "mixer": "<:Mixer:737967209271394345>",
+            "twitch": "<:Twitch:737967209350955029> ",
+            "youtube": "<:yt:737967209057353799>"
+        },
+        "games": {
+            "quake": "<:Quakecraft:826663003210121226>",
+            "walls": "<:Walls:826663003448672256>",
+            "paintball": "<:Paintball:826663003176173600>",
+            "blitz": "<:SurvivalGames:826663003276443668>",
+            "tntgames": "<:TNTGames:825397627960557588>",
+            "vampirez": "<:VampireZ:826663003033436181>",
+            "megawalls": "<:MegaWalls:826663003227160600>",
+            "arcade": "<:Arcade:826663003159265280>",
+            "arena": "<:Arena:826663003176435762>",
+            "cvc": "<:CopsVsCrims:826663003163852820>",
+            "uhc": "<:UHC:826663003285880842>",
+            "warlords": "<:Warlords:826663003117715468>",
+            "smashheroes": "<:SmashHeroes:826663003201994812>",
+            "turbokartracers": "<:TurboKartRacers:826663003255472148>",
+            "housing": "<:Housing:826663003188494396>",
+            "skywars": "<:Skywars:825397628098838558>",
+            "speeduhc": "<:SpeedUHC:826663003205926943>",
+            "prototype": "<:Prototype:826663003159134229>",
+            "bedwars": "<:BedWars:825397627944304651>",
+            "murdermystery": "<:MurderMystery:826663002810875915>",
+            "buildbattle": "<:BuildBattle:826663003021377537>",
+            "duels": "<:Duels:825397627755429909>",
+            "skyblock": "<:SkyBlock:825397627926741012>"
+        },
+        "statuses": {
+            "online": "<:online:822183807862964225>",
+            "idle": "<:idle:822183807871614979>",
+            "offline": "<:offline:822183808076873738>"
+        },
+        "other": {
+            "animatednitro": "<a:AnimatedNitro:737963904566820876>",
+            "animatedcheck": "✅",
+            "check": "<:Check:804901937375739954>",
+            "cross": ":x:",
+            "greentriangle": "<:small_green_triangle:737967849196224512>",
+            "yellowdiamond": "<:small_yellow_diamond:737967849305276486>",
+            "redtriangle": ":small_red_triangle_down:",
+            "terminal": "<:Terminal:737967676437037166>",
+            "guilds": "<:Guilds:737967555720904744>",
+            "server": "<:Server:737967555498737724>",
+            "minecraft": "<:Minecraft:737967555473309736>",
+            "hypixel": "<:Hypixel:737967451169488927>",
+            "hypixelmodern": "<:HypixelModern:737967451622342666>",
+            "hive": "<:Hive:737967451169357835>"
+        }
+    },
+    "hypixel": {
+        "arcade": "https://statsify.net/img/assets/hypixel/arcade.png",
+        "arena": "https://statsify.net/img/assets/hypixel/arena.png",
+        "bedwars": "https://statsify.net/img/assets/hypixel/bedwars.png",
+        "buildbattle": "https://statsify.net/img/assets/hypixel/buildbattle.png",
+        "classicgames": "https://statsify.net/img/assets/hypixel/classicgames.png",
+        "crazywalls": "https://statsify.net/img/assets/hypixel/crazywalls.png",
+        "cvc": "https://statsify.net/img/assets/hypixel/cvc.png",
+        "duels": "https://statsify.net/img/assets/hypixel/duels.png",
+        "megawalls": "https://statsify.net/img/assets/hypixel/megawalls.png",
+        "murdermystery": "https://statsify.net/img/assets/hypixel/murdermystery.png",
+        "paintball": "https://statsify.net/img/assets/hypixel/paintball.png",
+        "pit": "https://statsify.net/img/assets/hypixel/pit.png",
+        "prototype": "https://statsify.net/img/assets/hypixel/prototype.png",
+        "quake": "https://statsify.net/img/assets/hypixel/quake.png",
+        "blitz": "https://statsify.net/img/assets/hypixel/blitz.png",
+        "skyblock": "https://statsify.net/img/assets/hypixel/skyblock.png",
+        "skyclash": "https://statsify.net/img/assets/hypixel/skyclash.png",
+        "skywars": "https://statsify.net/img/assets/hypixel/skywars.png",
+        "smashheroes": "https://statsify.net/img/assets/hypixel/smashheroes.png",
+        "speeduhc": "https://statsify.net/img/assets/hypixel/speeduhc.png",
+        "tntgames": "https://statsify.net/img/assets/hypixel/tntgames.png",
+        "turbokartracers": "https://statsify.net/img/assets/hypixel/classicgames.png",
+        "uhc": "https://statsify.net/img/assets/hypixel/uhc.png",
+        "vampirez": "https://statsify.net/img/assets/hypixel/vampirez.png",
+        "walls": "https://statsify.net/img/assets/hypixel/walls.png",
+        "warlords": "https://statsify.net/img/assets/hypixel/warlords.png",
+        "guild": "https://statsify.net/img/assets/hypixel/guild.png"
+    },
+    "gameart": {
+        "arcade": "https://statsify.net/img/assets/gameart/arcade.png",
+        "arena": "https://statsify.net/img/assets/gameart/arena.png",
+        "bedwars": "https://statsify.net/img/assets/gameart/bedwars.png",
+        "buildbattle": "https://statsify.net/img/assets/gameart/buildbattle.png",
+        "classicgames": "https://statsify.net/img/assets/gameart/classicgames.png",
+        "crazywalls": "https://statsify.net/img/assets/gameart/crazywalls.png",
+        "cvc": "https://statsify.net/img/assets/gameart/cvc.png",
+        "duels": "https://statsify.net/img/assets/gameart/duels.png",
+        "megawalls": "https://statsify.net/img/assets/gameart/megawalls.png",
+        "murdermystery": "https://statsify.net/img/assets/gameart/murdermystery.png",
+        "paintball": "https://statsify.net/img/assets/gameart/paintball.png",
+        "pit": "https://statsify.net/img/assets/gameart/pit.png",
+        "prototype": "https://statsify.net/img/assets/gameart/prototype.png",
+        "quake": "https://statsify.net/img/assets/gameart/quake.png",
+        "blitz": "https://statsify.net/img/assets/gameart/blitz.png",
+        "skyblock": "https://statsify.net/img/assets/gameart/skyblock.png",
+        "skyclash": "https://statsify.net/img/assets/gameart/skyclash.png",
+        "skywars": "https://statsify.net/img/assets/gameart/skywars.png",
+        "smashheroes": "https://statsify.net/img/assets/gameart/smashheroes.png",
+        "speeduhc": "https://statsify.net/img/assets/gameart/speeduhc.png",
+        "tntgames": "https://statsify.net/img/assets/gameart/tntgames.png",
+        "turbokartracers": "https://statsify.net/img/assets/gameart/classicgames.png",
+        "uhc": "https://statsify.net/img/assets/gameart/uhc.png",
+        "vampirez": "https://statsify.net/img/assets/gameart/vampirez.png",
+        "walls": "https://statsify.net/img/assets/gameart/walls.png",
+        "warlords": "https://statsify.net/img/assets/gameart/warlords.png"
+    },
+    "hypixelLogos": {
+        "guilds": "https://statsify.net/img/assets/hypixelLogos/guilds.png",
+        "parties": "https://statsify.net/img/assets/hypixelLogos/parties.png",
+        "coins": "https://statsify.net/img/assets/hypixelLogos/coins.png",
+        "lobbies": "https://statsify.net/img/assets/hypixelLogos/lobbies.png",
+        "friends": "https://statsify.net/img/assets/hypixelLogos/friends.png",
+        "watchdog": "https://statsify.net/img/assets/hypixelLogos/watchdog.png"
+    },
+    "profileBackgrounds": {
+        "default": "https://statsify.net/img/profiles/default.png",
+        "pit": "https://statsify.net/img/profiles/pit.png",
+        "bedwars": "https://statsify.net/img/profiles/bedwars.png",
+        "skywars": "https://statsify.net/img/profiles/skywars.png"
+    },
+    "online": "https://statsify.net/img/assets/online.png",
+    "offline": "https://statsify.net/img/assets/offline.png",
+    "error": "https://statsify.net/img/assets/error.gif",
+    "info": "https://statsify.net/img/assets/info.png",
+    "help": "https://statsify.net/img/assets/help.png",
+    "link": "https://statsify.net/img/assets/link.png",
+    "check": "https://statsify.net/img/assets/check.png",
+    "people": "https://statsify.net/img/assets/people.png",
+    "discord": "https://statsify.net/img/assets/discord.png",
+    "normal": {
+        "logofull": "https://statsify.net/img/assets/logofull.png",
+        "logohalf": "https://statsify.net/img/assets/logohalf.png",
+        "logowhite": "https://statsify.net/img/assets/logowhite.png",
+        "mclogo": "https://statsify.net/img/assets/mclogo.png"
+    },
+    "logofull": "https://statsify.net/img/assets/halloweenLogo.png",
+    "logohalf": "https://statsify.net/img/assets/halloweenLogoNOBG.png",
+    "logowhite": "https://statsify.net/img/assets/logowhite.png",
+    "mclogo": "https://statsify.net/img/assets/mclogo.png"
+}

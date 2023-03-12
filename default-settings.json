@@ -1,0 +1,94 @@
+{
+    "prefix": "g!",
+    "roles": {
+        "blacklist": [],
+        "whitelist": []
+    },
+    "autoPost": {
+        "1": {
+            "name": "Slot 1",
+            "command": null,
+            "intervalType": null,
+            "doEditMessage": false,
+            "lastMessageID": null,
+            "lastSent": false,
+            "author": null
+        },
+        "2": {
+            "name": "Slot 2",
+            "command": null,
+            "intervalType": null,
+            "doEditMessage": false,
+            "lastMessageID": null,
+            "lastSent": false,
+            "author": null
+        },
+        "3": {
+            "name": "Slot 3",
+            "command": null,
+            "intervalType": null,
+            "doEditMessage": false,
+            "lastMessageID": null,
+            "lastSent": false,
+            "author": null
+        }
+    },
+    "requirements": {},
+    "gxpRoles": [],
+    "timeRoles": [],
+    "welcome": {
+        "channel": null,
+        "message": null
+    },
+    "verification": {
+        "channel": null,
+        "role": null,
+        "unverifiedRole": null,
+        "autoNick": null,
+        "deleteTimeout": null
+    },
+    "autoRole": {
+        "updateGroup": null,
+        "guild": null,
+        "logChannel": null,
+        "config": {},
+        "memberRole": null,
+        "guestRole": null,
+        "lastUsers": []
+    },
+    "joinLogs": {
+        "channel": null,
+        "lastMembers": null,
+        "lastUpdate": null,
+        "lastGuild": null
+    },
+    "rankRoles": {
+        "ADMIN": {
+            "weight": 8
+        },
+        "GAME_MASTER": {
+            "weight": 7
+        },
+        "YOUTUBE": {
+            "weight": 6
+        },
+        "MVP++": {
+            "weight": 5
+        },
+        "MVP+": {
+            "weight": 4
+        },
+        "MVP": {
+            "weight": 3
+        },
+        "VIP+": {
+            "weight": 2
+        },
+        "VIP": {
+            "weight": 1
+        },
+        "NON": {
+            "weight": 0
+        }
+    }
+}

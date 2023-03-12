@@ -1,0 +1,699 @@
+[
+    {
+        "name": "General",
+        "apiType": "player",
+        "reqs": [
+            {
+                "path": "player.level",
+                "id": "level",
+                "name": "Hypixel Level",
+                "desc": "The network level of the player."
+            },
+            {
+                "path": "player.karma",
+                "id": "karma",
+                "name": "Karma",
+                "desc": "The total karma of the player."
+            },
+            {
+                "path": "player.achievement_points",
+                "id": "ap",
+                "name": "Achievement Points",
+                "desc": "The total amount of achievement points of the player."
+            },
+            {
+                "path": "player.stats.ranksGifted",
+                "id": "ranks_gifted",
+                "name": "Ranks Gifted"
+            }
+        ]
+    },
+    {
+        "name": "Bedwars",
+        "apiType": "player",
+        "reqs": [
+            {
+                "path": "player.stats.BedWars.level",
+                "id": "bedwars_star",
+                "name": "Bedwars Star"
+            },
+            {
+                "path": "player.stats.BedWars.wins",
+                "id": "bedwars_wins",
+                "name": "Bedwars Wins"
+            },
+            {
+                "path": "player.stats.BedWars.losses",
+                "id": "bedwars_losses",
+                "name": "Bedwars Losses"
+            },
+            {
+                "path": "player.stats.BedWars.final_k_d",
+                "id": "bedwars_fkdr",
+                "accepts": "FLOAT",
+                "name": "Bedwars Final Kill/Death ratio"
+            },
+            {
+                "path": "player.stats.BedWars.final_kills",
+                "id": "bedwars_finals",
+                "name": "Bedwars Final Kills"
+            },
+            {
+                "path": "player.stats.BedWars.k_d",
+                "id": "bedwars_kdr",
+                "accepts": "FLOAT",
+                "name": "Bedwars Kill/Death ratio"
+            },
+            {
+                "path": "player.stats.BedWars.kills",
+                "id": "bedwars_kills",
+                "name": "Bedwars Kills"
+            },
+            {
+                "path": "player.stats.BedWars.beds_lost",
+                "id": "bedwars_beds_broken",
+                "name": "Bedwars Beds Broken"
+            }
+        ]
+    },
+    {
+        "name": "Skywars",
+        "apiType": "player",
+        "reqs": [
+            {
+                "path": "player.stats.SkyWars.level",
+                "id": "skywars_star",
+                "name": "Skywars Star",
+                "desc": "The skywars star/level of the player."
+            },
+            {
+                "path": "player.stats.SkyWars.kills",
+                "id": "skywars_kills",
+                "name": "Skywars Kills",
+                "desc": "Total amount of skywars kills."
+            },
+            {
+                "path": "player.stats.SkyWars.kill_death_ratio",
+                "id": "skywars_kdr",
+                "accepts": "FLOAT",
+                "name": "Skywars KDR",
+                "desc": "Skywars Kill/Death ratio."
+            },
+            {
+                "path": "player.stats.SkyWars.wins",
+                "id": "skywars_wins",
+                "name": "Skywars Wins",
+                "desc": "Total skywars wins."
+            },
+            {
+                "path": "player.stats.SkyWars.losses",
+                "id": "skywars_losses",
+                "name": "Skywars Losses",
+                "desc": "Total skywars losses."
+            },
+            {
+                "path": "player.stats.SkyWars.deaths",
+                "id": "skywars_deaths",
+                "name": "Skywars Deaths",
+                "desc": "Total skywars deaths."
+            },
+            {
+                "path": "player.stats.SkyWars.win_loss_ratio",
+                "id": "skywars_wlr",
+                "accepts": "FLOAT",
+                "name": "Skywars Win/Loss Ratio",
+                "desc": "The skywars winloss ratio of the player."
+            }
+        ]
+    },
+    {
+        "name": "Duels",
+        "apiType": "player",
+        "reqs": [
+            {
+                "path": "player.stats.Duels.general.wins",
+                "id": "duels_wins",
+                "name": "Total Duels Wins"
+            },
+            {
+                "path": "player.stats.Duels.general.losses",
+                "id": "duels_losses",
+                "name": "Total Duels Losses"
+            },
+            {
+                "path": "player.stats.Duels.general.deaths",
+                "id": "duels_deaths",
+                "name": "Total Duels Deaths"
+            },
+            {
+                "path": "player.stats.Duels.general.kd_ratio",
+                "id": "duels_kdr",
+                "accepts": "FLOAT",
+                "name": "Duels Kill/Death Ratio"
+            },
+            {
+                "path": "player.stats.Duels.general.kills",
+                "id": "duels_kills",
+                "name": "Total Duels Kills"
+            },
+            {
+                "path": "player.stats.Duels.general.win_loss_ratio",
+                "id": "duels_wlr",
+                "accepts": "FLOAT",
+                "name": "Duels Win/Loss Ratio"
+            }
+        ]
+    },
+    {
+        "name": "Murder Mystery",
+        "apiType": "player",
+        "reqs": [
+            {
+                "path": "player.stats.MurderMystery.kills",
+                "id": "mm_kills",
+                "name": "Total Murder Mystery Kills"
+            },
+            {
+                "path": "player.stats.MurderMystery.kill_death_ratio",
+                "id": "mm_kdr",
+                "accepts": "FLOAT",
+                "name": "Murder Mystery Kill/Death Ratio"
+            },
+            {
+                "path": "player.stats.MurderMystery.wins",
+                "id": "mm_wins",
+                "name": "Total Murder Mystery Wins"
+            },
+            {
+                "path": "player.stats.MurderMystery.knife_kills",
+                "id": "mm_knife_kills",
+                "name": "Murder Mystery Knife Kills"
+            },
+            {
+                "path": "player.stats.MurderMystery.thrown_knife_kills",
+                "id": "mm_thrown_knife_kills",
+                "name": "Murder Mystery Thrown Knife Kills"
+            },
+            {
+                "path": "player.stats.MurderMystery.bow_kills",
+                "id": "mm_bow_kills",
+                "name": "Murder Mystery Bow Kills"
+            },
+            {
+                "path": "player.stats.MurderMystery.deaths",
+                "id": "mm_deaths",
+                "name": "Total Murder Mystery Deaths"
+            },
+            {
+                "path": "player.stats.MurderMystery.knife_kills",
+                "id": "mm_knifeKills",
+                "name": "Murder Mystery Knife Kills"
+            },
+            {
+                "path": "player.stats.MurderMystery.games_played",
+                "id": "mm_games",
+                "name": "Murder Mystery Games Played"
+            }
+        ]
+    },
+    {
+        "name": "TNT Games",
+        "apiType": "player",
+        "reqs": [
+            {
+                "path": "player.stats.TNT.gamemodes.bow_spleef.wins",
+                "id": "bowspleef_wins",
+                "name": "BowSpleef Wins"
+            },
+            {
+                "path": "player.stats.TNT.gamemodes.bow_spleef.losses",
+                "id": "bowspleef_losses",
+                "name": "BowSpleef Losses"
+            },
+            {
+                "path": "player.stats.TNT.gamemodes.bow_spleef.win_loss_ratio",
+                "id": "bowspleef_wlr",
+                "accepts": "FLOAT",
+                "name": "BowSpleef Win/Loss Ratio"
+            },
+            {
+                "path": "player.stats.TNT.gamemodes.pvp_run.wins",
+                "id": "pvprun_wins",
+                "name": "PVP Run Wins"
+            },
+            {
+                "path": "player.stats.gamemodes.pvp_run.losses",
+                "id": "pvprun_losses",
+                "name": "PVP Run Losses"
+            },
+            {
+                "path": "player.stats.TNT.gamemodes.pvp_run.wins",
+                "id": "pvprun_wlr",
+                "accepts": "FLOAT",
+                "name": "PVP Run Win/Loss Ratio"
+            },
+            {
+                "path": "player.stats.TNT.gamemodes.pvp_run.kills",
+                "id": "pvprun_kills",
+                "name": "PVP Run Kills"
+            }
+        ]
+    },
+    {
+        "name": "Pit",
+        "apiType": "player",
+        "reqs": [
+            {
+                "path": "player.stats.Pit.kills",
+                "id": "pit_kills",
+                "name": "Total Pit Kills"
+            },
+            {
+                "path": "player.stats.Pit.deaths",
+                "id": "pit_deaths",
+                "name": "Total Pit Deaths"
+            },
+            {
+                "path": "player.stats.Pit.kd_ratio",
+                "id": "pit_kdr",
+                "accepts": "FLOAT",
+                "name": "Pit Kill/Death Ratio"
+            },
+            {
+                "path": "player.stats.Pit.prestige",
+                "id": "pit_prestige",
+                "name": "Pit Prestige"
+            },
+            {
+                "path": "player.stats.Pit.playtime_minutes",
+                "id": "pit_playtime",
+                "name": "Pit Playtime (Minutes)"
+            }
+        ]
+    },
+    {
+        "name": "Arcade 1",
+        "apiType:": "player",
+        "reqs": [
+            {
+                "path": "player.stats.Arcade.coins",
+                "id": "arcade_coins",
+                "name": "Arcade Coins"
+            },
+            {
+                "path": "player.stats.Arcade.kills",
+                "id": "arcade_kills",
+                "name": "Arcade Kills"
+            },
+            {
+                "path": "player.stats.Arcade.wins",
+                "id": "arcade_wins",
+                "name": "Arcade Wins"
+            },
+            {
+                "path": "player.stats.Arcade.modes.blocking_dead.wins",
+                "id": "blocking_dead_wins",
+                "name": "Blocking Dead Wins"
+            },
+            {
+                "path": "player.stats.Arcade.modes.blocking_dead.headshots",
+                "id": "blocking_dead_headshots",
+                "name": "Blocking Dead Headshots"
+            },
+            {
+                "path": "player.stats.Arcade.modes.blocking_dead.zombie_kills",
+                "id": "blocking_dead_zombie_kills",
+                "name": "Blocking Dead Zombie Kills"
+            },
+            {
+                "path": "player.stats.Arcade.modes.bounty_hunters.bounty_kills",
+                "id": "bounty_hunters_bounty_kills",
+                "name": "Bounty Hunters Bounty Kills"
+            },
+            {
+                "path": "player.stats.Arcade.modes.bounty_hunters.bow_kills",
+                "id": "bounty_hunters_bow_kills",
+                "name": "Bounty Hunters Bow Kills"
+            },
+            {
+                "path": "player.stats.Arcade.modes.bounty_hunters.deaths",
+                "id": "bounty_hunters_deaths",
+                "name": "Bounty Hunters Deaths"
+            },
+            {
+                "path": "player.stats.Arcade.modes.bounty_hunters.kills",
+                "id": "bounty_hunters_kills",
+                "name": "Bounty Hunters Kills"
+            },
+            {
+                "path": "player.stats.Arcade.modes.bounty_hunters.sword_kills",
+                "id": "bounty_hunters_sword_kills",
+                "name": "Bounty Hunters Sword Kills"
+            },
+            {
+                "path": "player.stats.Arcade.modes.bounty_hunters.wins",
+                "id": "bounty_hunters_wins",
+                "name": "Bounty Hunters Wins"
+            },
+            {
+                "path": "player.stats.Arcade.modes.creeper_attack.best_wave",
+                "id": "creeper_attack_best_wave",
+                "name": "Creeper Attack Best Wave"
+            },
+            {
+                "path": "player.stats.Arcade.modes.dragonwars.wins",
+                "id": "dragonwars_wins",
+                "name": "Dragonwars Wins"
+            },
+            {
+                "path": "player.stats.Arcade.modes.dragonwars.kills",
+                "id": "dragonwars_kills",
+                "name": "Dragonwars Kills"
+            },
+            {
+                "path": "player.stats.Arcade.modes.ender_spleef.wins",
+                "id": "ender_spleef_wins",
+                "name": "Ender Spleef Wins"
+            }
+        ]
+    },
+    {
+        "name": "Arcade 2",
+        "apiType": "player",
+        "reqs": [
+            {
+                "path": "player.stats.Arcade.modes.farm_hunt.animal_bow_kills",
+                "id": "farm_hunt_animal_bow_kills",
+                "name": "Farm Hunt Animal Bow Kills"
+            },
+            {
+                "path": "player.stats.Arcade.modes.farm_hunt.animal_kills",
+                "id": "farm_hunt_animal_kills",
+                "name": "Farm Hunt Animal Kills"
+            },
+            {
+                "path": "player.stats.Arcade.modes.farm_hunt.animal_wins",
+                "id": "farm_hunt_animal_wins",
+                "name": "Farm Hunt Animal Wins"
+            },
+            {
+                "path": "player.stats.Arcade.modes.farm_hunt.bow_kills",
+                "id": "farm_hunt_bow_kills",
+                "name": "Farm Hunt Bow Kills"
+            },
+            {
+                "path": "player.stats.Arcade.modes.farm_hunt.hunter_bow_kills",
+                "id": "farm_hunt_hunter_bow_kills",
+                "name": "Farm Hunt Hunter Bow Kills"
+            },
+            {
+                "path": "player.stats.Arcade.modes.farm_hunt.hunter_kills",
+                "id": "farm_hunt_hunter_kills",
+                "name": "Farm Hunt Hunter Kills"
+            },
+            {
+                "path": "player.stats.Arcade.modes.farm_hunt.hunter_wins",
+                "id": "farm_hunt_hunter_wins",
+                "name": "Farm Hunt Hunter Wins"
+            },
+            {
+                "path": "player.stats.Arcade.modes.farm_hunt.kills",
+                "id": "farm_hunt_kills",
+                "name": "Farm Hunt Kills"
+            },
+            {
+                "path": "player.stats.Arcade.modes.farm_hunt.wins",
+                "id": "farm_hunt_wins",
+                "name": "Farm Hunt Wins"
+            },
+            {
+                "path": "player.stats.Arcade.modes.football.goals",
+                "id": "football_goals",
+                "name": "Football Goals"
+            },
+            {
+                "path": "player.stats.Arcade.modes.football.kicks",
+                "id": "football_kicks",
+                "name": "Football Kicks"
+            },
+            {
+                "path": "player.stats.Arcade.modes.football.powerkicks",
+                "id": "football_powerkicks",
+                "name": "Football Powerkicks"
+            },
+            {
+                "path": "player.stats.Arcade.modes.football.wins",
+                "id": "football_wins",
+                "name": "Football Wins"
+            },
+            {
+                "path": "player.stats.Arcade.modes.galaxy_wars.deaths",
+                "id": "galaxy_wars_deaths",
+                "name": "Galaxy Wars Deaths"
+            },
+            {
+                "path": "player.stats.Arcade.modes.galaxy_wars.kills",
+                "id": "galaxy_wars_kills",
+                "name": "Galaxy Wars Kills"
+            },
+            {
+                "path": "player.stats.Arcade.modes.galaxy_wars.wins",
+                "id": "galaxy_wars_wins",
+                "name": "Galaxy Wars Wins"
+            }
+        ]
+    },
+    {
+        "name": "Arcade 3",
+        "apiType": "player",
+        "reqs": [
+            {
+                "path": "player.stats.Arcade.modes.hide_and_seek.hider_wins",
+                "id": "hide_and_seek_hider_wins",
+                "name": "Hide And Seek Hider Total Wins"
+            },
+            {
+                "path": "player.stats.Arcade.modes.hide_and_seek.party_pooper_hider_wins",
+                "id": "hide_and_seek_party_pooper_hider_wins",
+                "name": "Party Pooper Hider Wins"
+            },
+            {
+                "path": "player.stats.Arcade.modes.hide_and_seek.party_pooper_seeker_wins",
+                "id": "hide_and_seek_party_pooper_seeker_wins",
+                "name": "Party Pooper Seeker Wins"
+            },
+            {
+                "path": "player.stats.Arcade.modes.hide_and_seek.party_pooper_wins",
+                "id": "hide_and_seek_party_pooper_wins",
+                "name": "Party Pooper Wins"
+            },
+            {
+                "path": "player.stats.Arcade.modes.hide_and_seek.prop_hunt_hider_wins",
+                "id": "hide_and_seek_prop_hunt_hider_wins",
+                "name": "Prop Hunt Hider Wins"
+            },
+            {
+                "path": "player.stats.Arcade.modes.hide_and_seek.prop_hunt_seeker_wins",
+                "id": "hide_and_seek_prop_hunt_seeker_wins",
+                "name": "Prop Hunt Seeker Wins"
+            },
+            {
+                "path": "player.stats.Arcade.modes.hide_and_seek.prop_hunt_wins",
+                "id": "hide_and_seek_prop_hunt_wins",
+                "name": "Prop Hunt Wins"
+            },
+            {
+                "path": "player.stats.Arcade.modes.hide_and_seek.seeker_wins",
+                "id": "hide_and_seek_seeker_wins",
+                "name": "Hide And Seek Seeker Total Wins"
+            },
+            {
+                "path": "player.stats.Arcade.modes.hide_and_seek.wins",
+                "id": "hide_and_seek_wins",
+                "name": "Hide And Seek Total Wins"
+            },
+            {
+                "path": "player.stats.Arcade.modes.hole_in_the_wall.highest_score_finals",
+                "id": "hole_in_the_wall_highest_score_finals",
+                "name": "Hole In The Wall Highest Score Finals"
+            },
+            {
+                "path": "player.stats.Arcade.modes.hole_in_the_wall.highest_score_qualification",
+                "id": "hole_in_the_wall_highest_score_qualification",
+                "name": "Hole In The Wall Highest Score Qualification"
+            },
+            {
+                "path": "player.stats.Arcade.modes.hole_in_the_wall.rounds",
+                "id": "hole_in_the_wall_rounds",
+                "name": "Hole In The Wall Rounds"
+            },
+            {
+                "path": "player.stats.Arcade.modes.hole_in_the_wall.wins",
+                "id": "hole_in_the_wall_wins",
+                "name": "Hole In The Wall Wins"
+            }
+        ]
+    },
+    {
+        "name": "Arcade 4",
+        "apiType": "player",
+        "reqs": [
+            {
+                "path": "player.stats.Arcade.modes.hypixel_says.round_wins",
+                "id": "hypixel_says_round_wins",
+                "name": "Hypixel Says Round Wins"
+            },
+            {
+                "path": "player.stats.Arcade.modes.hypixel_says.rounds",
+                "id": "hypixel_says_rounds",
+                "name": "Hypixel Says Rounds"
+            },
+            {
+                "path": "player.stats.Arcade.modes.hypixel_says.top_score",
+                "id": "hypixel_says_top_score",
+                "name": "Hypixel Says Top Score"
+            },
+            {
+                "path": "player.stats.Arcade.modes.hypixel_says.wins",
+                "id": "hypixel_says_wins",
+                "name": "Hypixel Says Wins"
+            },
+            {
+                "path": "player.stats.Arcade.modes.miniwalls.deaths",
+                "id": "miniwalls_deaths",
+                "name": "Miniwalls Deaths"
+            },
+            {
+                "path": "player.stats.Arcade.modes.miniwalls.final_kills",
+                "id": "miniwalls_final_kills",
+                "name": "Miniwalls Final Kills"
+            },
+            {
+                "path": "player.stats.Arcade.modes.miniwalls.kills",
+                "id": "miniwalls_kills",
+                "name": "Miniwalls Kills"
+            },
+            {
+                "path": "player.stats.Arcade.modes.miniwalls.wins",
+                "id": "miniwalls_wins",
+                "name": "Miniwalls Wins"
+            },
+            {
+                "path": "player.stats.Arcade.modes.miniwalls.wither_damge",
+                "id": "miniwalls_wither_damge",
+                "name": "Miniwalls Wither Damage"
+            },
+            {
+                "path": "player.stats.Arcade.modes.miniwalls.wither_kills",
+                "id": "miniwalls_wither_kills",
+                "name": "Miniwalls Wither Kills"
+            },
+            {
+                "path": "player.stats.Arcade.modes.party_games.stars_earned",
+                "id": "party_games_stars_earned",
+                "name": "Party Games Stars Earned"
+            },
+            {
+                "path": "player.stats.Arcade.modes.party_games.wins",
+                "id": "party_games_wins",
+                "name": "Party Games Wins"
+            },
+            {
+                "path": "player.stats.Arcade.modes.party_games.round_wins",
+                "id": "party_games_round_wins",
+                "name": "Party Games Round Wins"
+            },
+            {
+                "path": "player.stats.Arcade.modes.pixel_painters.wins",
+                "id": "pixel_painters_wins",
+                "name": "Pixel Painters Wins"
+            }
+        ]
+    },
+    {
+        "name": "Arcade 5",
+        "apiType": "player",
+        "reqs": [
+            {
+                "path": "player.stats.Arcade.modes.throw_out.deaths",
+                "id": "throw_out_deaths",
+                "name": "Throw Out Deaths"
+            },
+            {
+                "path": "player.stats.Arcade.modes.throw_out.kills",
+                "id": "throw_out_kills",
+                "name": "Throw Out Kills"
+            },
+            {
+                "path": "player.stats.Arcade.modes.throw_out.wins",
+                "id": "throw_out_wins",
+                "name": "Throw Out Wins"
+            },
+            {
+                "path": "player.stats.Arcade.modes.zombies.alien_arcadium_wins",
+                "id": "zombies_alien_arcadium_wins",
+                "name": "Zombies Alien Arcadium Wins"
+            },
+            {
+                "path": "player.stats.Arcade.modes.zombies.bad_blood_wins",
+                "id": "zombies_bad_blood_wins",
+                "name": "Zombies Bad Blood Wins"
+            },
+            {
+                "path": "player.stats.Arcade.modes.zombies.best_round",
+                "id": "zombies_best_round",
+                "name": "Zombies Best Round"
+            },
+            {
+                "path": "player.stats.Arcade.modes.zombies.bullets_hit",
+                "id": "zombies_bullets_hit",
+                "name": "Zombies Bullets Hit"
+            },
+            {
+                "path": "player.stats.Arcade.modes.zombies.dead_end_wins",
+                "id": "zombies_dead_end_wins",
+                "name": "Zombies Dead End Wins"
+            },
+            {
+                "path": "player.stats.Arcade.modes.zombies.deaths",
+                "id": "zombies_deaths",
+                "name": "Zombies Deaths"
+            },
+            {
+                "path": "player.stats.Arcade.modes.zombies.doors_opened",
+                "id": "zombies_doors_opened",
+                "name": "Zombies Doors Opened"
+            },
+            {
+                "path": "player.stats.Arcade.modes.zombies.headshots",
+                "id": "zombies_headshots",
+                "name": "Zombies Headshots"
+            },
+            {
+                "path": "player.stats.Arcade.modes.zombies.players_revived",
+                "id": "zombies_players_revived",
+                "name": "Zombies Players Revived"
+            },
+            {
+                "path": "player.stats.Arcade.modes.zombies.total_rounds_survived",
+                "id": "zombies_total_rounds_survived",
+                "name": "Zombies Total Rounds Survived"
+            },
+            {
+                "path": "player.stats.Arcade.modes.zombies.windows_repaired",
+                "id": "zombies_windows_repaired",
+                "name": "Zombies Windows Repaired"
+            },
+            {
+                "path": "player.stats.Arcade.modes.zombies.wins",
+                "id": "zombies_wins",
+                "name": "Zombies Wins"
+            },
+            {
+                "path": "player.stats.Arcade.modes.zombies.zombie_kills",
+                "id": "zombies_zombie_kills",
+                "name": "Zombies Zombie Kills"
+            }
+        ]
+    }
+]

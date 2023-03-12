@@ -1,0 +1,26 @@
+{
+  "version": "3.2.0",
+  "env": "PROD",
+  "mongo": "mongodb://localhost/hypixelguildbot",
+  "token": "",
+  "hypixel_key": "",
+  "slothpixel_key": "",
+  "client_id": "",
+  "developers": [
+    "280466694663831553",
+    "272493209366822913"
+  ],
+  "debug": true,
+  "footer": {
+    "text": "Hypixel Guild Bot | v%version%",
+    "icon": ""
+  },
+  "supportServer": {
+    "id": "",
+    "welcome": "",
+    "reactionMessage": ""
+  },
+  "autoUpdate": {
+    "cooldown": 30000
+  }
+}
