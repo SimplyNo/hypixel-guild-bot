@@ -29,6 +29,8 @@ module.exports = {
         const username = interaction.options.getString('username', true);
         let verificationDeleteTimeout = serverConf.verification.deleteTimeout;
         if (serverConf.verification.channel && interaction.channel.id !== serverConf.verification.channel) return interaction.followUp(`Verification is only enabled in <#${serverConf.verification.channel}>!`);
+        // console.log(Number(interaction.user?.discriminator) ? (player.socialMedia.links.DISCORD == interaction.user.tag) : (player.socialMedia.links.DISCORD == interaction.username))        
+
         if (await bot.getUser({ id: interaction.user.id })) {
             return embed = bot.createEmbed(interaction)
                 .setAuthor(`❌ Verification Error`)
@@ -59,7 +61,7 @@ module.exports = {
                 .setImage(`https://i.imgur.com/8ILZ3LX.gif`).send().then(msg => {
                     if (verificationDeleteTimeout) setTimeout(() => { msg.delete().catch();; }, verificationDeleteTimeout * 1000)
                 })
-        } else if (player.socialMedia.links.DISCORD == interaction.user.tag) {
+        } else if (Number(interaction.user?.discriminator) ? (player.socialMedia.links.DISCORD == interaction.user.tag) : (player.socialMedia.links.DISCORD.toLowerCase() == interaction.user.username)) {
             await bot.addUser(interaction.user.id, player.uuid);
             var embed = bot.createEmbed(interaction)
                 .setAuthor(`✅ Verification Successful`)
@@ -84,7 +86,7 @@ module.exports = {
             var embed = bot.createEmbed(interaction)
                 .setAuthor(`❌ Verification Error`)
                 .setColor(bot.color)
-                .setDescription(`Your discord does not match the one linked with your account! (\`${player.socialMedia.links.DISCORD}\`)`)
+                .setDescription(`Your discord (\`${Number(interaction.user?.discriminator) ? (interaction.user.tag) : (interaction.username)}\`) does not match the one linked with your account! (\`${player.socialMedia.links.DISCORD}\`)`)
                 .setImage(`https://i.imgur.com/8ILZ3LX.gif`).send().then(msg => {
                     if (verificationDeleteTimeout) setTimeout(() => { msg.delete().catch(); }, verificationDeleteTimeout * 1000)
                 })

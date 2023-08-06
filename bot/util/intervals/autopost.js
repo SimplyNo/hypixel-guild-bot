@@ -104,7 +104,7 @@ module.exports = {
                     }
 
                 })
-                await wait(0.5);
+                if (types.includes('daily')) await wait(5);
             }
         }
 

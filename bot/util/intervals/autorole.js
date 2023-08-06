@@ -521,8 +521,8 @@ module.exports = {
     async beginInterval(bot) {
         bot.log(`&6[SHARD ${bot.shard?.ids[0] || -1}] [AutoRole] Began AutoRole interval.`)
         while (true) {
-            await this.interval(bot).catch(e => console.error(`-------------AutoRole ERROR------------\n${e}\n-------------------------------`))
-            await new Promise(r => setTimeout(r, 3 * 60 * 1000))
+            this.interval(bot).catch(e => console.error(`-------------AutoRole ERROR------------\n${e}\n-------------------------------`))
+            await new Promise(r => setTimeout(r, 5 * 60 * 1000))
         }
     }
 }

@@ -9,7 +9,7 @@ module.exports = {
     async execute(bot, interaction) {
         if (!interaction.isCommand()) return;
         const command = bot.commands.get(interaction.commandName) || bot.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
-
+        if (!interaction.guild) return interaction.reply(`Commands don't work in DMs please use them in a server.`)
         if (command) {
             bot.log(`&a[COMMAND] ${interaction.guild.name} &7>>> &3${interaction.user.tag}&7 used &3/${command.name}&7 in &3#${interaction.channel.name}`);
 
@@ -45,9 +45,9 @@ module.exports = {
             if (command.type == "comingsoon" && !bot.hasDev(interaction.user.id)) {
                 return bot.createErrorEmbed(interaction).setDescription("Wooah there time traveler, this command hasn't been released yet!").send()
             }
-            if (command.adminOnly && !interaction.member.permissions.has("ADMINISTRATOR") && !bot.hasDev(interaction.user.id)) {
-                return bot.createErrorEmbed(interaction).setDescription("You need server **administrator permissions** to use this command. [Invite the bot](https://discord.com/oauth2/authorize?client_id=684986294459564042&permissions=469888080&scope=bot) to your server to see what this command has to offer!").send()
-            }
+            // if (command.adminOnly && !interaction.member.permissions.has("ADMINISTRATOR") && !bot.hasDev(interaction.user.id)) {
+            //     return bot.createErrorEmbed(interaction).setDescription("You need server **administrator permissions** to use this command. [Invite the bot](https://discord.com/oauth2/authorize?client_id=684986294459564042&permissions=469888080&scope=bot) to your server to see what this command has to offer!").send()
+            // }
             if (command.devOnly && !bot.hasDev(interaction.user.id)) {
                 return;
             }

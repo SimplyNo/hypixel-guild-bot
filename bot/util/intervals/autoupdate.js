@@ -1,11 +1,15 @@
-const { Collection, Message } = require("discord.js");
+const { Collection, Message, GuildMember } = require("discord.js");
 const MemberRoles = require("../setup/MemberRoles");
 /**
  * @TODO make it so that adding guest role will send a log message to auto role log channel!
  */
 module.exports = {
     /**
-     * @param {{autoUpdateCache: Set}} bot 
+     * 
+     * @param {GuildMember} member 
+     * @param {*} serverConf 
+     * @param {*} bot 
+     * @param {*} force 
      */
     async execute(member, serverConf, bot, force) {
         const verificationConf = serverConf.verification;
@@ -127,7 +131,10 @@ module.exports = {
                 }
                 if (memberRoles.rolesToAdd.length || memberRoles.rolesToRemove.length) {
                     bot.log(`&5[AutoUpdate] [${member.user.tag}] Roles added: ${memberRoles.rolesToAdd.map(e => e.id)} Roles removed: ${memberRoles.rolesToRemove.map(e => e.id)}`);
-                    await member.roles.set(memberRoles.array(), "Hypixel Guild Bot Rank Roles").catch(e => bot.log(`&4[${member.user.tag}] AutoUpdate error - permissions error.`))
+                    await member.roles.remove(memberRoles.rolesToRemove.map(r => r.id),'Hypixel Guild Bot Rank Roles' );
+                    await member.roles.add(memberRoles.rolesToAdd.map(r => r.id),'Hypixel Guild Bot Rank Roles' );
+                    console.log(`roles to remove: ${memberRoles.rolesToRemove}`)
+                    // await member.roles.set(memberRoles.array(), "Hypixel Guild Bot Rank Roles").catch(e => bot.log(`&4[${member.user.tag}] AutoUpdate error - permissions error.`))
                 }
             }
         }

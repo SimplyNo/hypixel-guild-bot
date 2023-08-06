@@ -103,6 +103,7 @@ module.exports = {
         const subcommand = interaction.options.getSubcommand();
 
         if (subcommand === "view") {
+            interaction.deferReply();
             sendConfigEmbed();
         } else if (subcommand === "info") {
             bot.createEmbed(interaction)

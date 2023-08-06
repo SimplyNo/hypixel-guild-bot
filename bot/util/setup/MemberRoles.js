@@ -11,6 +11,7 @@ module.exports = class MemberRoles {
         this.newMemberRoles = new Set();
     }
     addRole(role, reason) {
+        if (!role) return;
         this.newMemberRoles.add(role);
         if (role && !this.memberRoles.has(role)) {
             // console.log(`roles: adding role, ${role}`, reason)
@@ -22,6 +23,7 @@ module.exports = class MemberRoles {
         }
     }
     removeRole(role, reason) {
+        if (!role) return;
         /**
          * to solve duplicate role issue, check to see
          * if the newMemberRoles has the role we want to
