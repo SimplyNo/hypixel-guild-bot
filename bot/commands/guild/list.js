@@ -36,9 +36,9 @@ module.exports = {
 
             let guild;
             if (!query && !user) return bot.createErrorEmbed(interaction).setDescription("To use this command without arguments, verify by doing `/verify [username]`!").send();
-            else if (!query) guild = await bot.wrappers.slothpixelGuild.get(encodeURI(user.uuid), 'player');
-            else if (type === "player") guild = await bot.wrappers.slothpixelGuild.get(encodeURI(query), 'player');
-            else if (type === "guild") guild = await bot.wrappers.slothpixelGuild.get(encodeURI(query), 'name');
+            else if (!query) guild = await bot.wrappers.hypixelGuild.get((user.uuid), 'player', true);
+            else if (type === "player") guild = await bot.wrappers.hypixelGuild.get((query), 'player', true);
+            else if (type === "guild") guild = await bot.wrappers.hypixelGuild.get((query), 'name', true);
 
             if (guild.exists == false && !query) return bot.createErrorEmbed(interaction).setDescription("You are not in a guild!").send();
             if (guild.exists == false && type === 'guild') return bot.sendErrorEmbed(interaction, `We couldn't find a guild with the information you gave us.`)
@@ -125,17 +125,17 @@ module.exports = {
 
             if (args[0] == "-p") {
                 if (!args[1]) return bot.sendErrorEmbed(message, `You did not include a user to check the guild of`)
-                var guild = await bot.wrappers.slothpixelGuild.get(encodeURI(args[1]), "player")
+                var guild = await bot.wrappers.hypixelGuild.get((args[1]), "player", true)
             } else {
                 if (!args[0]) {
                     if (!user) return bot.sendErrorEmbed(message, `You did not include a guild to check`)
-                    var guild = await bot.wrappers.slothpixelGuild.get(encodeURI(user.uuid), "player")
+                    var guild = await bot.wrappers.hypixelGuild.get((user.uuid), "player", true)
                 } else if (args[0].match(/<@.?[0-9]*?>/)) {
                     var mentionedID = args[0].replace(/!/g, '').slice(2, -1)
                     var mentioned = await bot.getUser({ id: mentionedID })
                     if (!mentioned) return bot.sendErrorEmbed(message, `You did not include a guild to check`)
-                    var guild = await bot.wrappers.slothpixelGuild.get(encodeURI(mentioned.uuid), "player")
-                } else var guild = await bot.wrappers.slothpixelGuild.get(encodeURI(args.join(" ")), "name")
+                    var guild = await bot.wrappers.hypixelGuild.get((mentioned.uuid), "player", true)
+                } else var guild = await bot.wrappers.hypixelGuild.get((args.join(" ")), "name", true)
             }
 
             if (guild.exists == false) return bot.sendErrorEmbed(message, `We couldn't find a guild with the information you gave us.`)

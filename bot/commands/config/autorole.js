@@ -103,7 +103,7 @@ module.exports = {
         const subcommand = interaction.options.getSubcommand();
 
         if (subcommand === "view") {
-            interaction.deferReply();
+            await interaction.deferReply();
             sendConfigEmbed();
         } else if (subcommand === "info") {
             bot.createEmbed(interaction)
@@ -311,12 +311,12 @@ _Auto Role automatically syncs in-game Guild Ranks with their Discord Role count
                 .setAuthor(interaction.guild.name, interaction.guild.iconURL())
                 .setTitle("Current Auto Role Config")
                 .setDescription(`Use **${serverConf.prefix}autorole info** for a list of valid subcommands.
-━━━━━━━━━━━━━━━━━━━━━━
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
 Server Guild: **${guildData ? guildData.name : "No Guild Set!"}**
 Log Channel: **${interaction.guild.channels.cache.get(serverConf.autoRole.logChannel) || "No Log Channel Set!"}**
 Default Guild Member Role: **${serverConf.autoRole.memberRole ? '<@&' + serverConf.autoRole.memberRole + '>' : "No Role Set"}**
 Guest Role: **${serverConf.autoRole.guestRole ? '<@&' + serverConf.autoRole.guestRole + '>' : "No Role Set"}**
-━━━━━━━━━━━━━━━━━━━━━━`)
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯`)
                 .setThumbnail(`https://hypixel.net/data/guild_banners/200x400/${guildData ? guildData._id : null}.png`);
             if (guildData && guildData.exists == false) {
                 return bot.createErrorEmbed().setDescription("This guild no longer exists and has been deleted from the database. If you believe this is an error please contact a developer.").send(interaction)

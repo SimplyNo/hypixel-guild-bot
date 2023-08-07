@@ -31,7 +31,7 @@ module.exports = {
         // let user = memberCheck ? (await bot.getUser({ id: memberCheck.id }))?.uuid : args[0] ? args[0] : (await bot.getUser({ id: interaction.author.id })).uuid;
 
 
-        let data = await bot.wrappers.slothpixelPlayer.get(username);
+        let data = await bot.wrappers.hypixelPlayer.get(username);
 
         if (!data || data.outage || data.exists == false) {
             return bot.createErrorEmbed(interaction).setDescription("Could not find that player!").send()
@@ -60,7 +60,7 @@ module.exports = {
             //                 }
         })
         bot.createEmbed(interaction)
-            .setTitle(`${data.emojiRank} ${data.username}'s Requirements Check`)
+            .setTitle(`${data.emojiRank} ${data.displayname}'s Requirements Check`)
             // .setDescription(`${outcome.passed}/${outcome.total} requirements passed:`)
             .addField(`${outcome.passed}/${outcome.total} Passed:`, desc.join('\n'))
             // .addFields(desc)

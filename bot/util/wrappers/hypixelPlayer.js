@@ -1,29 +1,55 @@
 
 const fetch = require("node-fetch");
 const { hypixel_key } = require('../../../config.json');
+const { Response } = require("node-fetch");
+const mojangPlayer = require("./mojangPlayer");
+const redis = require("../../../index").redis;
 
-const getMain = (uuid) => `http://api.hypixel.net/player?key=${hypixel_key}&uuid=${uuid}`;
+const main = (uuid) => `http://api.hypixel.net/player?key=${hypixel_key}&uuid=${uuid}`;
 const mojang = `https://api.mojang.com/users/profiles/minecraft/`;
-
-
+let lastTimeReset = 30;
+let cacheSaveTime = 60;
 module.exports = {
     get(query) {
+        console.log(`q: `, query)
         const { getRank, getPlusColor, getEmojiRank, getFormattedRank, getPlusColorMC } = require('../functions.js')
         return new Promise(async res => {
             if (query.length <= 16) {
-                let $uuid = await fetch(mojang + query);
-                try {
-                    let uuid = await $uuid.json();
-                    query = uuid.id;
-                } catch (e) {
-                    res(0)
-                }
+                let $uuid = await mojangPlayer.get(query).catch(e => null)
+                if (!$uuid) return res(null);
+                query = $uuid.id;
             } else {
                 query = query.replace(/-/g, "");
             }
-            let unparsed = await fetch(getMain(query)).catch(e => ({ outage: true }));
+            let cached = await redis.get(`player:${query}`);
+            if (cached) return res(JSON.parse(cached));
+            let unparsed = await fetch(main(query)).catch(e => ({ outage: true }));
             if (unparsed.outage) return res(unparsed);
-            let data = await unparsed.json().catch(e => ({ outage: true }));
+
+            let data = { throttle: true };
+            while (data?.throttle) {
+                const q = main(query);
+                console.log(q)
+                // console.log(`[Hypixel-Player] Fetching Stats of ${q}...`);
+                let unparsed = await (Promise.race([fetch(q), new Promise(res => setTimeout(() => res({ fetchtimeout: true }), 10000))]));
+
+                // maybe timeout ?? idfk .
+                if (!(unparsed instanceof Response)) {
+                    console.log('THE TIME OUT WORKED ?!')
+                    return res(null);
+                }
+
+                data = await unparsed.json().catch(e => ({ outage: true }));
+                // console.log(`[Hypixel-Player] Fetched stats of ${query}! (parsed)`, util.inspect(data, { depth: 0, colors: true }));
+                // console.log(`${q}`, data.displayname)
+                if (data?.throttle) {
+                    // console.log(`running throttle loop`)
+                    const nextReset = parseInt(unparsed.headers.get('retry-after')) || (lastTimeReset ?? 30);
+                    lastTimeReset = nextReset;
+                    console.log(`[HYPIXEL-PLAYER] Key throttled:`, data, `Trying again in ${nextReset} seconds...`)
+                    await Util.wait(nextReset * 1000)
+                }
+            }
             if (data.outage) return res(data);
             if (!data.player) return res(data.player);
 
@@ -34,8 +60,11 @@ module.exports = {
                 data.player.color = getPlusColor(data.player.rankPlusColor, data.player.rank),
                 data.player.emojiRank = getEmojiRank(data.player),
                 data.player.mcPlusColor = getPlusColorMC(data.player.rank, data.player.rankPlusColor),
-                data.player.formattedRank = getFormattedRank(data.player.rank, data.player.mcPlusColor),
-                res(data.player)
+                data.player.formattedRank = getFormattedRank(data.player.rank, data.player.mcPlusColor);
+
+            redis.setex(`player:${query}`, cacheSaveTime, JSON.stringify(data.player))
+
+            res(data.player)
         })
     }
 }

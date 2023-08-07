@@ -21,7 +21,7 @@ module.exports = {
         await interaction.deferReply();
 
         if (!autoRole.guild) return bot.createErrorEmbed(interaction).setDescription(`You need to set an autorole guild to do this!`).send()
-        let data = await bot.wrappers.slothpixelGuild.get(autoRole.guild, 'id');
+        let data = await bot.wrappers.hypixelGuild.get(autoRole.guild, 'id', true);
         // let data = await bot.wrappers.slothpixelGuild.get('HypixelDuck', 'name');
         if (!data || data.exists == false || !data.members?.length) return bot.createErrorEmbed(interaction).setDescription('could not find the guild!').send()
 

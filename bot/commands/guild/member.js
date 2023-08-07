@@ -28,14 +28,14 @@ module.exports = {
         else if (!name) name = requestUser.uuid;
 
 
-        let player = await bot.wrappers.slothpixelPlayer.get(name)
+        let player = await bot.wrappers.hypixelPlayer.get(name)
 
         const errorCheck = bot.playerErrorCheck(player)
         if (errorCheck) return bot.sendErrorEmbed(interaction, errorCheck)
         let user = await bot.getUser({ uuid: player.uuid }) || {}
         const emoji = user.emoji || ""
 
-        const guild = await bot.wrappers.slothpixelGuild.get(encodeURI(player.uuid), "player")
+        const guild = await bot.wrappers.hypixelGuild.get(encodeURI(player.uuid), "player", true)
 
 
 
@@ -74,7 +74,7 @@ module.exports = {
         ]
 
         const embed = {
-            description: `**${Discord.Util.escapeMarkdown(`${emoji} ${player.emojiRank} ${player.username}${guild.tag ? ` [${guild.tag}]` : ""}`)}**`,
+            description: `**${Discord.Util.escapeMarkdown(`${emoji} ${player.emojiRank} ${player.displayname}${guild.tag ? ` [${guild.tag}]` : ""}`)}**`,
             thumbnail: bot.skin(player.uuid),
             icon: bot.assets.hypixel.guild,
             color: player.plusColor.hex,
@@ -103,14 +103,14 @@ module.exports = {
     },
     async execute(message, args, bot) {
         var { name, page } = await bot.argFormatter(message.author.id, args, [])
-        let player = await bot.wrappers.slothpixelPlayer.get(name)
+        let player = await bot.wrappers.hypixelPlayer.get(name)
 
         const errorCheck = bot.playerErrorCheck(player)
         if (errorCheck) return bot.sendErrorEmbed(message, errorCheck)
         let user = await bot.getUser({ uuid: player.uuid }) || {}
         let requestUser = await bot.getUser({ id: message.author.id }) || {}
         const emoji = user.emoji || ""
-        const guild = args ? await bot.wrappers.slothpixelGuild.get(encodeURI(player.uuid), "player") : await bot.wrappers.slothpixelGuild.get(encodeURI(user.uuid), "player")
+        const guild = args ? await bot.wrappers.hypixelGuild.get(encodeURI(player.uuid), "player", true) : await bot.wrappers.hypixelGuild.get(encodeURI(user.uuid), "player", true)
 
         if (guild.exists == false) return bot.sendErrorEmbed(message, `This user is not in a guild.`)
         if (guild.outage) return bot.sendErrorEmbed(message, `There is a Hypixel API Outage, please try again within a few minutes`);
@@ -147,7 +147,7 @@ module.exports = {
         ]
 
         const embed = {
-            description: `**${Discord.Util.escapeMarkdown(`${emoji} ${player.emojiRank} ${player.username}${guild.tag ? ` [${guild.tag}]` : ""}`)}**`,
+            description: `**${Discord.Util.escapeMarkdown(`${emoji} ${player.emojiRank} ${player.displayname}${guild.tag ? ` [${guild.tag}]` : ""}`)}**`,
             thumbnail: bot.skin(player.uuid),
             icon: bot.assets.hypixel.guild,
             color: player.plusColor.hex,

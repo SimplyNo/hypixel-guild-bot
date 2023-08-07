@@ -38,21 +38,23 @@ module.exports = {
 
             let guild;
             if (!query && !user) return bot.createErrorEmbed(interaction).setDescription("To use this command without arguments, verify by doing `/verify [username]`!").send();
-            else if (!query) guild = await bot.wrappers.slothpixelGuild.get(encodeURI(user.uuid), 'player');
-            else if (type === "player") guild = await bot.wrappers.slothpixelGuild.get(encodeURI(query), 'player');
-            else if (type === "guild") guild = await bot.wrappers.slothpixelGuild.get(encodeURI(query), 'name');
+            else if (!query) guild = await bot.wrappers.hypixelGuild.get((user.uuid), 'player', true);
+            else if (type === "player") guild = await bot.wrappers.hypixelGuild.get((query), 'player', true);
+            else if (type === "guild") guild = await bot.wrappers.hypixelGuild.get((query), 'name', true);
 
             if (guild.exists == false && !query) return bot.createErrorEmbed(interaction).setDescription("You are not in a guild!").send();
             if (guild.exists == false && type === 'guild') return bot.sendErrorEmbed(interaction, `We couldn't find a guild with the information you gave us.`)
             if (guild.exists == false && type === 'player') return bot.sendErrorEmbed(interaction, `This player is not in a guild!`)
             if (guild.outage) return bot.sendErrorEmbed(interaction, `There is a Hypixel API Outage, please try again within a few minutes`)
 
-            var guildMaster = (guild.members || []).find(m => m.rank.match(/^guild\s*master$/i))
+            const guildMaster = (guild.members || []).find(m => m.rank.match(/^guild\s*master$/i))
+            const guildMasterProfile = await bot.wrappers.hypixelPlayer.get(guildMaster.uuid);
+
             const guildCreated = new MomentTZ(guild.createdAt).tz("America/New_York").format("MM/DD/YY HH:mm A");
             const emotes = bot.assets.emotes.games;
             const guildExpByGameType = guild.expByGame;
 
-            var guildGames;
+            var guildGames = [];
             var dates = Object.keys(guild.members[0].expHistory || {}).map(e => ({ key: e, date: new Date(`${e} EST`).setHours(0, 0, 0) }));
             var GEXPFormatted = [];
             var gexp = new Map();
@@ -62,11 +64,11 @@ module.exports = {
                 let avg = guild.members.reduce((prev, curr) => prev + curr.expHistory[date.key] || 0, 0) / guild.members.length;
                 return [date.key, Math.floor(avg)]
             }))
-
-            if (guild.preferred_games) {
+            console.log(`preferred games:`, guild)
+            if (guild.preferredGames) {
                 guildGames = [];
 
-                guild.preferred_games.forEach(game => {
+                guild.preferredGames.forEach(game => {
                     let gameFormat = Constants.game_types.find(g => g.clean_name === game)
                     let formattedGame = game;
                     if (gameFormat) {
@@ -189,7 +191,7 @@ module.exports = {
                 {
                     author: "Guild Overall Stats",
                     fields: [
-                        { name: "Guild Master", value: `${guildMaster ? `${!user.emojiRanks || user.emojiRanks == "true" ? bot.getEmojiRankFromFormatted(guildMaster.profile.rank_formatted) : `**[${guildMaster.displayName.split(" ")[0].replace(/§1|§2|§3|§4|§5|§6|§7|§8|§9|§0|§a|§b|§c|§d|§e|§f|§k|§r|§l|§|\[|\]/g, "")}]**`} **${Discord.Util.escapeMarkdown(guildMaster.profile.username)}**` : "Error"}`, options: { escapeFormatting: true } },
+                        { name: "Guild Master", value: `${guildMaster ? `${!user.emojiRanks || user.emojiRanks == "true" ? guildMasterProfile.emojiRank : `**[${guildMaster.displayName.split(" ")[0].replace(/§1|§2|§3|§4|§5|§6|§7|§8|§9|§0|§a|§b|§c|§d|§e|§f|§k|§r|§l|§|\[|\]/g, "")}]**`} **${Discord.Util.escapeMarkdown(guildMaster.username)}**` : "Error"}`, options: { escapeFormatting: true } },
                         { name: "Created", value: `<t:${Math.floor(guild.created / 1000)}:R>`, options: { escapeFormatting: true } },
                         { name: "Members", value: `${guild.members.length || 0}/125` },
                         { name: "Level", value: guild.level },
@@ -232,29 +234,30 @@ module.exports = {
             let user = await bot.getUser({ id: message.author.id }) || {}
             if (args[0] == "-p") {
                 if (!args[1]) return bot.sendErrorEmbed(message, `You did not include a user to check the guild of`)
-                var guild = await bot.wrappers.slothpixelGuild.get(encodeURI(args[1]), "player")
+                var guild = await bot.wrappers.hypixelGuild.get((args[1]), "player", true)
             } else {
                 if (!args[0]) {
                     if (!user.uuid) return bot.sendErrorEmbed(message, `You did not include a guild to check`)
 
-                    var guild = await bot.wrappers.slothpixelGuild.get(encodeURI(user.uuid), "player")
+                    var guild = await bot.wrappers.hypixelGuild.get((user.uuid), "player", true)
                 } else if (args[0].match(/<@.?[0-9]*?>/)) {
                     var mentionedID = args[0].replace(/!/g, '').slice(2, -1)
                     var mentioned = await bot.getUser({ id: mentionedID })
                     if (!mentioned) return bot.sendErrorEmbed(message, `You did not include a guild to check`)
-                    var guild = await bot.wrappers.slothpixelGuild.get(encodeURI(mentioned.uuid), "player")
-                } else var guild = await bot.wrappers.slothpixelGuild.get(encodeURI(args.join(" ")), "name")
+                    var guild = await bot.wrappers.hypixelGuild.get((mentioned.uuid), "player", true)
+                } else var guild = await bot.wrappers.hypixelGuild.get((args.join(" ")), "name", true)
             }
             // console.log(guild)
             if (guild.exists == false) return bot.sendErrorEmbed(message, `We couldn't find a guild with the information you gave us.`)
             if (guild.outage) return bot.sendErrorEmbed(message, `There is a Hypixel API Outage, please try again within a few minutes`)
 
-            var guildMaster = (guild.members || []).find(m => m.rank.match(/^guild\s*master$/i))
+            const guildMaster = (guild.members || []).find(m => m.rank.match(/^guild\s*master$/i))
+            const guildMasterProfile = await bot.wrappers.hypixelPlayer.get(guildMaster.uuid);
             const guildCreated = new MomentTZ(guild.createdAt).tz("America/New_York").format("MM/DD/YY HH:mm A");
             const emotes = bot.assets.emotes.games;
             const guildExpByGameType = guild.expByGame;
 
-            var guildGames;
+            var guildGames = [];
             var dates = Object.keys(guild.members[0].expHistory || {}).map(e => ({ key: e, date: new Date(`${e} EST`).setHours(0, 0, 0) }));
             var GEXPFormatted = [];
             var gexp = new Map();
@@ -265,10 +268,10 @@ module.exports = {
                 return [date.key, Math.floor(avg)]
             }))
 
-            if (guild.preferred_games) {
+            if (guild.preferredGames) {
                 guildGames = [];
 
-                guild.preferred_games.forEach(game => {
+                guild.preferredGames.forEach(game => {
                     let gameFormat = Constants.game_types.find(g => g.clean_name === game)
                     let formattedGame = game;
                     if (gameFormat) {
@@ -391,7 +394,7 @@ module.exports = {
                 {
                     author: "Guild Overall Stats",
                     fields: [
-                        { name: "Guild Master", value: `${guildMaster ? `${!user.emojiRanks || user.emojiRanks == "true" ? bot.getEmojiRankFromFormatted(guildMaster.profile.rank_formatted) : `**[${guildMaster.displayName.split(" ")[0].replace(/§1|§2|§3|§4|§5|§6|§7|§8|§9|§0|§a|§b|§c|§d|§e|§f|§k|§r|§l|§|\[|\]/g, "")}]**`} **${Discord.Util.escapeMarkdown(guildMaster.profile.username)}**` : "Error"}`, options: { escapeFormatting: true } },
+                        { name: "Guild Master", value: `${guildMaster ? `${!user.emojiRanks || user.emojiRanks == "true" ? guildMasterProfile.emojiRank : `**[${guildMaster.displayName.split(" ")[0].replace(/§1|§2|§3|§4|§5|§6|§7|§8|§9|§0|§a|§b|§c|§d|§e|§f|§k|§r|§l|§|\[|\]/g, "")}]**`} **${Discord.Util.escapeMarkdown(guildMaster.username)}**` : "Error"}`, options: { escapeFormatting: true } },
                         { name: "Created", value: `<t:${Math.floor(guild.created / 1000)}:R>`, options: { escapeFormatting: true } },
                         { name: "Members", value: `${guild.members.length || 0}/125` },
                         { name: "Level", value: guild.level },

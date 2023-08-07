@@ -102,7 +102,7 @@ module.exports = {
             // let memberCheck = await bot.parseMember(args[1], interaction.guild);
             // let user = memberCheck ? (await bot.getUser({ id: memberCheck.id }))?.uuid : args[1];
 
-            let data = await bot.wrappers.slothpixelPlayer.get(username);
+            let data = await bot.wrappers.hypixelPlayer.get(username);
 
             if (!data || data.outage || data.exists == false) {
                 return bot.createErrorEmbed(interaction).setDescription("Could not find that player!").send()
@@ -131,7 +131,7 @@ module.exports = {
                 //                 }
             })
             bot.createEmbed(interaction)
-                .setTitle(`${data.emojiRank} ${data.username}'s Requirements Check`)
+                .setTitle(`${data.emojiRank} ${data.displayname}'s Requirements Check`)
                 // .setDescription(`${outcome.passed}/${outcome.total} requirements passed:`)
                 .addField(`${outcome.passed}/${outcome.total} Passed:`, desc.join('\n'))
                 // .addFields(desc)
@@ -161,7 +161,7 @@ module.exports = {
             await interaction.deferReply();
             const guild = serverConf.autoRole.guild;
             if (!guild) return bot.createErrorEmbed(interaction).setDescription(`You need to set your guild in autorole before you can use this command!\n\n\`${interaction.prefix}autorole setguild <GUILD NAME>\``).send()
-            const guildData = await bot.wrappers.slothpixelGuild.get(guild, 'id');
+            const guildData = await bot.wrappers.hypixelGuild.get(guild, 'id', true);
             if (!guildData || guildData.outage || guildData.exists == false) return bot.createErrorEmbed(interaction).setDescription(`Could not find that guild!`).send();
             await interaction.followUp({
                 embeds: [
@@ -171,7 +171,7 @@ module.exports = {
             })
             let members = guildData.members.map(m => m.uuid);
 
-            let membersData = await bot.wrappers.slothpixelPlayers.get(members, {
+            let membersData = await bot.wrappers.hypixelPlayers.get(members, {
                 progressCallback(num, total) {
                     interaction.editReply({
                         embeds: [
@@ -181,12 +181,13 @@ module.exports = {
                     })
                 }
             });
+            // console.log(membersData)
             let membersDataWithReqs = membersData.map(m => {
                 let [check, outcome] = bot.requirementCheck(m, requirements);
                 const data = {
-                    l: m.stats.BedWars.level,
+                    // l: m.stats.BedWars.level,
                     uuid: m.uuid,
-                    username: m.username,
+                    displayname: m.displayname,
                     emojiRank: m.emojiRank,
                     check,
                     outcome
@@ -204,7 +205,7 @@ module.exports = {
                 let { emojiRank } = m;
                 let { check, outcome } = m;
                 let failed = Object.entries(check).filter(([n, c]) => !c.passed);
-                return `${outcome.passed == outcome.total ? '<:pass:1028363845749710878>' : '<:fail:1028363703298568244>'} ${emojiRank} **${m.username}** (${outcome.passed}/${outcome.total}) ${`${Object.entries(check).map(
+                return `${outcome.passed == outcome.total ? '<:pass:1028363845749710878>' : '<:fail:1028363703298568244>'} ${emojiRank} **${m.displayname}** (${outcome.passed}/${outcome.total}) ${`${Object.entries(check).map(
                     ([n, result]) => {
                         let { name, accepts } = getReqFromID(n);
                         return `\n└ \`${name}\`: ${result.max ?? false ? `${result.max?.toLocaleString()}/` : ''}**${accepts !== "FLOAT" ? parseInt(result.currentValue).toLocaleString() : result.currentValue}**${result.min ?? false ? `/${result.min.toLocaleString()}` : ''}`
@@ -214,13 +215,13 @@ module.exports = {
                     .join('')}`}`
 
             })
-            let passedFields = Util.splitMessage(membersDataWithReqs.filter(m => m.outcome.passed == m.outcome.total).map(m => `\`${m.username}\``).join(' • ') || "No members!", { maxLength: 1024, char: '•' }).map((m, i) => {
+            let passedFields = Util.splitMessage(membersDataWithReqs.filter(m => m.outcome.passed == m.outcome.total).map(m => `\`${m.displayname}\``).join(' • ') || "No members!", { maxLength: 1024, char: '•' }).map((m, i) => {
                 return {
                     name: i === 0 ? `<:pass:1028363845749710878> Passed (${membersDataWithReqs.filter(m => m.outcome.passed == m.outcome.total).length}/${membersDataWithReqs.length})` : "\u200b",
                     value: m,
                 }
             })
-            let failedFields = Util.splitMessage(membersDataWithReqs.filter(m => m.outcome.passed !== m.outcome.total).map(m => `\`${m.username}\``).join(' • ') || "No members!", { maxLength: 1024, char: '•' }).map((m, i) => {
+            let failedFields = Util.splitMessage(membersDataWithReqs.filter(m => m.outcome.passed !== m.outcome.total).map(m => `\`${m.displayname}\``).join(' • ') || "No members!", { maxLength: 1024, char: '•' }).map((m, i) => {
                 return {
                     name: i === 0 ? `<:fail:1028363703298568244> Failed (${membersDataWithReqs.filter(m => m.outcome.passed !== m.outcome.total).length}/${membersDataWithReqs.length})` : "\u200b",
                     value: m,
@@ -461,7 +462,7 @@ module.exports = {
             let memberCheck = await bot.parseMember(args[1], message.guild);
             let user = memberCheck ? (await bot.getUser({ id: memberCheck.id }))?.uuid : args[1];
 
-            let data = await bot.wrappers.slothpixelPlayer.get(user);
+            let data = await bot.wrappers.hypixelPlayer.get(user);
 
             if (!data || data.outage || data.exists == false) {
                 return bot.createErrorEmbed(message).setDescription("Could not find that player!").send()
@@ -491,7 +492,7 @@ module.exports = {
                 //                 }
             })
             bot.createEmbed(message)
-                .setTitle(`${data.emojiRank} ${data.username}'s Requirements Check`)
+                .setTitle(`${data.emojiRank} ${data.displayname}'s Requirements Check`)
                 // .setDescription(`${outcome.passed}/${outcome.total} requirements passed:`)
                 .addField(`${outcome.passed}/${outcome.total} requirements passed:`, desc.join('\n'))
                 // .addFields(desc)

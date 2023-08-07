@@ -16,6 +16,7 @@ const functionsConfig = require("./functionsConfig.js");
 const path = require("path");
 const rankFunctions = require("./rankFunctions.js");
 const validReqs = require('../../valid-requirements.json');
+const Redis = require('ioredis');
 // const requirements = require("../old_commands/config/requirements");
 
 // update footer
@@ -70,7 +71,6 @@ module.exports = {
      * 
      */
     async init(bot, options) {
-
 
 
         bot.CONFIG = config;
@@ -336,6 +336,7 @@ module.exports = {
                  */
                 let msg = await (message ? bot.replyGracefully(message, { embeds: Embeds, ...options }) : channel.send({ embeds: Embeds, ...options })).catch(e => console.log(options, e));
                 if (!msg) {
+                    // console.log(`message: `, message)
                     console.log(`${message ? 'Replying Gracefully' : 'Sending through channel'}: Couldn't send a message because of missing permissions?!`)
                     return null;
                 }
@@ -1027,12 +1028,17 @@ module.exports = {
         bot.replyGracefully = async (message, ...args) => {
             // console.log(args, `defer: ${message.deferred} replied: ${message.replied}`);
             if (message.deferred) return message.editReply(...args);
+            // if (message.deferred) return message.channel.send(...args);
             else if (message.replied) return message.followUp(...args);
             const reply = await message.reply(...args).catch(e => null);
-            // console.log(`reply: ` + reply);
+            // const reply = await message.followUp(...args);
+            // console.log(`args: `, args);
+            // console.log(`reply: `, reply);
             return reply;
         }
         bot.sendPages = (message, embeds = [], page = 1, time) => {
+            message.user = message.user || message.author;
+
             if (!message.channel.permissionsFor(message.guild.me).has(['SEND_MESSAGES', "ADD_REACTIONS", "MANAGE_MESSAGES", "ATTACH_FILES"])) {
                 console.log(chalk.red(`[INVITE ERR] ${message.guild.name} invited the bot with missing perms`))
                 return bot.replyGracefully(message, `:x: Hypixel Guild Bot has been added with the incorrect permissions. Please **reinvite** with correct permissions (<https://discord.com/oauth2/authorize?client_id=684986294459564042&permissions=469888080&scope=bot>) **OR** you can assign the following permissions:\n\n\`+\` **SEND_MESSAGES**\n\`+\` **ADD_REACTIONS**\n\`+\` **MANAGE_MESSAGES**\n\`+\` **ATTACH_FILES**`).catch(e => {
@@ -1043,7 +1049,7 @@ module.exports = {
 
             if (embeds.length == 1 || message.autoPost) return bot.replyGracefully(message, { embeds: [embeds[0]] }).catch(e => console.log(`error caught with no pages. deferred: ${message.deferred}`, e))
             bot.replyGracefully(message, { embeds: [embeds[page - 1]], fetchReply: true }).then(msg => {
-                // if (!msg.react)
+                console.log(`message: `, message);
                 msg.react("◀️").then(r => {
                     msg.react("▶️").then(msg.react("⏹️"));
 
@@ -1096,6 +1102,7 @@ module.exports = {
 
         bot.wrappers = {
             hypixelPlayer: require('./wrappers/hypixelPlayer'),
+            hypixelPlayers: require('./wrappers/hypixelPlayers'),
             hypixelGuild: require('./wrappers/hypixelGuild'),
             hypixelStatus: require('./wrappers/hypixelStatus'),
             sk1erLb: require('./wrappers/sk1erLb'),
