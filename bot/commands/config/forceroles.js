@@ -26,15 +26,15 @@ module.exports = {
             guestRole: serverConf.autoRole.guestRole || null,
             unverified: serverConf.verification.unverified || null
         }
-
+        const memberRole = serverConf.autoRole.memberRole || null;
         console.log(Object.values(possibleRoles))
-        if (Object.values(possibleRoles).every(e => !e)) {
+        if (Object.values(possibleRoles).every(e => !e) && !memberRole) {
             return bot.createEmbed(interaction).setTitle(`️️:warning: No roles!`)
                 .setDescription(`
-            You need to have set at least **one** of the following roles to use this command:
+You need to have set at least **one** of the following roles to use this command:
 
-            \`•\` **Verified Role** (\`${interaction.prefix}verifyconfig\`)
-            \`•\` **Unverified Role** (\`${interaction.prefix}verifyconfig\`)
+\`•\` **Verified Role** (\`${interaction.prefix}verifyconfig\`)
+\`•\` **Unverified Role** (\`${interaction.prefix}verifyconfig\`)
 \`•\` **Guest Role** (\`${interaction.prefix}autorole\`)
 
 **»** _The bot **automatically** updates members' roles as they send messages in the server. This command force updates everyone and shouldn't need to be used often._
@@ -45,13 +45,13 @@ module.exports = {
             let collector = await bot.createEmbed(interaction)
                 .setTitle(":warning: Confirmation")
                 .setDescription(`
-    The bot will update all members according to the following roles:
-    
-    \`•\` **Verified Role** (\`${interaction.prefix}verifyconfig\`) ${possibleRoles.verifiedRole ? `- <@&${possibleRoles.verifiedRole}>` : ``}
-    \`•\` **Unverified Role** (\`${interaction.prefix}verifyconfig\`) ${possibleRoles.unverified ? `- <@&${possibleRoles.unverified}>` : ``}
-    \`•\` **Guest Role** (\`${interaction.prefix}autorole\`) ${possibleRoles.guestRole ? `- <@&${possibleRoles.guestRole}>` : ``}
-    
-    **_This may take some time depending on large your server is._**
+The bot will update all members according to the following roles:
+
+\`•\` **Verified Role** (\`${interaction.prefix}verifyconfig\`) ${possibleRoles.verifiedRole ? `- <@&${possibleRoles.verifiedRole}>` : ``}
+\`•\` **Unverified Role** (\`${interaction.prefix}verifyconfig\`) ${possibleRoles.unverified ? `- <@&${possibleRoles.unverified}>` : ``}
+\`•\` **Guest Role** (\`${interaction.prefix}autorole\`) ${possibleRoles.guestRole ? `- <@&${possibleRoles.guestRole}>` : ``}
+
+**_This may take some time depending on large your server is._**
     `).sendAsConfirmation();
             collector.on("cancel", async btn => {
                 btn.deferUpdate();
@@ -117,6 +117,8 @@ Elapsed Time: \`${Math.floor((Date.now() - startTime) / 1000 / 60)}m ${Math.floo
                         } else {
                             // verified: add guest role if not in guild
                             if (!memberRoles.array().includes(possibleRoles.guestRole)) memberRoles.addRole(possibleRoles.guestRole);
+                            // verified: remove member role if not in guild
+                            if (memberRoles.array().includes(memberRole)) memberRoles.removeRole(memberRole);
                         }
 
                         // verified: add verified role
@@ -130,6 +132,8 @@ Elapsed Time: \`${Math.floor((Date.now() - startTime) / 1000 / 60)}m ${Math.floo
                         if (memberRoles.array().includes(possibleRoles.verifiedRole)) memberRoles.removeRole(possibleRoles.verifiedRole);
                         // not verified: add unverified role
                         if (!memberRoles.array().includes(possibleRoles.unverified)) memberRoles.addRole(possibleRoles.unverified);
+                        // not verified: remove member role
+                        if (memberRoles.array().includes(memberRole)) memberRoles.removeRole(memberRole)
                     }
                     currentAdded++;
                     // fix when have 2 roles . . .
