@@ -29,7 +29,7 @@ A Discord Bot for managing and viewing Hypixel Guilds!
 
 ## 💻 Running Locally
 #### ⚠ Disclaimer: Currently, emoji rank visibility will likely be lost when running locally.
-- Ensure you have a working version of [Node 16](https://nodejs.org/en/blog/release/v16.16.0) and [MongoDB](https://www.mongodb.com/docs/manual/installation/) installed.
+- Ensure you have a working version of [Node 16](https://nodejs.org/en/blog/release/v16.16.0), [MongoDB](https://www.mongodb.com/docs/manual/installation/), and [Redis](https://redis.io) installed.
 - Clone the repository: `git clone https://github.com/SimplyNo/hypixel-guild-bot.git`.
 - Install dependencies: `npm i`.
 - Setup the `config.json` file according to `config.schema.json`. 
