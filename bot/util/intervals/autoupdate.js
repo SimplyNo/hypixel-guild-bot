@@ -110,11 +110,11 @@ module.exports = {
                         let rankRoles = Object.values(serverConf.rankRoles);
                         rankRoles.forEach(r => memberRoles.removeRole(r.id));
                     }
-                    // add guestt role
-                    if (autoRole.guestRole && autoRole.guild) {
-                        console.log(`[autoupdate] ADD GUEST ROLE TO ${member.user.tag}!`)
+                    // REMOVE guestt role if not verified
+                    if (autoRole.guestRole) {
+                        console.log(`[autoupdate] REMOVE GUEST ROLE FROM ${member.user.tag}!`)
 
-                        memberRoles.addRole(autoRole.guestRole)
+                        memberRoles.removeRole(autoRole.guestRole)
                     }
                     // verified role
                     if (role && member.roles.cache.has(role)) {
@@ -131,8 +131,8 @@ module.exports = {
                 }
                 if (memberRoles.rolesToAdd.length || memberRoles.rolesToRemove.length) {
                     bot.log(`&5[AutoUpdate] [${member.user.tag}] Roles added: ${memberRoles.rolesToAdd.map(e => e.id)} Roles removed: ${memberRoles.rolesToRemove.map(e => e.id)}`);
-                    await member.roles.remove(memberRoles.rolesToRemove.map(r => r.id),'Hypixel Guild Bot Rank Roles' );
-                    await member.roles.add(memberRoles.rolesToAdd.map(r => r.id),'Hypixel Guild Bot Rank Roles' );
+                    await member.roles.remove(memberRoles.rolesToRemove.map(r => r.id), 'Hypixel Guild Bot Rank Roles');
+                    await member.roles.add(memberRoles.rolesToAdd.map(r => r.id), 'Hypixel Guild Bot Rank Roles');
                     console.log(`roles to remove: ${memberRoles.rolesToRemove}`)
                     // await member.roles.set(memberRoles.array(), "Hypixel Guild Bot Rank Roles").catch(e => bot.log(`&4[${member.user.tag}] AutoUpdate error - permissions error.`))
                 }
