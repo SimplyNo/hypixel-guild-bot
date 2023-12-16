@@ -35,7 +35,7 @@ module.exports = {
       .addField(`Bot User Count`, `:bust_in_silhouette: \`${userCount.toLocaleString()}\``, true)
       .addField(`Channel Count`, `:hash: \`${channelCount.toLocaleString()}\``, true)
       .addField(`Current Shard`, `💎 ID: \`${interaction.guild.shardId}\`/ Total: \`${bot.shard?.count ?? 0}\``)
-      .setFooter(`Version ${bot.config.version} | Created and developed by SimplyNo#8524`)
+      .setFooter(`Version ${bot.CONFIG.version} | Created and developed by SimplyNo#8524`)
       .send()
     //     let url = args[0];
     //     let now = Date.now();
