@@ -86,7 +86,7 @@ module.exports = {
             var embed = bot.createEmbed(interaction)
                 .setAuthor(`❌ Verification Error`)
                 .setColor(bot.color)
-                .setDescription(`Your discord (\`${Number(interaction.user?.discriminator) ? (interaction.user.tag) : (interaction.username)}\`) does not match the one linked with your account! (\`${player.socialMedia.links.DISCORD}\`)`)
+                .setDescription(`Your discord (\`${Number(interaction.user?.discriminator) ? (interaction.user.tag) : (interaction.user.username)}\`) does not match the one linked with your account! (\`${player.socialMedia.links.DISCORD}\`)`)
                 .setImage(`https://i.imgur.com/8ILZ3LX.gif`).send().then(msg => {
                     if (verificationDeleteTimeout) setTimeout(() => { msg.delete().catch(); }, verificationDeleteTimeout * 1000)
                 })
