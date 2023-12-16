@@ -43,7 +43,12 @@ module.exports = {
         .addSubcommand(subcmd =>
             subcmd
                 .setName('checkguild')
-                .setDescription(`Check the whole guild. Based on autorole guild.`))
+                .setDescription(`Check a whole guild.`)
+                .addStringOption(option =>
+                    option
+                        .setName("guild")
+                        .setDescription("The guild to check")
+                        .setRequired(false)))
         .addSubcommand(subcmd =>
             subcmd
                 .setName('set')
@@ -159,9 +164,15 @@ module.exports = {
 
         } else if (subcommand == 'checkguild') {
             await interaction.deferReply();
+            const guild_ = interaction.options.getString('guild', false);
             const guild = serverConf.autoRole.guild;
-            if (!guild) return bot.createErrorEmbed(interaction).setDescription(`You need to set your guild in autorole before you can use this command!\n\n\`${interaction.prefix}autorole setguild <GUILD NAME>\``).send()
-            const guildData = await bot.wrappers.hypixelGuild.get(guild, 'id', true);
+            // if (!guild) return bot.createErrorEmbed(interaction).setDescription(`You need to set your guild in autorole before you can use this command!\n\n\`${interaction.prefix}autorole setguild <GUILD NAME>\``).send()
+            let guildData;
+            if (guild_) {
+                guildData = await bot.wrappers.hypixelGuild.get(guild_, 'name', true);
+            } else {
+                guildData = await bot.wrappers.hypixelGuild.get(guild, 'id', true);
+            }
             if (!guildData || guildData.outage || guildData.exists == false) return bot.createErrorEmbed(interaction).setDescription(`Could not find that guild!`).send();
             await interaction.followUp({
                 embeds: [
@@ -208,7 +219,7 @@ module.exports = {
                 return `${outcome.passed == outcome.total ? '<:pass:1028363845749710878>' : '<:fail:1028363703298568244>'} ${emojiRank} **${m.displayname}** (${outcome.passed}/${outcome.total}) ${`${Object.entries(check).map(
                     ([n, result]) => {
                         let { name, accepts } = getReqFromID(n);
-                        return `\n└ \`${name}\`: ${result.max ?? false ? `${result.max?.toLocaleString()}/` : ''}**${accepts !== "FLOAT" ? parseInt(result.currentValue).toLocaleString() : result.currentValue}**${result.min ?? false ? `/${result.min.toLocaleString()}` : ''}`
+                        return `\n└ \`${name}\`: ${result.max ?? false ? `${result.max?.toLocaleString()}/` : ''}${result.passed ? `**` : ''}${accepts !== "FLOAT" ? parseInt(result.currentValue).toLocaleString() : result.currentValue}${result.passed ? `**` : ''}${result.min ?? false ? `/${result.min.toLocaleString()}` : ''}`
 
                         // return `${c.verdict < 0 ? `${(c.min - c.currentValue).toLocaleString()} more` : `${(c.currentValue - c.max).toLocaleString()} less`} ${name}(s)`
                     })
