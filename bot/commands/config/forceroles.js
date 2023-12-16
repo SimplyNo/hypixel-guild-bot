@@ -125,8 +125,8 @@ Elapsed Time: \`${Math.floor((Date.now() - startTime) / 1000 / 60)}m ${Math.floo
                         if (!memberRoles.array().includes(possibleRoles.verifiedRole)) memberRoles.addRole(possibleRoles.verifiedRole);
 
                     } else {
-                        // not verified: add guest role if not verified
-                        if (!memberRoles.array().includes(possibleRoles.guestRole)) memberRoles.addRole(possibleRoles.guestRole);
+                        // not verified: remove guest role if not verified
+                        if (!memberRoles.array().includes(possibleRoles.guestRole)) memberRoles.removeRole(possibleRoles.guestRole);
 
                         // not verified: remove verified role
                         if (memberRoles.array().includes(possibleRoles.verifiedRole)) memberRoles.removeRole(possibleRoles.verifiedRole);
