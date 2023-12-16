@@ -4,11 +4,15 @@ const { hypixel_key } = require('../../../config.json');
 const { Response } = require("node-fetch");
 const mojangPlayer = require("./mojangPlayer");
 const redis = require("../../../index").redis;
-
+const util = require('../../util/gameFunctions.js');
+const playerUtil = require('../../util/playerFunctions');
 const main = (uuid) => `http://api.hypixel.net/player?key=${hypixel_key}&uuid=${uuid}`;
 const mojang = `https://api.mojang.com/users/profiles/minecraft/`;
 let lastTimeReset = 30;
-let cacheSaveTime = 60;
+let cacheSaveTime = 300;
+function wait(ms) {
+    return new Promise(res => setTimeout(res, ms));
+}
 module.exports = {
     get(query) {
         console.log(`q: `, query)
@@ -47,7 +51,7 @@ module.exports = {
                     const nextReset = parseInt(unparsed.headers.get('retry-after')) || (lastTimeReset ?? 30);
                     lastTimeReset = nextReset;
                     console.log(`[HYPIXEL-PLAYER] Key throttled:`, data, `Trying again in ${nextReset} seconds...`)
-                    await Util.wait(nextReset * 1000)
+                    await wait(nextReset * 1000)
                 }
             }
             if (data.outage) return res(data);
@@ -56,12 +60,14 @@ module.exports = {
             data.player.plusColor = {
                 id: data.player.rankPlusColor
             }
-            data.player.rank = getRank(data.player),
-                data.player.color = getPlusColor(data.player.rankPlusColor, data.player.rank),
-                data.player.emojiRank = getEmojiRank(data.player),
-                data.player.mcPlusColor = getPlusColorMC(data.player.rank, data.player.rankPlusColor),
-                data.player.formattedRank = getFormattedRank(data.player.rank, data.player.mcPlusColor);
-
+            data.player.rank = getRank(data.player);
+            data.player.color = getPlusColor(data.player.rankPlusColor, data.player.rank);
+            data.player.emojiRank = getEmojiRank(data.player);
+            data.player.mcPlusColor = getPlusColorMC(data.player.rank, data.player.rankPlusColor);
+            data.player.formattedRank = getFormattedRank(data.player.rank, data.player.mcPlusColor);
+            data.player.level = Math.floor(playerUtil.getLevel(data.player.networkExp));
+            if (data.player.stats.SkyWars) data.player.stats.SkyWars.level = util.getSkywarsLevel(data.player.stats.SkyWars.skywars_experience || 0);
+            if (data.player.stats.Pit?.profile?.prestiges) data.player.stats.Pit.prestige = data.player.stats.Pit.profile.prestiges.length;
             redis.setex(`player:${query}`, cacheSaveTime, JSON.stringify(data.player))
 
             res(data.player)

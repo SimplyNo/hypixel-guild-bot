@@ -2,6 +2,9 @@ const fetch = require("node-fetch");
 const { hypixel_key } = require("../../../config.json");
 const main = `http://api.hypixel.net/guild?key=${hypixel_key}`;
 const { colorCodeToColor } = require("../rankFunctions");
+const { Response } = require("node-fetch");
+const mojangPlayer = require("./mojangPlayer");
+
 const endpoints = {
     player: main + "&player=",
     id: main + "&id=",
@@ -12,15 +15,43 @@ const mojang = require("./mojangProfile");
 module.exports = {
     get(query, type, parseNames = false) {
         return new Promise(async (res) => {
-            let unparsed = await fetch(endpoints[type] + encodeURI(query)).catch(
-                (e) => {
-                    outage: true;
+            let data = { throttle: true };
+            if (type === 'player') {
+                if (query.length <= 16) {
+                    let $uuid = await mojangPlayer.get(query).catch(e => null)
+                    if (!$uuid) return res(null);
+                    query = $uuid.id;
+                } else {
+                    query = query.replace(/-/g, "");
                 }
-            );
-            let data = await unparsed.json().catch((e) => ({ outage: true }));
+            }
+            while (data?.throttle) {
+                const q = endpoints[type] + encodeURI(query);
+                console.log(q)
+                // console.log(`[Hypixel-Player] Fetching Stats of ${q}...`);
+                let unparsed = await (Promise.race([fetch(q), new Promise(res => setTimeout(() => res({ fetchtimeout: true }), 10000))]));
+
+                // maybe timeout ?? idfk .
+                if (!(unparsed instanceof Response)) {
+                    console.log('THE TIME OUT WORKED ?!')
+                    return res(null);
+                }
+
+                data = await unparsed.json().catch(e => ({ outage: true }));
+                // console.log(`[Hypixel-Player] Fetched stats of ${query}! (parsed)`, util.inspect(data, { depth: 0, colors: true }));
+                // console.log(`${q}`, data.displayname)
+                if (data?.throttle) {
+                    // console.log(`running throttle loop`)
+                    const nextReset = parseInt(unparsed.headers.get('retry-after')) || (lastTimeReset ?? 30);
+                    lastTimeReset = nextReset;
+                    console.log(`[HYPIXEL-PLAYER] Key throttled:`, data, `Trying again in ${nextReset} seconds...`)
+                    await wait(nextReset * 1000)
+                }
+            }
             if (data.outage) return res(data);
             // console.log(data)
-            console.log(query)
+            // console.log(query)
+
             if (data.guild) {
                 data.guild.members = data.guild.members.filter(
                     (m) => data.guild.members.filter((e) => e.uuid == m.uuid).length == 1
