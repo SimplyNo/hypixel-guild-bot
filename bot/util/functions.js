@@ -704,28 +704,43 @@ module.exports = {
                 let reqConfig = validReqs.flatMap(e => e.reqs).find(e => e.id.toLowerCase() == id.toLowerCase());
 
                 // temp variable storing last data
-                let lastData = data;
                 // parse the path string
-                reqConfig.path.split('.').forEach(key => {
-                    // if the next property exists, set the lastdata to the next property 
-                    if (lastData[key] !== undefined) {
-                        lastData = lastData[key]
-                    } else {
-                        return;
-                    }
+                const totalPath = reqConfig.path;
+                const operator = totalPath.match(/\/|\+|\-|\*/)?.['0'];
+                const paths = operator ? totalPath.split(/\s(?:\/|\+|\-|\*)\s/g) : [totalPath];
+                const parsedPaths = paths.map(path => {
+                    let lastData = data;
+                    path.split('.').forEach(key => {
+                        // if the next property exists, set the lastdata to the next property 
+                        if (lastData[key] !== undefined) {
+                            lastData = lastData[key]
+                        } else {
+                            return;
+                        }
+                    })
+                    return !lastData || isNaN(lastData) ? 0 : lastData;
                 })
-                if (!lastData || isNaN(lastData)) lastData = 0;
-                let passCheck = (min === null || lastData >= min) && (max === null || lastData <= max) ? true : false;
+                let reqValue = 0;
+                // get the total value
+                if (paths.length > 1) {
+                    console.log(parsedPaths, paths);
+
+                    reqValue = parsedPaths.reduce((a, b) => eval(`a ${operator} b`)).toPrecision(2);
+                } else {
+                    reqValue = parsedPaths[0];
+                }
+                if (!reqValue || isNaN(reqValue)) reqValue = 0;
+                let passCheck = (min === null || reqValue >= min) && (max === null || reqValue <= max) ? true : false;
                 if (!passCheck) {
                     // -1 = too low, 1 = too high
-                    if (min !== null && lastData < min) requirements[id].verdict = -1;
-                    if (max !== null && lastData > max) requirements[id].verdict = 1;
+                    if (min !== null && reqValue < min) requirements[id].verdict = -1;
+                    if (max !== null && reqValue > max) requirements[id].verdict = 1;
                 }
                 // add to total passed
                 if (passCheck) totalPassed++;
                 else totalFailed++;
 
-                requirements[id].currentValue = lastData;
+                requirements[id].currentValue = reqValue;
                 requirements[id].passed = passCheck;
             })
             // requirements.TOTAL_PASSED = totalPassed;
@@ -859,7 +874,7 @@ module.exports = {
             return 1
         }
         bot.playerErrorCheck = (player, mode) => {
-
+            if (!player) return "Please specifiy a valid username or uuid."
             if (player.exists == false) return "Please specifiy a valid username or uuid."
             else if (player.outage == true) return "There is currently a Hypixel API Outage, responses may be slower or nonexistent."
             else if (mode)
