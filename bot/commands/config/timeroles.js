@@ -94,7 +94,7 @@ module.exports = {
                 .setAuthor(interaction.guild.name, interaction.guild.iconURL())
                 .setTitle(`Time Roles Info`)
                 .setDescription(`_Time Role will automatically give roles to verified guild members based off of the time since they joined the guild._ Below you can find a list of all available Time Role arguments and what they do:\n
-• </timeroles help:${interaction.commandId}> - Shows this command
+• </timeroles info:${interaction.commandId}> - Shows this command
 • </timeroles add:${interaction.commandId}> - Adds a new time role.
 • </timeroles remove:${interaction.commandId}> - Removes time role.
 • </timeroles set:${interaction.commandId}> - Sets a new Time Role.
