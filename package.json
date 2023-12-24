@@ -10,7 +10,7 @@
     "@discordjs/builders": "^1.1.0",
     "@discordjs/rest": "^1.0.1",
     "better-sqlite3": "^7.4.1",
-    "canvas": "^2.8.0",
+    "canvas": "^2.11.2",
     "chalk": "^4.1.1",
     "discord.js": "^13.15.1",
     "enmap": "^5.8.5",
