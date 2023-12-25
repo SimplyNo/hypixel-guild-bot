@@ -9,7 +9,8 @@
 const Discord = require('discord.js');
 const { APIMessage, Structures } = require("discord.js");
 const Redis = require('ioredis');
-module.exports.redis = new Redis();
+
+new Redis("redis://whatevergoeshere/o"); //You can get this in Redis
 
 let intents = new Discord.Intents([
     "GUILD_MEMBERS",
