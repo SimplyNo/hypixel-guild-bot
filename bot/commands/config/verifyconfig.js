@@ -34,7 +34,15 @@ module.exports = {
         .addSubcommand(subcmd =>
             subcmd
                 .setName('autonickexcludedroles')
-                .setDescription("Set the roles the bot will ignore while autonicknaming users.")
+                .setDescription("Set the roles the bot will ignore while auto nicknaming users.")
+                .addStringOption(option =>
+                    option
+                        .setName("roles")
+                        .setDescription("Mention the roles you want to exclude, seperated by spaces.")))
+        .addSubcommand(subcmd =>
+            subcmd
+                .setName('autoroleexcludedroles')
+                .setDescription("Set the roles the bot will exclude from AutoRole.")
                 .addStringOption(option =>
                     option
                         .setName("roles")
@@ -154,6 +162,21 @@ module.exports = {
                 await bot.createEmbed(interaction).setTitle(`${bot.assets.emotes.other.check} Success!`).setDescription(`**Everyone** will now be subject to autonick (if it's enabled).`).send()
                 showInfo(true)
             }
+        } else if (subcommand === 'autoroleexcludedroles') {
+            const unparsed = interaction.options.getString('roles');
+            if (unparsed) {
+                const rolesUnparsed = unparsed.split(" ");
+                const roles = (await Promise.all(rolesUnparsed.map(r => bot.parseRole(r, interaction.guild, true)))).map((r, i) => ({ unparsed: rolesUnparsed[i], role: r }));
+                const invalidRoles = roles.filter(r => !r.role);
+                if (invalidRoles.length > 0) return bot.createErrorEmbed(interaction).setDescription(`Could not parse the following roles: ${invalidRoles.map(r => `\`${r.unparsed}\``).join(", ")}`).send();
+
+                await bot.config.verification.setAutoRoleExcludedRoles(interaction.guild.id, roles.map(r => r.role.id));
+                await bot.createEmbed(interaction).setTitle(`${bot.assets.emotes.other.check} Success!`).setDescription(`Server members who have ${roles.map(r => `<@&${r.role.id}>`).join(', ')} will be exempt from AutoRole.`).send();
+            } else {
+                await bot.config.verification.setAutoNickExcludedRoles(interaction.guild.id, undefined);
+                await bot.createEmbed(interaction).setTitle(`${bot.assets.emotes.other.check} Success!`).setDescription(`**Everyone** will now be subject to autonick (if it's enabled).`).send()
+                showInfo(true)
+            }
 
         } else if (subcommand == "autonick") {
             const yes = interaction.options.getBoolean('enabled', true);
@@ -175,23 +198,26 @@ module.exports = {
             let vSettings = (await bot.config.getConfigAsObject(interaction.guild.id)).verification;
             let Embed = bot.createEmbed(interaction).setFancyGuild({ subtext: "Verification Config" })
                 .setTitle('Current Settings').setDescription(`
-            🔨 **Auto Nickname** - ${vSettings.autoNick ? `${bot.assets.emotes.other.check} On` : `❌ \`Off\``}
-            _Whether verified members of this server will be **renamed** to their Minecraft IGN (if the bot has permission)._
-            
-            ⛔ **Auto Nickname Excluded Roles** - ${vSettings.autoNickExcludedRoles ? `${vSettings.autoNickExcludedRoles.map(r => `<@&${r}>`).join(', ')}` : `\`None\``}
-            _Roles that will be excluded from auto nick (if it's enabled)._
-                    
-            #️⃣ **Verification Channel** - ${vSettings.channel ? `<#${vSettings.channel}>` : "`None`"}    
-            _Verification Channel limits the \`verify\` command to one channel._
-            
-            ✅ **Verified Role** - ${vSettings.role ? `<@&${vSettings.role}>` : "`None`"}     
-            _Verified Role is given to ${bot.assets.emotes.other.check} **Verified** members of this server._
-            
-            ❌ **Unverified Role** - ${vSettings.unverified ? `<@&${vSettings.unverified}>` : "`None`"}         
-            _Unverified Role is given to **Unverified** members of this server._  
-            
-            ⏲️ **Verify Message Delete Timeout** - ${vSettings.deleteTimeout ? `\`${vSettings.deleteTimeout}\` seconds` : "`None`"}         
-            _The amount of seconds the bot waits after a user verifies to delete the verification messages._  
+🔨 **Auto Nickname** - ${vSettings.autoNick ? `${bot.assets.emotes.other.check} On` : `❌ \`Off\``}
+_Whether verified members of this server will be **renamed** to their Minecraft IGN (if the bot has permission)._
+
+⛔ **Auto Nickname Excluded Roles** - ${vSettings.autoNickExcludedRoles ? `${vSettings.autoNickExcludedRoles.map(r => `<@&${r}>`).join(', ')}` : `\`None\``}
+_Roles that will be excluded from auto nick (if it's enabled)._
+
+⛔ **AutoRole Excluded Roles** - ${vSettings.autoNickExcludedRoles ? `${vSettings.autoNickExcludedRoles.map(r => `<@&${r}>`).join(', ')}` : `\`None\``}
+_The bot will not change roles of members with this role._
+
+#️⃣ **Verification Channel** - ${vSettings.channel ? `<#${vSettings.channel}>` : "`None`"}    
+_Verification Channel limits the \`verify\` command to one channel._
+
+✅ **Verified Role** - ${vSettings.role ? `<@&${vSettings.role}>` : "`None`"}     
+_Verified Role is given to ${bot.assets.emotes.other.check} **Verified** members of this server._
+
+❌ **Unverified Role** - ${vSettings.unverified ? `<@&${vSettings.unverified}>` : "`None`"}         
+_Unverified Role is given to **Unverified** members of this server._  
+
+⏲️ **Verify Message Delete Timeout** - ${vSettings.deleteTimeout ? `\`${vSettings.deleteTimeout}\` seconds` : "`None`"}         
+_The amount of seconds the bot waits after a user verifies to delete the verification messages._  
             `)
             // let Embed = bot.createEmbed(message).setFancyGuild().setTitle(`Verification Config`).setDescription(`\`${message.prefix}verifyconfig reset\` - Reset configurations`)
             //     .addField(`Auto Nickname » ${vSettings.autoNick ? `Yes ${bot.assets.emotes.other.check}` : `No ❌`}`, `> \`Whether verified members of this server will be **renamed** to their Minecraft IGN (if the bot has permission).\`\n__Usage__: **\`${message.prefix}verifyconfig autonick [yes/no]\`**\nCurrent Value: **${vSettings.autoNick ? `Yes ${bot.assets.emotes.other.check}` : `No ❌`}**`)

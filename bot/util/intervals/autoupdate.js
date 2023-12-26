@@ -13,7 +13,7 @@ module.exports = {
      */
     async execute(member, serverConf, bot, force) {
         const verificationConf = serverConf.verification;
-        const { autoNick, autoNickExcludedRoles, role, unverified } = verificationConf;
+        const { autoNick, autoNickExcludedRoles, role, unverified, autoRoleExcludedRoles } = verificationConf;
         const doRankCheck = Object.values(serverConf.rankRoles).some(e => e.id);
         const requirements = Object.entries(serverConf.requirements).filter(e => [e[1].role, e[1].min, e[1].max].some(el => el !== null));
         const autoRole = serverConf.autoRole;
@@ -129,7 +129,7 @@ module.exports = {
                         memberRoles.addRole(unverified);
                     }
                 }
-                if (memberRoles.rolesToAdd.length || memberRoles.rolesToRemove.length) {
+                if ((memberRoles.rolesToAdd.length || memberRoles.rolesToRemove.length) && !autoRoleExcludedRoles?.some(e => member.roles.cache.has(e))) {
                     bot.log(`&5[AutoUpdate] [${member.user.tag}] Roles added: ${memberRoles.rolesToAdd.map(e => e.id)} Roles removed: ${memberRoles.rolesToRemove.map(e => e.id)}`);
                     await member.roles.remove(memberRoles.rolesToRemove.map(r => r.id), 'Hypixel Guild Bot Rank Roles');
                     await member.roles.add(memberRoles.rolesToAdd.map(r => r.id), 'Hypixel Guild Bot Rank Roles');

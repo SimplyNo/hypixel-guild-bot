@@ -202,6 +202,7 @@ module.exports = {
                             force ? bot.log(`&6[AutoRole] ${verifiedUser.id} (${verifiedUser.uuid}) not in server?!`) : undefined;
                             continue;
                         }
+                        console.log(`verfication:`, serverConf.config.verification?.autoRoleExcludedRoles[0])
                         // let memberRoles = new Set([...member.roles.cache.keys()]);
                         let memberRoles = new MemberRoles([...member.roles.cache.keys()])
 
@@ -297,7 +298,11 @@ module.exports = {
                             if (memberRoles.rolesToAdd.length || memberRoles.rolesToRemove.length) {
 
                                 console.log(`setting roles of ${member.user.tag}`)
-                                await member.roles.set(memberRoles.array());
+                                if (member.roles.cache.has(serverConf.config.verification?.autoRoleExcludedRoles[0])) {
+                                    bot.log(`&6[AutoRole] autorole excluded role detected... skipping`)
+                                } else {
+                                    await member.roles.set(memberRoles.array());
+                                }
                             }
                         } catch (e) {
                             if (force) bot.log(`couldnt set roles of ${user.uuid}, ${member.user.tag}`, memberRoles.rolesToAdd, memberRoles.rolesToRemove, e);
@@ -315,7 +320,7 @@ module.exports = {
                         }
                         if (memberRoles.rolesToAdd.length) {
                             if (server.id == '877855420599894147') {
-                                console.log(`ADD - ${member.user.tag} - ${memberRoles.rolesToAdd.join(', ')}`)
+                                bot.log(`ADD - ${member.user.tag} - ${memberRoles.rolesToAdd.join(', ')}`)
                             }
                             //await member.roles.add(rolesToAdd, "(Auto Role)");
                             str += "**Roles Added:**\n";
@@ -416,15 +421,18 @@ module.exports = {
                     }
                     memberRoles.rolesToRemove.length && bot.log(`&6${shardInfo} [AutoRole] &fremoving ${memberRoles.rolesToRemove.length} roles from ${member.user.tag}`);
                     try {
-
-                        await member.roles.set(memberRoles.array());
+                        if (member.roles.cache.has(serverConf.config.verification?.autoRoleExcludedRoles[0])) {
+                            bot.log(`&6[AutoRole] autorole excluded role detected... skipping (left)`)
+                        } else {
+                            await member.roles.set(memberRoles.array());
+                        }
                     } catch (e) {
                         let roles = [...memberRoles.rolesToAdd.map(r => r.id), ...memberRoles.rolesToRemove.map(r => r.id)];
                         let rolesHigher = roles.filter(r => member.guild.me.roles.highest.comparePositionTo(r) <= 0);
                         if (rolesHigher.length) {
                             if (logChannel) {
-                                bot.log(`${shardInfo} &4Error whilst trying to do autorole: Invalid role hierarchy`);
-                                return bot.createErrorEmbed().setTitle("Invalid Permissions!").setDescription(`**Uh oh, looks like I do not have permissions to add/remove the following roles:**\n\n• <@&${rolesHigher.join('>\n<@&')}>\n\nTo fix this, please either set my role to be higher than those roles, or give a role that is already higher.`).send(logChannel)
+                                bot.log(`${shardInfo} & 4Error whilst trying to do autorole: Invalid role hierarchy`);
+                                return bot.createErrorEmbed().setTitle("Invalid Permissions!").setDescription(`** Uh oh, looks like I do not have permissions to add / remove the following roles:**\n\n• < @& ${rolesHigher.join('>\n<@&')}>\n\nTo fix this, please either set my role to be higher than those roles, or give a role that is already higher.`).send(logChannel)
                             }
                         } else {
                             console.log(`error whilst adding roles: ` + e)

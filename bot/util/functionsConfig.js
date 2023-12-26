@@ -181,8 +181,13 @@ module.exports = {
                     server.config.set('verification', { ...server.config.get('verification'), autoNickExcludedRoles: roles });
                     await server.save();
                     return 1;
+                },
+                async setAutoRoleExcludedRoles(serverID, roles) {
+                    let server = await settings.ensure(serverID);
+                    server.config.set('verification', { ...server.config.get('verification'), autoRoleExcludedRoles: roles });
+                    await server.save();
+                    return 1;
                 }
-
             },
             requirements: {
                 async delete(serverID) {
