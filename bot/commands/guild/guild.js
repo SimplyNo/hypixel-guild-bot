@@ -52,7 +52,7 @@ module.exports = {
 
             const guildCreated = new MomentTZ(guild.createdAt).tz("America/New_York").format("MM/DD/YY HH:mm A");
             const emotes = bot.assets.emotes.games;
-            const guildExpByGameType = guild.expByGame;
+            const guildExpByGameType = guild.guildExpByGameType;
 
             var guildGames = [];
             var dates = Object.keys(guild.members[0].expHistory || {}).map(e => ({ key: e, date: new Date(`${e} EST`).setHours(0, 0, 0) }));
@@ -64,13 +64,14 @@ module.exports = {
                 let avg = guild.members.reduce((prev, curr) => prev + curr.expHistory[date.key] || 0, 0) / guild.members.length;
                 return [date.key, Math.floor(avg)]
             }))
-            console.log(`preferred games:`, guild)
+            // console.log(`preferred games:`, guild)
             if (guild.preferredGames) {
                 guildGames = [];
 
                 guild.preferredGames.forEach(game => {
-                    let gameFormat = Constants.game_types.find(g => g.clean_name === game)
+                    let gameFormat = Constants.game_types.find(g => g.type_name === game)
                     let formattedGame = game;
+                    console.log(game, formattedGame)
                     if (gameFormat) {
                         formattedGame = `${emotes[gameFormat.standard_name.toLowerCase()] || emotes[gameFormat.database_name.toLowerCase()] || ''} ${gameFormat.clean_name}`;
                     }
@@ -149,7 +150,7 @@ module.exports = {
             //     `\`+\` Weekly: **${(guild.scaledExpHistory.weekly || 0).toLocaleString()}** | ${(guild.expHistory.weekly || 0).toLocaleString()}\n`,
             //     `\`+\` Monthly: **${(guild.scaledExpHistory.monthly || 0).toLocaleString()}** | ${(guild.expHistory.monthly || 0).toLocaleString()}\n`,
             // )
-            console.log(guild.id)
+            // console.log(guild.id)
             const embed = {
                 title: `${Discord.Util.escapeMarkdown(`${guild.name} ${guild.tag ? `[${guild.tag}]` : ""}`)}`,
                 thumbnail: `https://hypixel.paniek.de/guild/${guild.id || guild._id}/banner.png`,
@@ -255,7 +256,7 @@ module.exports = {
             const guildMasterProfile = await bot.wrappers.hypixelPlayer.get(guildMaster.uuid);
             const guildCreated = new MomentTZ(guild.createdAt).tz("America/New_York").format("MM/DD/YY HH:mm A");
             const emotes = bot.assets.emotes.games;
-            const guildExpByGameType = guild.expByGame;
+            const guildExpByGameType = guild.guildExpByGameType;
 
             var guildGames = [];
             var dates = Object.keys(guild.members[0].expHistory || {}).map(e => ({ key: e, date: new Date(`${e} EST`).setHours(0, 0, 0) }));
@@ -352,7 +353,7 @@ module.exports = {
             //     `\`+\` Weekly: **${(guild.scaledExpHistory.weekly || 0).toLocaleString()}** | ${(guild.expHistory.weekly || 0).toLocaleString()}\n`,
             //     `\`+\` Monthly: **${(guild.scaledExpHistory.monthly || 0).toLocaleString()}** | ${(guild.expHistory.monthly || 0).toLocaleString()}\n`,
             // )
-            console.log(guild.id)
+            // console.log(guild.id)
             const embed = {
                 title: `${Discord.Util.escapeMarkdown(`${guild.name} ${guild.tag ? `[${guild.tag}]` : ""}`)}`,
                 thumbnail: `https://hypixel.paniek.de/guild/${guild.id || guild._id}/banner.png`,
