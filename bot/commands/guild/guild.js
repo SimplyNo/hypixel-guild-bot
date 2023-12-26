@@ -71,7 +71,6 @@ module.exports = {
                 guild.preferredGames.forEach(game => {
                     let gameFormat = Constants.game_types.find(g => g.type_name === game)
                     let formattedGame = game;
-                    console.log(game, formattedGame)
                     if (gameFormat) {
                         formattedGame = `${emotes[gameFormat.standard_name.toLowerCase()] || emotes[gameFormat.database_name.toLowerCase()] || ''} ${gameFormat.clean_name}`;
                     }
