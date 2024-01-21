@@ -1,4 +1,12 @@
-const Discord = require("discord.js")
+const { SlashCommandBuilder, ButtonBuilder, ActionRowBuilder } = require("@discordjs/builders");
+const Discord = require("discord.js");
+const moment = require('moment')
+function calculateMonthlyExp(expHistory, monthLookup) {
+    return Object.entries(expHistory)
+        .filter(([date]) => date.startsWith(monthLookup))
+        .reduce((prev, [date, val]) => prev + val, 0);
+}
+const thirtyDaysMs = 30 * 24 * 60 * 60 * 1000;
 module.exports = {
     name: "monthly",
     aliases: ["month"],
@@ -8,56 +16,92 @@ module.exports = {
     example: "Lucid all",
     type: 'guild',
     autoPost: true,
+    slash: new SlashCommandBuilder()
+        .setName("monthly")
+        .setDescription("Monthly GEXP leaderboard of a guild")
+        .addStringOption(option =>
+            option
+                .setName('query')
+                .setRequired(false)
+                .setDescription('Guild name or player name'))
+        .addStringOption(option =>
+            option
+                .setName("count")
+                .setDescription("The number of players to show"))
+        .addStringOption(option =>
+            option
+                .setName("type")
+                .setDescription(`Whether to search by player or by guild name`)
+                .setRequired(false)
+                .addChoices({ name: "player", value: "player" }, { name: "guild", value: "guild" }))
+        .addStringOption(option =>
+            option
+                .setName("filter")
+                .setDescription("The GEXP filter. Examples: '>10000' for more than 10000 GEXP, '<1000' for less than 1000 GEXP")),
+    /**
+     * 
+     * @param {Discord.CommandInteraction} interaction 
+     * @param {*} param1 
+     * @param {*} bot 
+    */
+    async run(interaction, { serverConf }, bot) {
+        await interaction.deferReply();
 
-    async execute(message, args, bot) {
-        
-        const command = async () => {
-            let user = await bot.getUser({ id: message.author.id });
+        let user = await bot.getUser({ id: interaction.user.id });
 
-            var memberCount, gexpReq, gexpOperator;
+        const query = interaction.options.getString("query", false);
+        let memberCount = interaction.options.getString('count', false) ?? 15;
+        const type = interaction.options.getString('type', false) ?? 'guild';
+        const filter = interaction.options.getString('filter', false) ?? ">=0";
 
-            if (args[args.length - 2] && [">=", ">", "<", "<=", "=="].includes(args[args.length - 2])) {
-                gexpOperator = args[args.length - 2]
-                args.splice(args.length - 2, 1);
-                if (args[args.length - 2] && ((Number(args[args.length - 2]) >= 1 && Number(args[args.length - 2]) <= 125) || args[args.length - 2].toLowerCase() == "all")) {
-                    if (args[args.length - 2].toLowerCase() == "all") memberCount = "all"
-                    else memberCount = Number(args[args.length - 2])
-                    args.splice(args.length - 2, 1);
-                } else memberCount = "all"
-                if (args[args.length - 1] && isFinite(Number(args[args.length - 1]))) {
-                    gexpReq = Number(args[args.length - 1])
-                    args.pop()
-                } else gexpReq = 0
-            } else if (args[args.length - 1] && ((Number(args[args.length - 1]) >= 1 && Number(args[args.length - 1]) <= 125) || args[args.length - 1].toLowerCase() == "all")) {
-                if (args[[args.length - 1]].toLowerCase() == "all") memberCount = "all"
-                else memberCount = Number(args[args.length - 1])
-                args.pop()
-            } else memberCount = 15;
+        const check = filter.match(/^([<=>]{1,2}) ?(\d+)$/);
+        if (!check || ![">=", ">", "<", "<=", "=="].includes(check[1])) return bot.createErrorEmbed(interaction).setDescription(`Malformed filter: \`${filter}\``).send();
 
-            if (!gexpReq || !gexpOperator){
-                gexpReq = 0; 
-                gexpOperator = ">=";
-            }
+        const gexpReq = check[2];
+        const gexpOperator = check[1];
 
-            if (args[0] == "-p") {
-                if (!args[1]) return bot.sendErrorEmbed(message, `You did not include a user to check the guild of`)
-                var guild = await bot.wrappers.statsifyGuild.get(encodeURI(args[1]), "player")
-            } else {
-                if (!args[0]) {
-                    if (!user) return bot.sendErrorEmbed(message, `You did not include a guild to check`)
-                    var guild = await bot.wrappers.statsifyGuild.get(encodeURI(user.uuid), "player")
-                } else if (args[0].match(/<@.?[0-9]*?>/)) {
-                    var mentionedID = args[0].replace(/!/g, '').slice(2, -1)
-                    var mentioned = await bot.getUser({ id: mentionedID })
-                    if (!mentioned) return bot.sendErrorEmbed(message, `You did not include a guild to check`)
-                    var guild = await bot.wrappers.statsifyGuild.get(encodeURI(mentioned.uuid), "player")
-                } else var guild = await bot.wrappers.statsifyGuild.get(encodeURI(args.join(" ")), "name")
-            }
+        let guild;
+        if (!query && !user) return bot.createErrorEmbed(interaction).setDescription("To use this command without arguments, verify by doing `/verify [username]`!").send();
+        else if (!query) guild = await bot.wrappers.guildTracker.get((user.uuid), true, 'player', true);
+        else if (type === "player") guild = await bot.wrappers.guildTracker.get((query), true, 'player', true);
+        else if (type === "guild") guild = await bot.wrappers.guildTracker.get((query), true, 'name', true);
 
-            if (guild.exists == false) return bot.sendErrorEmbed(message, `We couldn't find a guild with the information you gave us.`)
-            if (guild.outage) return bot.sendErrorEmbed(message, `There is a Hypixel API Outage, please try again within a few minutes`)
-            
-            var gexp = {}
+        if (guild?.error == 'notfound' && !query) return bot.createErrorEmbed(interaction).setDescription("You are not in a guild!").send();
+        if (guild?.error == 'notfound' && type === 'guild') return bot.sendErrorEmbed(interaction, `No guild was found with the name \`${query}\`!`)
+        if (guild?.error == 'notfound' && type === 'player') return bot.sendErrorEmbed(interaction, `The player \`${query}\` is not in a guild!`)
+        if (guild?.error) return bot.sendErrorEmbed(interaction, `There is a Hypixel API Outage, please try again within a few minutes`)
+
+        const thisMonth = moment(getMonth(0));
+        const lastMonth = moment(getMonth(1));
+        const twoMonthAgo = moment(getMonth(2));
+        const threeMonthAgo = moment(getMonth(3));
+
+        const thisMonthLookup = thisMonth.format("YYYY-MM");
+        const lastMonthLookup = lastMonth.format("YYYY-MM");
+        const twoMonthAgoLookup = twoMonthAgo.format("YYYY-MM");
+        const threeMonthAgoLookup = threeMonthAgo.format("YYYY-MM");
+
+        const dateNow = new Date();
+        const thirtyDaysAgo = new Date(dateNow - 30 * 24 * 60 * 60 * 1000);
+        const thirtyDaysAgoLookup = moment(thirtyDaysAgo).format("YYYY-MM-DD");
+        const dateLookup = {
+            monthlyThisMonth: thisMonthLookup,
+            monthlyLastMonth: lastMonthLookup,
+            monthlyTwoMonthAgo: twoMonthAgoLookup,
+            monthlyThreeMonthAgo: threeMonthAgoLookup,
+            monthlyLast30Days: thirtyDaysAgoLookup
+        }
+        /**
+         * 
+         * monthlyThisMonth
+         * monthlyLastMonth
+         * monthlyTwoMonthAgo
+         * monthlyThreeMonthAgo
+         * monthlyLast30Days
+        */
+        const command = (monthLookup, niceName, period, memberCount) => {
+
+            let gexp = {};
 
             const embed = {
                 title: `Top ${memberCount} Monthly GEXP ${guild.name} ${guild.tag ? `[${guild.tag}]` : ""}`,
@@ -68,53 +112,188 @@ module.exports = {
             }
 
             let pages = []
-
-            guild.members = guild.members.filter(member => eval(`${member.monthly} ${gexpOperator} ${gexpReq}`))
-            if (memberCount == "all" || memberCount > guild.members.length) memberCount = guild.members.length
-
-            gexp["monthly"] = guild.expHistory.monthly
-            gexp["monthlyScaled"] = guild.scaledExpHistory.monthly
-
+            guild.allMembers.forEach(member => {
+                member.monthlyThisMonth = calculateMonthlyExp(member.expHistory, thisMonthLookup);
+                member.monthlyLastMonth = calculateMonthlyExp(member.expHistory, lastMonthLookup);
+                member.monthlyTwoMonthAgo = calculateMonthlyExp(member.expHistory, twoMonthAgoLookup);
+                member.monthlyThreeMonthAgo = calculateMonthlyExp(member.expHistory, threeMonthAgoLookup);
+                member.monthlyLast30Days = Object.entries(member.expHistory).filter(([date]) => ((new Date(date).getTime()) - thirtyDaysAgo.getTime()) > 0).reduce((prev, [date, val]) => prev + val, 0);
+                // Object.entries(member.expHistory).forEach(([date, exp]) => new Date(date).getTime() > new Date(dateLookup[monthLookup]).getTime() gexp[date] = (gexp[date] || 0) + exp);
+                // member.monthlyLast30Days = Object.entries(member.expHistory).slice(-30).reduce((prev, [date, val]) => prev + val, 0);
+            })
+            guild.monthlyThisMonth = guild.allMembers.reduce((prev, member) => prev + member.monthlyThisMonth, 0);
+            guild.monthlyLast30Days = guild.allMembers.reduce((prev, member) => prev + member.monthlyLast30Days, 0);
+            // people might leve and join back then bot counts wrong gexp [BUG]
+            guild.allMembers = guild.allMembers.filter(member => eval(`${member[monthLookup]} ${gexpOperator} ${gexpReq}`))
+            if (memberCount == "all" || memberCount > guild.allMembers.length) memberCount = guild.allMembers.length
+            gexp["weekly"] = 0;
+            gexp["weeklyScaled"] = 0;
             pages[0] = {}
             pages[0].fields = []
-            var players = []
-
+            let players = []
+            console.log(gexp)
             pages[0].author = "Guild Monthly GEXP"
             pages[0].title = `Top ${memberCount} Monthly GEXP ${guild.name} ${guild.tag ? `[${guild.tag}]` : ""}`
-            pages[0].description = `\`\`\`CSS\nShowing results for ${guild.name} ${guild.tag ? `[${guild.tag}]` : ""} Top ${memberCount} Monthly GEXP\`\`\`\n\`\`\`js\nTotal RAW Monthly GEXP: ${(gexp["monthly"] || 0).toLocaleString()}\nTotal SCALED Monthly GEXP: ${(gexp["monthlyScaled"] || 0).toLocaleString()} (Approximated)\`\`\``
+            const missingGuildData = hasMissingData(guild, dateLookup[monthLookup], guild.firstUpdated);
+            if (missingGuildData) {
+                pages[0].fields.push({ name: "⚠️ Not enough data!", value: `\`•\` Not enough data has been collected to show GEXP in this period (${period.replace('-', 'to')})!\n\`•\` Hang tight, collection will be complete <t:${Math.floor((Date.now() + missingGuildData.difference) / 1000)}:R>!`, options: { escapeFormatting: true } })
+                return bot.pageEmbedMaker(embed, pages)
+            }
+            pages[0].description = `\`\`\`CSS\nShowing results for ${guild.name}${guild.tag ? ` [${guild.tag}] ` : " "}Top ${memberCount} Monthly GEXP\nFrom ${period.replace('-', 'to')}\`\`\`\n\`\`\`js\nTotal RAW Monthly GEXP: ${(guild.monthlyLast30Days || 0).toLocaleString()}\nTotal SCALED Monthly GEXP: ${(gexp["weeklyScaled"] || 0).toLocaleString()} (Approximated)\`\`\``
 
-            guild.members.sort((a, b) => b.monthly - a.monthly)
-            guild.members.forEach((member, index) => {
-                if (index < memberCount) players.push(`\`#${index + 1}\` ${Discord.Util.escapeMarkdown(member.username || "Error")}: ${(member.monthly || 0).toLocaleString()}\n`)
+            guild.allMembers.sort((a, b) => b[monthLookup] - a[monthLookup])
+            // console.log(guild)
+            guild.allMembers.forEach((member, index) => {
+                if (index < memberCount) players.push(`\`#${index + 1}\` ${(user && user.uuid == member.uuid) ? "**" : ""}${(Date.now() - parseInt(member.joined)) < (7 * 24 * 60 * 60 * 1000) ? ' 🆕 ' : ''}${Discord.Util.escapeMarkdown(member.username || "Error")}: ${(member[monthLookup] || 0).toLocaleString()}${(user && user.uuid == member.uuid) ? "**" : ""}\n`)
             })
 
-            var sliceSize = memberCount / 3;
-            var list = Array.from({ length: 3 }, (_, i) => players.slice(i * sliceSize, (i + 1) * sliceSize))
+            let sliceSize = memberCount / 3;
+            let list = Array.from({ length: 3 }, (_, i) => players.slice(i * sliceSize, (i + 1) * sliceSize))
 
             list.forEach((item, index) => {
                 if (item.length === 0) return;
                 pages[0].fields[index] = { value: item.join(""), options: { blankTitle: true, escapeFormatting: true } }
             })
 
-            var secPage = false
+            let secPage = false
 
-            pages[0].fields.forEach(field => { if (field.value.length >= 1024) secPage = true})
-            
-            if (secPage){
-                var sliceSize = memberCount / 6;
-                var list = Array.from({ length: 6 }, (_, i) => players.slice(i * sliceSize, (i + 1) * sliceSize))
-    
+            pages[0].fields.forEach(field => { if (field.value.length >= 1024) secPage = true })
+
+            if (secPage) {
+                let sliceSize = memberCount / 6;
+                let list = Array.from({ length: 6 }, (_, i) => players.slice(i * sliceSize, (i + 1) * sliceSize))
+
                 list.forEach((item, index) => {
                     if (item.length === 0) return;
-                    if (index > guild.members.length/2) pages[1].fields[index - 3] = { value: item.join(""), options: { blankTitle: true, escapeFormatting: true } }
+                    if (index > guild.allMembers.length / 2) pages[1].fields[index - 3] = { value: item.join(""), options: { blankTitle: true, escapeFormatting: true } }
                     else pages[0].fields[index] = { value: item.join(""), options: { blankTitle: true, escapeFormatting: true } }
                 })
             }
 
+
+
             const embeds = bot.pageEmbedMaker(embed, pages)
-            bot.sendPages(message, embeds)
+            return embeds
         }
-        command()
-        
-    },
+        const embeds = command("monthlyLast30Days", "Last 30 Days", `${moment(thirtyDaysAgo).format('MMMM D')} - Today`, memberCount)
+        let optionSelected = 0;
+        const selectMenu = () => {
+            let menu = new Discord.MessageSelectMenu()
+                .setCustomId('monthly')
+                .setPlaceholder('Select Time Period')
+                .addOptions([
+                    {
+                        label: 'Last 30 Days',
+                        description: `${moment(thirtyDaysAgo).format('MMMM D')} - Today`,
+                        value: `monthlyLast30Days,Last 30 Days,${moment(thirtyDaysAgo).format('MMMM D')} - Today`,
+                        emoji: '🔁',
+                    },
+                    {
+                        label: 'This Month',
+                        description: `${thisMonth.format('MMMM D')} - Today`,
+                        emoji: '🗓️',
+                        value: `monthlyThisMonth,This Month,${thisMonth.format('MMMM D')} - Today`,
+                    },
+                    {
+                        label: 'Last Month',
+                        description: `${lastMonth.format('MMMM D')} - ${thisMonth.clone().subtract(1, 'day').format('MMMM D')}`,
+                        emoji: '🗓️',
+                        value: `monthlyLastMonth,Last Month,${lastMonth.format('MMMM D')} - ${thisMonth.clone().subtract(1, 'day').format('MMMM D')}`,
+                    },
+                    {
+                        label: '2 Months Ago',
+                        description: `${twoMonthAgo.format('MMMM D')} - ${lastMonth.clone().subtract(1, 'day').format('MMMM D')}`,
+                        emoji: '🗓️',
+                        value: `monthlyTwoMonthAgo,2 Months Ago,${twoMonthAgo.format('MMMM D')} - ${lastMonth.clone().subtract(1, 'day').format('MMMM D')}`,
+                    },
+                    {
+                        label: '3 Months Ago',
+                        description: `${threeMonthAgo.format('MMMM D')} - ${twoMonthAgo.clone().subtract(1, 'day').format('MMMM D')}`,
+                        emoji: '🗓️',
+                        value: `monthlyThreeMonthAgo,3 Months Ago,${threeMonthAgo.format('MMMM D')} - ${twoMonthAgo.clone().subtract(1, 'day').format('MMMM D')}`,
+                    },
+
+                ])
+            menu.options[optionSelected].default = true
+            return menu;
+        }
+        const setCountBtn = new Discord.MessageButton()
+            .setCustomId('setcount')
+            .setLabel('Set Count')
+            .setStyle('SECONDARY')
+        const msg = await interaction.followUp({
+            embeds: embeds,
+            components: [
+                new Discord.MessageActionRow().addComponents(selectMenu()),
+                new Discord.MessageActionRow().addComponents(setCountBtn)
+            ]
+        })
+        const collector = msg.createMessageComponentCollector({ idle: 300000 });
+        collector.on('end', () => {
+            msg.edit({ components: [] })
+        })
+        collector.on('collect',
+            /**
+             * 
+             * @param {Discord.SelectMenuInteraction} i 
+             * @returns 
+             */
+            async (i) => {
+                if (i.customId === 'setcount') {
+                    await i.showModal(new Discord.Modal()
+                        .setTitle('Set Count')
+                        .setCustomId('count')
+                        .addComponents(
+                            new Discord.MessageActionRow().addComponents(new Discord.TextInputComponent().setCustomId('ct').setRequired(true).setPlaceholder('Enter a number').setStyle('SHORT').setLabel('Member Count').setValue(memberCount.toString()).setPlaceholder('15'))
+                        ))
+                    const resp = await i.awaitModalSubmit({ time: 30000 });
+                    let setMemberCount = Number(resp.components[0].components[0].value) && Number(resp.components[0].components[0].value) >= 0 ? Number(resp.components[0].components[0].value) : 125;
+                    if (i.user.id !== interaction.user.id) return resp.reply({ embeds: command(...selectMenu().options[optionSelected].value.split(','), setMemberCount), ephemeral: true });
+                    resp.deferUpdate()
+                    memberCount = setMemberCount;
+                    i.message.edit({
+                        embeds: command(...selectMenu().options[optionSelected].value.split(','), memberCount), components: [
+                            new Discord.MessageActionRow().addComponents(selectMenu()),
+                            new Discord.MessageActionRow().addComponents(setCountBtn)
+                        ]
+                    })
+                }
+                if (i.customId === 'monthly') {
+                    const [monthLookup, niceName, period] = i.values[0].split(',')
+
+                    optionSelected = selectMenu().options.findIndex(option => option.value === i.values[0]);
+                    if (i.user.id !== interaction.user.id) return i.reply({ embeds: command(monthLookup, niceName, period, memberCount), ephemeral: true });
+                    i.update({
+                        embeds: command(monthLookup, niceName, period, memberCount), components: [
+                            new Discord.MessageActionRow().addComponents(selectMenu()),
+                            new Discord.MessageActionRow().addComponents(setCountBtn)
+                        ]
+                    })
+                }
+            });
+    }
+}
+function scaledGEXP(input) {
+    if (input <= 200000) return Number(input);
+    if (input <= 700000) return Number(Math.round(((input - 200000) / 10) + 200000));
+    if (input > 700000) return Number(Math.round(((input - 700000) / 33) + 250000));
+}
+
+function getMonth(num) {
+    let lastMonth = new Date();
+    lastMonth.setDate(1);
+    lastMonth.setHours(0, 0, 0, 0);
+    lastMonth.setMonth(lastMonth.getMonth() - num);
+    return lastMonth;
+}
+
+
+function hasMissingData(guild, startingDay, firstUpdated) {
+    const startDate = new Date(startingDay);
+    const firstUpdatedDate = new Date(firstUpdated);
+    if (startDate.getTime() < firstUpdatedDate.getTime()) return {
+        hasMissingData: true,
+        difference: firstUpdatedDate.getTime() - startDate.getTime()
+    }
+    return null;
 }
