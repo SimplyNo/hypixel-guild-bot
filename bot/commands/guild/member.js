@@ -41,22 +41,22 @@ module.exports = {
 
         if (guild.exists == false) return bot.sendErrorEmbed(interaction, `This user is not in a guild.`)
         if (guild.outage) return bot.sendErrorEmbed(interaction, `There is a Hypixel API Outage, please try again within a few minutes`);
-        var member = (guild.members || []).find(member => member.uuid == player.uuid)
-        var rank = (guild.ranks || []).find(r => r.name == member.rank)
+        let member = (guild.members || []).find(member => member.uuid == player.uuid)
+        let rank = (guild.ranks || []).find(r => r.name == member.rank)
 
         if (!rank) rank = { tag: "GM" }
 
-        var GEXPFormatted = [];
-        var weeklyExp = [];
-        var dates = Object.keys(member.expHistory || {}).map(e => ({ key: e, date: new Date(`${e} EST`).setHours(0, 0, 0) }));
+        let GEXPFormatted = [];
+        let weeklyExp = [];
+        let dates = Object.keys(member.expHistory || {}).map(e => ({ key: e, date: new Date(`${e} EST`).setHours(0, 0, 0) }));
 
-        var dailyPos = 1
-        var weeklyPos = 1
-        // var monthlyPos = 1
+        let dailyPos = 1
+        let weeklyPos = 1
+        // let monthlyPos = 1
 
         let weeklyAverage = Object.entries(member.expHistory).reduce((p, c) => p + c[1], 0) / 7;
-        for (var n = 0; n < 7; n++) {
-            var dailyPos = 1
+        for (let n = 0; n < 7; n++) {
+            let dailyPos = 1
             guild.members.forEach(otherMember => { if (otherMember.expHistory[dates[n].key] > member.expHistory[dates[n].key]) dailyPos++ })
             GEXPFormatted[n] = `\`•\` ${Moment(dates[n].date).format('MMM. Do')}: **${member.expHistory[dates[n].key].toLocaleString()}** \`[#${dailyPos}/${guild.members.length}]\`\n`
             weeklyExp.push(member.expHistory[dates[n].key])
@@ -102,7 +102,7 @@ module.exports = {
 
     },
     async execute(message, args, bot) {
-        var { name, page } = await bot.argFormatter(message.author.id, args, [])
+        let { name, page } = await bot.argFormatter(message.author.id, args, [])
         let player = await bot.wrappers.hypixelPlayer.get(name)
 
         const errorCheck = bot.playerErrorCheck(player)
@@ -114,22 +114,22 @@ module.exports = {
 
         if (guild.exists == false) return bot.sendErrorEmbed(message, `This user is not in a guild.`)
         if (guild.outage) return bot.sendErrorEmbed(message, `There is a Hypixel API Outage, please try again within a few minutes`);
-        var member = (guild.members || []).find(member => member.uuid == player.uuid)
-        var rank = (guild.ranks || []).find(r => r.name == member.rank)
+        let member = (guild.members || []).find(member => member.uuid == player.uuid)
+        let rank = (guild.ranks || []).find(r => r.name == member.rank)
 
         if (!rank) rank = { tag: "GM" }
 
-        var GEXPFormatted = [];
-        var weeklyExp = [];
-        var dates = Object.keys(member.expHistory || {}).map(e => ({ key: e, date: new Date(`${e} EST`).setHours(0, 0, 0) }));
+        let GEXPFormatted = [];
+        let weeklyExp = [];
+        let dates = Object.keys(member.expHistory || {}).map(e => ({ key: e, date: new Date(`${e} EST`).setHours(0, 0, 0) }));
 
-        var dailyPos = 1
-        var weeklyPos = 1
-        // var monthlyPos = 1
+        let dailyPos = 1
+        let weeklyPos = 1
+        // let monthlyPos = 1
 
         let weeklyAverage = Object.entries(member.expHistory).reduce((p, c) => p + c[1], 0) / 7;
-        for (var n = 0; n < 7; n++) {
-            var dailyPos = 1
+        for (let n = 0; n < 7; n++) {
+            let dailyPos = 1
             guild.members.forEach(otherMember => { if (otherMember.expHistory[dates[n].key] > member.expHistory[dates[n].key]) dailyPos++ })
             GEXPFormatted[n] = `\`•\` ${Moment(dates[n].date).format('MMM. Do')}: **${member.expHistory[dates[n].key].toLocaleString()}** \`[#${dailyPos}/${guild.members.length}]\`\n`
             weeklyExp.push(member.expHistory[dates[n].key])

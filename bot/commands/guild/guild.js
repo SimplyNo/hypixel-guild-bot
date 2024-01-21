@@ -54,11 +54,11 @@ module.exports = {
             const emotes = bot.assets.emotes.games;
             const guildExpByGameType = guild.guildExpByGameType;
 
-            var guildGames = [];
-            var dates = Object.keys(guild.members[0].expHistory || {}).map(e => ({ key: e, date: new Date(`${e} EST`).setHours(0, 0, 0) }));
-            var GEXPFormatted = [];
-            var gexp = new Map();
-            var ranks = null;
+            let guildGames = [];
+            let dates = Object.keys(guild.members[0].expHistory || {}).map(e => ({ key: e, date: new Date(`${e} EST`).setHours(0, 0, 0) }));
+            let GEXPFormatted = [];
+            let gexp = new Map();
+            let ranks = null;
 
             let memberAverages = Object.fromEntries(dates.map(date => {
                 let avg = guild.members.reduce((prev, curr) => prev + curr.expHistory[date.key] || 0, 0) / guild.members.length;
@@ -143,7 +143,7 @@ module.exports = {
                 for (const rank of guildRanks) ranks.push(`\`•\` **${rank.name}** ${rank.tag ? `[${rank.tag}]` : ""}\n`);
             }
 
-            for (var i = 0; i < 7; i++) GEXPFormatted.push(`\`•\` ${Moment(dates[i].date).format('MMM. Do')}: **\`${Math.floor((guild.scaledExpHistory[dates[i].key] || 0)).toLocaleString()}\`** | \`${(guild.expHistory[dates[i].key] || 0).toLocaleString()}\` | \`${memberAverages[dates[i].key].toLocaleString()}\`\n`)
+            for (let i = 0; i < 7; i++) GEXPFormatted.push(`\`•\` ${Moment(dates[i].date).format('MMM. Do')}: **\`${Math.floor((guild.scaledExpHistory[dates[i].key] || 0)).toLocaleString()}\`** | \`${(guild.expHistory[dates[i].key] || 0).toLocaleString()}\` | \`${memberAverages[dates[i].key].toLocaleString()}\`\n`)
             // GEXPFormatted.push(
             //     `\u200b\n`,
             //     `\`+\` Weekly: **${(guild.scaledExpHistory.weekly || 0).toLocaleString()}** | ${(guild.expHistory.weekly || 0).toLocaleString()}\n`,
@@ -234,17 +234,17 @@ module.exports = {
             let user = await bot.getUser({ id: message.author.id }) || {}
             if (args[0] == "-p") {
                 if (!args[1]) return bot.sendErrorEmbed(message, `You did not include a user to check the guild of`)
-                var guild = await bot.wrappers.hypixelGuild.get((args[1]), "player", true)
+                let guild = await bot.wrappers.hypixelGuild.get((args[1]), "player", true)
             } else {
                 if (!args[0]) {
                     if (!user.uuid) return bot.sendErrorEmbed(message, `You did not include a guild to check`)
 
-                    var guild = await bot.wrappers.hypixelGuild.get((user.uuid), "player", true)
+                    let guild = await bot.wrappers.hypixelGuild.get((user.uuid), "player", true)
                 } else if (args[0].match(/<@.?[0-9]*?>/)) {
-                    var mentionedID = args[0].replace(/!/g, '').slice(2, -1)
-                    var mentioned = await bot.getUser({ id: mentionedID })
+                    let mentionedID = args[0].replace(/!/g, '').slice(2, -1)
+                    let mentioned = await bot.getUser({ id: mentionedID })
                     if (!mentioned) return bot.sendErrorEmbed(message, `You did not include a guild to check`)
-                    var guild = await bot.wrappers.hypixelGuild.get((mentioned.uuid), "player", true)
+                    let guild = await bot.wrappers.hypixelGuild.get((mentioned.uuid), "player", true)
                 } else var guild = await bot.wrappers.hypixelGuild.get((args.join(" ")), "name", true)
             }
             // console.log(guild)
@@ -257,11 +257,11 @@ module.exports = {
             const emotes = bot.assets.emotes.games;
             const guildExpByGameType = guild.guildExpByGameType;
 
-            var guildGames = [];
-            var dates = Object.keys(guild.members[0].expHistory || {}).map(e => ({ key: e, date: new Date(`${e} EST`).setHours(0, 0, 0) }));
-            var GEXPFormatted = [];
-            var gexp = new Map();
-            var ranks = null;
+            let guildGames = [];
+            let dates = Object.keys(guild.members[0].expHistory || {}).map(e => ({ key: e, date: new Date(`${e} EST`).setHours(0, 0, 0) }));
+            let GEXPFormatted = [];
+            let gexp = new Map();
+            let ranks = null;
 
             let memberAverages = Object.fromEntries(dates.map(date => {
                 let avg = guild.members.reduce((prev, curr) => prev + curr.expHistory[date.key] || 0, 0) / guild.members.length;
@@ -346,7 +346,7 @@ module.exports = {
                 for (const rank of guildRanks) ranks.push(`\`•\` **${rank.name}** ${rank.tag ? `[${rank.tag}]` : ""}\n`);
             }
 
-            for (var i = 0; i < 7; i++) GEXPFormatted.push(`\`•\` ${Moment(dates[i].date).format('MMM. Do')}: **\`${Math.floor((guild.scaledExpHistory[dates[i].key] || 0)).toLocaleString()}\`** | \`${(guild.expHistory[dates[i].key] || 0).toLocaleString()}\` | \`${memberAverages[dates[i].key].toLocaleString()}\`\n`)
+            for (let i = 0; i < 7; i++) GEXPFormatted.push(`\`•\` ${Moment(dates[i].date).format('MMM. Do')}: **\`${Math.floor((guild.scaledExpHistory[dates[i].key] || 0)).toLocaleString()}\`** | \`${(guild.expHistory[dates[i].key] || 0).toLocaleString()}\` | \`${memberAverages[dates[i].key].toLocaleString()}\`\n`)
             // GEXPFormatted.push(
             //     `\u200b\n`,
             //     `\`+\` Weekly: **${(guild.scaledExpHistory.weekly || 0).toLocaleString()}** | ${(guild.expHistory.weekly || 0).toLocaleString()}\n`,
