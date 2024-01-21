@@ -11,10 +11,18 @@ const endpoints = {
     name: main + "&name=",
 };
 const mojang = require("./mojangProfile");
+const { tracker_api } = require('../../../config.json');
+const guildTracker = require("./guildTracker");
 
 module.exports = {
     get(query, type, parseNames = false) {
         return new Promise(async (res) => {
+            if (tracker_api) {
+                // using Tracker API
+                console.log(`Using tracker!`)
+                return res(guildTracker.get(query, false, type, parseNames))
+            }
+
             let data = { throttle: true };
             if (type === 'player') {
                 if (query.length <= 16) {
