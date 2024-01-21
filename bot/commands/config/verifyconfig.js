@@ -201,11 +201,11 @@ module.exports = {
 🔨 **Auto Nickname** - ${vSettings.autoNick ? `${bot.assets.emotes.other.check} On` : `❌ \`Off\``}
 _Whether verified members of this server will be **renamed** to their Minecraft IGN (if the bot has permission)._
 
-⛔ **Auto Nickname Excluded Roles** - ${vSettings.autoNickExcludedRoles ? `${vSettings.autoNickExcludedRoles.map(r => `<@&${r}>`).join(', ')}` : `\`None\``}
+📛 **Auto Nickname Excluded Roles** - ${vSettings.autoNickExcludedRoles ? `${vSettings.autoNickExcludedRoles.map(r => `<@&${r}>`).join(', ')}` : `\`None\``}
 _Roles that will be excluded from auto nick (if it's enabled)._
 
 ⛔ **AutoRole Excluded Roles** - ${vSettings.autoNickExcludedRoles ? `${vSettings.autoNickExcludedRoles.map(r => `<@&${r}>`).join(', ')}` : `\`None\``}
-_The bot will not change roles of members with this role._
+_The bot will not edit roles of members with this role._
 
 #️⃣ **Verification Channel** - ${vSettings.channel ? `<#${vSettings.channel}>` : "`None`"}    
 _Verification Channel limits the \`verify\` command to one channel._

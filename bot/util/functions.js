@@ -1064,7 +1064,7 @@ module.exports = {
 
             if (embeds.length == 1 || message.autoPost) return bot.replyGracefully(message, { embeds: [embeds[0]] }).catch(e => console.log(`error caught with no pages. deferred: ${message.deferred}`, e))
             bot.replyGracefully(message, { embeds: [embeds[page - 1]], fetchReply: true }).then(msg => {
-                console.log(`message: `, message);
+                // console.log(`message: `, message);
                 msg.react("◀️").then(r => {
                     msg.react("▶️").then(msg.react("⏹️"));
 
@@ -1125,6 +1125,7 @@ module.exports = {
             slothpixelGuild: require('./wrappers/slothpixelGuild'),
             slothpixelPlayer: require('./wrappers/slothpixelPlayer'),
             slothpixelPlayers: require('./wrappers/slothpixelPlayers'),
+            guildTracker: require('./wrappers/guildTracker.js'),
         }
         return bot;
 

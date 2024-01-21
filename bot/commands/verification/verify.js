@@ -46,7 +46,7 @@ module.exports = {
         const player = await bot.wrappers.hypixelPlayer.get(username);
         const requestUser = await bot.getUser({ id: interaction.user.id }) || {}
 
-        if (!player || player.exists == false) return bot.sendErrorEmbed(interaction, "Please specifiy a valid username or uuid.").then(msg => {
+        if (!player || player.exists == false) return bot.sendErrorEmbed(interaction, "Please specify a valid username or uuid.").then(msg => {
             if (verificationDeleteTimeout) setTimeout(() => { msg.delete().catch(); }, verificationDeleteTimeout * 1000)
         })
         else if (player.outage == true) return bot.sendErrorEmbed(interaction, "There is currently a Hypixel API Outage, responses may be slower or nonexistent").then(msg => {

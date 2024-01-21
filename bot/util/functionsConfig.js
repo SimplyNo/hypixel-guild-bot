@@ -425,7 +425,32 @@ module.exports = {
                     } else return (defaultSettings.prefix);
 
                 }
-            }
+            },
+            verifyMessage: {
+                async set(serverID, messageID) {
+                    let server = await settings.ensure(serverID);
+
+                    server.config.set('verifyMessage', { ...server.config.get('verifyMessage'), messageID });
+                    return await server.save();
+
+                },
+                async get(serverID) {
+                    let server = await settings.getConfig(serverID);
+                    if (server && server.config.get('verifyMessage')) {
+                        let message = server.config.get('verifyMessage');
+                        return (message);
+                    } else return (defaultSettings.verifyMessage);
+
+                },
+                async reset(serverID) {
+                    let server = await settings.getConfig(serverID);
+                    if (server && server.config.get('verifyMessage')) {
+                        server.config.delete('verifyMessage');
+                        return await server.save();
+                    } else return (defaultSettings.verifyMessage);
+
+                }
+            },
         }
         return settings
     }
