@@ -12,7 +12,7 @@ const endpoints = {
 };
 const mojang = require("./mojangProfile");
 const { tracker_api } = require('../../../config.json');
-const guildTracker = require("./guildTracker");
+const guildTracker = require("./trackerGuild");
 
 module.exports = {
     get(query, type, parseNames = false) {

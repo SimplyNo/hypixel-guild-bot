@@ -72,6 +72,8 @@ module.exports = {
      */
     async init(bot, options) {
 
+        // used by autopost
+        bot.tempUserConfig = new Discord.Collection();
 
         bot.CONFIG = config;
         bot.CONFIG.PREFIX = '/';
@@ -98,31 +100,16 @@ module.exports = {
         })
         console.log(chalk.green("Connected!") + chalk.cyan(` (${Date.now() - current}ms)`))
         const afkSchema = new Mongoose.Schema({
-            id: {
-                type: String,
-                required: true
-            },
-            uuid: {
-                type: String,
-                require: true
-            },
-            startTime: {
-                type: String,
-                required: true
-            }
+            id: { type: String, required: true }, uuid: { type: String, require: true }, startTime: { type: String, required: true }
         })
-        const userSchema = new Mongoose.Schema({
-            id: {
-                type: String,
-                required: true
-            },
-            uuid: {
-                type: String,
-                required: true
-            },
-            emoji: {
-                type: String
-            },
+        const userConfigSchema = new Mongoose.Schema({
+            id: { type: String, required: true },
+            recentlySearched: { type: [String], required: false, default: [] },
+        })
+        const verifiedSchema = new Mongoose.Schema({
+            id: { type: String, required: true },
+            uuid: { type: String, required: true },
+            emoji: { type: String },
         })
 
         const configSchema = new Mongoose.Schema({
@@ -137,8 +124,9 @@ module.exports = {
             stats: Map
         })
         bot.afking = Mongoose.model('afking', afkSchema, 'afking');
-        bot.verified = Mongoose.model('users', userSchema, 'users');
+        bot.verified = Mongoose.model('users', verifiedSchema, 'users');
         bot.stats = Mongoose.model('stats', statsSchema, 'stats');
+        bot.userConfig = Mongoose.model('userConfig', userConfigSchema, 'userConfig');
         const defaultStats = {
             cmds: 0
         }
@@ -178,7 +166,18 @@ module.exports = {
          */
         let verified = bot.verified;
         bot.serverConf = Mongoose.model('config', configSchema, 'config')
-
+        bot.addRecentSearch = async (id, search) => {
+            return new Promise(res => {
+                bot.userConfig.findOne({ id: id }, async (err, result) => {
+                    if (!result) result = new bot.userConfig({ id: id, recentlySearched: [] })
+                    if (result.recentlySearched.length >= 5) result.recentlySearched.pop();
+                    if (result.recentlySearched.map(s => s.toLowerCase()).includes(search.toLowerCase())) result.recentlySearched.splice(result.recentlySearched.map(e => e.toLowerCase()).indexOf(search.toLowerCase()), 1)
+                    result.recentlySearched.unshift(search);
+                    await result.save()
+                    res(result.recentlySearched)
+                })
+            })
+        }
         bot.getAllAfk = async () => await bot.afking.find({})
         bot.setAfk = async (id, uuid) => await new bot.afking({
             id: id,
@@ -544,6 +543,9 @@ module.exports = {
             }
             return Embed;
         }
+        bot.createSuccessEmbed = (message) => {
+            return bot.createEmbed(message).setTitle(":white_check_mark: Success!").setColor('#00FF00');
+        }
         /**
          * Error Embeds
          */
@@ -609,7 +611,8 @@ module.exports = {
 
                 if (embed.footer && pages.length > 1) embeded.setFooter(`『 Page ${pageIndex + 1}/${pages.length}』 ${config.footer.text}`)
                 else if (embed.footer) embeded.setFooter(`${config.footer.text}`)
-
+                console.log(page.fields)
+                page.fields = page?.fields?.filter(p => p.value || p.name) || null;
                 if (page.fields) {
                     let blanks = 0
                     let fields = []
@@ -873,12 +876,10 @@ module.exports = {
                 if (modes[x].map(e => e.toLowerCase()).indexOf(mode.toLowerCase()) != -1) return ++x
             return 1
         }
-        bot.playerErrorCheck = (player, mode) => {
-            if (!player) return "Please specifiy a valid username or uuid."
-            if (player.exists == false) return "Please specifiy a valid username or uuid."
+        bot.playerErrorCheck = (player, name) => {
+            if (!player) return `\`${name}\` is not a valid username or uuid.`
+            if (player.exists == false) return `\`${name}\` is not a valid username or uuid.`
             else if (player.outage == true) return "There is currently a Hypixel API Outage, responses may be slower or nonexistent."
-            else if (mode)
-                if (!player.stats || !player.stats[mode]) return `${player.displayname} has not played this gamemode.`
         }
         Canvas.registerFont("./fonts/minecraft-special.ttf", {
             family: "Minecraft"
@@ -1051,6 +1052,7 @@ module.exports = {
             // console.log(`reply: `, reply);
             return reply;
         }
+
         bot.sendPages = (message, embeds = [], page = 1, time) => {
             message.user = message.user || message.author;
 
@@ -1125,7 +1127,10 @@ module.exports = {
             slothpixelGuild: require('./wrappers/slothpixelGuild'),
             slothpixelPlayer: require('./wrappers/slothpixelPlayer'),
             slothpixelPlayers: require('./wrappers/slothpixelPlayers'),
-            guildTracker: require('./wrappers/guildTracker.js'),
+            trackerGuild: require('./wrappers/trackerGuild.js'),
+            trackerSearch: require('./wrappers/trackerSearch.js'),
+            trackerLeaderboard: require('./wrappers/trackerLeaderboard.js'),
+            trackerMember: require('./wrappers/trackerMember.js'),
         }
         return bot;
 

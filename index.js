@@ -2,10 +2,7 @@
 //  * Hypixel Guild Bot
 //  * By SimplyNo
 //  * 
-//  * 
 //  */
-
-
 const Discord = require('discord.js');
 const { APIMessage, Structures } = require("discord.js");
 const Redis = require('ioredis');
