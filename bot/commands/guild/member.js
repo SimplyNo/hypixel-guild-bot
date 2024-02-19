@@ -2,6 +2,9 @@ const { SlashCommandBuilder } = require("@discordjs/builders");
 const Discord = require("discord.js");
 const Moment = require("moment");
 
+function getDiscordTimeFormat(ms, type = 'd') {
+    return `<t:${Math.floor(ms / 1000)}:${type}>`
+}
 module.exports = {
     name: "member",
     aliases: ["m", "mem"],
@@ -30,7 +33,7 @@ module.exports = {
 
         let player = await bot.wrappers.hypixelPlayer.get(name)
 
-        const errorCheck = bot.playerErrorCheck(player)
+        const errorCheck = bot.playerErrorCheck(player, name)
         if (errorCheck) return bot.sendErrorEmbed(interaction, errorCheck)
         let user = await bot.getUser({ uuid: player.uuid }) || {}
         const emoji = user.emoji || ""
@@ -38,8 +41,14 @@ module.exports = {
         const guild = await bot.wrappers.hypixelGuild.get(encodeURI(player.uuid), "player", true)
 
 
-
-        if (guild.exists == false) return bot.sendErrorEmbed(interaction, `This user is not in a guild.`)
+        const memberLogs = (await bot.wrappers.trackerMember.get(player.uuid)).filter(e => e.leftEstimate);
+        const memberLogsField = memberLogs.length ? {
+            name: 'Guild History',
+            value: `${memberLogs.sort((a, b) => b.joined - a.joined).map(e => `\`•\` **${e.guild}** from ${getDiscordTimeFormat(Math.floor(e.joined))}${e.leftEstimate ? ` to ${getDiscordTimeFormat(Math.floor(e.leftEstimate.estimate))} (± \`${Math.floor(e.leftEstimate.error / (24 * 60 * 60 * 100)) / 10} days\`)` : ''}`).join("\n")}`
+        } : null
+        if (guild.exists == false) return bot.createErrorEmbed(interaction)
+            .setDescription(`${player.emojiRank} ${player.displayname} is not in a guild.`)
+            .addFields([memberLogsField || { name: 'Guild History', value: 'No previous guilds found since **June 2023**.' }]).send()
         if (guild.outage) return bot.sendErrorEmbed(interaction, `There is a Hypixel API Outage, please try again within a few minutes`);
         let member = (guild.members || []).find(member => member.uuid == player.uuid)
         let rank = (guild.ranks || []).find(r => r.name == member.rank)
@@ -75,24 +84,24 @@ module.exports = {
 
         const embed = {
             description: `**${Discord.Util.escapeMarkdown(`${emoji} ${player.emojiRank} ${player.displayname}${guild.tag ? ` [${guild.tag}]` : ""}`)}**`,
-            thumbnail: bot.skin(player.uuid),
-            icon: bot.assets.hypixel.guild,
+            icon: bot.skin(player.uuid),
             color: player.plusColor.hex,
             footer: true
         }
 
         let pages = [
             {
-                author: "Guild Overall Stats",
+                author: "Guild Member Stats",
                 // thumbnail: `https://hypixel.paniek.de/guild/${guild.id || guild._id}/banner.png`,
                 fields: [
                     { name: "Guild", value: `[\`${guild.name}\`](https://plancke.io/hypixel/guild/name/${encodeURI(guild.name)})`, options: { escapeFormatting: true } },
                     { name: "Guild Rank", value: `${member.rank}${rank.tag ? ` [${rank.tag}]` : ""}` },
-                    { name: "Total Quest Participation", value: member.quest_participation },
+                    { name: "Quest Participation", value: member.questParticipation },
                     // { options: { blank: true, inline: true } },
                     { name: "Daily Experience History", value: GEXPFormatted.join(""), options: { inline: true, escapeFormatting: true }, },
                     { name: "\u200B", value: weeklyGEXP.join(""), options: { inline: true, escapeFormatting: true } },
-                    { name: "Join Date", value: `<t:${Math.floor(member.joined / 1000)}:f> (<t:${Math.floor(member.joined / 1000)}:R>)`, options: { inline: false, escapeFormatting: true } },
+                    { name: "Join Date", value: `<t:${Math.floor(member.joined / 1000)}:f>`, options: { inline: false, escapeFormatting: true } },
+                    { ...memberLogsField, options: { escapeFormatting: true } }
                 ]
             }
         ]
