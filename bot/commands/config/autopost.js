@@ -1,8 +1,9 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
-const { Message, Client, ApplicationCommand, Constants, Permissions, CommandInteraction } = require("discord.js");
+const { Message, Client, ApplicationCommand, Constants, Permissions, CommandInteraction, ApplicationCommandManager } = require("discord.js");
 const { BulkWriteError } = require("mongodb");
 const { execute } = require("../../util/intervals/autoupdate");
 const validIntervals = ['weekly', 'daily', 'hourly'];
+const validCommands = ['weekly', 'monthly', 'daily', 'member', 'leaderboard', 'list', 'guild'];
 const yes = ['yes', 'true', 'y', '1', 'ye', 'yep', 'yea', 'yeah', 'on', 'enable'];
 const no = ['no', 'n', 'false', '0', 'nope', 'nah', 'na', 'nop', 'off', 'disable'];
 const getCommand = (bot, commandName) => bot.commands.get(commandName) || bot.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
@@ -45,19 +46,26 @@ module.exports = {
                 .setDescription('Get info on autopost.'))
         .addSubcommand(subcmd =>
             subcmd
+                .setName('setcommand')
+                .setDescription('Set autopost command.')
+                .addIntegerOption(option =>
+                    option
+                        .setName('slot')
+                        .addChoices({ name: '1', value: 1 }, { name: '2', value: 2 }, { name: '3', value: 3 })
+                        .setDescription('Slot to set.')
+                        .setRequired(true))
+
+        )
+        .addSubcommand(subcmd =>
+            subcmd
                 .setName('set')
                 .setDescription('Set autopost settings.')
                 .addIntegerOption(option =>
                     option
                         .setName('slot')
-                        .setMinValue(1)
-                        .setMaxValue(3)
+                        .addChoices({ name: '1', value: 1 }, { name: '2', value: 2 }, { name: '3', value: 3 })
                         .setDescription('Slot to set.')
                         .setRequired(true))
-                .addStringOption(option =>
-                    option
-                        .setName('command')
-                        .setDescription('Command to set.'))
                 .addChannelOption(option =>
                     option
                         .setName('channel')
@@ -103,7 +111,7 @@ module.exports = {
                 let autoPost = serverConf.autoPost[prop];
                 fields.push({
                     name: `» ${autoPost.name}`, value: `
-\`+\` Command: ${autoPost.command ? `\`/${autoPost.command}\`` : `\`Unset!\``}
+\`+\` Command: ${autoPost.slashCommand ? `\`${autoPost.slashCommand}\`` : autoPost.command ? `\`/${autoPost.command}\`` : `\`Unset!\``}
 \`+\` Channel: ${autoPost.channel ? `<#${autoPost.channel}>` : `\`Unset!\``}
 \`+\` Interval: ${autoPost.intervalType ? `**${capitalize(autoPost.intervalType)}** (next <t:${Math.floor(getNextTime(autoPost.intervalType) / 1000)}:R>)` : `\`Unset!\``}
 \`+\` Edit Last Message: ${autoPost.doEditMessage ? `**Yes** ✅` : `**No** ❌`}
@@ -143,27 +151,65 @@ module.exports = {
 
 `
             ).send()
+        } else if (subcmd === 'setcommand') {
+            /**
+             * @type {Collection<import("discord.js").Snowflake,ApplicationCommand>}
+             */
+            const slashCmds = await bot.application.commands.fetch();
+            const getCmdStr = (cmd) => {
+                const slash = slashCmds.find(n => n.name === cmd);
+                return `</${slash.name}:${slash.id}>`
+            }
+
+            /**
+             * 
+             * @param {CommandInteraction} cmd 
+            */
+            const slot = interaction.options.getInteger('slot', true);
+            const tempConfig = bot.tempUserConfig.get(interaction.user.id) || {};
+            const callback = (cmd) => {
+                const { commandName, } = cmd;
+                const slotObject = serverConf.autoPost[`${slot}`];
+                let newSlot = {};
+
+                const commandObj = bot.commands.get(commandName);
+
+                if (!validCommands.includes(commandName)) return bot.createErrorEmbed(cmd)
+                    .setFancyGuild()
+                    .setDescription(`\`${commandName}\` is not a **valid AutoPost command**!\n\n**Valid Commands:**\n•${getCmdStr('guild')} - General guild stats.\n• ${getCmdStr('weekly')} - Weekly GEXP stats.\n• ${getCmdStr('daily')} - Daily GEXP stats.\n• ${getCmdStr('monthly')} - Monthly GEXP stats.\n• ${getCmdStr('member')} - GEXP stats of a given user.\n• ${getCmdStr('leaderboard')} - Leaderboard position of a guild (Must be top 1,000).\n• ${getCmdStr('list')} - A list of members in a guild.`)
+                    .send()
+
+                let commandText = cmd.toString();
+                newSlot.slashCommand = commandText;
+                newSlot.author = interaction.user.id;
+
+                bot.config.autoPost.setSlot(interaction.guild.id, slot, newSlot);
+
+                return bot.createSuccessEmbed(cmd)
+                    .setTitle(`✅ Command Set!`)
+                    .setDescription(`\`•\` **Command**: ${slotObject.command ? `\`${slotObject.command}\`` : slotObject.slashCommand ? `\`${slotObject.slashCommand}\`` : `\`Unset!\``} → \`${commandText}\`\n`)
+                    .send()
+            }
+
+            tempConfig.autopost = {
+                callback: callback
+            }
+            bot.tempUserConfig.set(interaction.user.id, tempConfig);
+            bot.createEmbed(interaction)
+                .setTitle(`Slot ${slot}: Waiting for AutoPost command... `)
+                .setDescription(`*The next command you send will be set as your AutoPost command!*\n\n**Valid Commands:**\n•${getCmdStr('guild')} - General guild stats.\n• ${getCmdStr('weekly')} - Weekly GEXP stats.\n• ${getCmdStr('daily')} - Daily GEXP stats.\n• ${getCmdStr('monthly')} - Monthly GEXP stats.\n• ${getCmdStr('member')} - GEXP stats of a given user.\n• ${getCmdStr('leaderboard')} - Leaderboard position of a guild (Must be top 1,000).\n• ${getCmdStr('list')} - A list of members in a guild.`)
+                .setFooter(`Please send the command you want the bot to post now:`)
+                .send();
+
         } else if (subcmd === 'set') {
             const slot = interaction.options.getInteger('slot', true);
-            const command = interaction.options.getString('command');
             const channel = interaction.options.getChannel('channel');
             const interval = interaction.options.getString('interval');
             const doEditMessage = interaction.options.getBoolean('editlastmessage');
-
-            const slotObject = serverConf.autoPost[`${slot}`];
-            let newSlot = {};
+            console.log(`doedditmessage`, doEditMessage)
             let text = ``;
-            if (command) {
-                const commandArgs = command.split(' ');
-                const commandName = commandArgs.shift();
-                const commandObj = getCommand(bot, commandName) ? getCommand(bot, commandName) : getCommand(bot, commandName.slice(serverConf.prefix.length, commandName.length));
-                if (!commandObj || !commandObj.autoPost) return bot.createErrorEmbed(interaction).setFancyGuild().setDescription(`\`${commandName}\` is not a **valid AutoPost command**! Try again with a valid command.\n\n**Valid Commands:**\n• \`weekly\` - Weekly GEXP stats.\n• \`daily\` - Daily GEXP stats.\n• \`monthly\` - Monthly GEXP stats.\n• \`member\` - GEXP stats of a given user.\n• \`leaderboard\` - Leaderboard position of a guild (Must be top 1,000).\n• \`list\` - A list of members in a guild.`).send()
-
-                let realCommandText = [commandObj.name].concat(commandArgs).join(' ');
-                newSlot.command = realCommandText;
-                newSlot.author = interaction.user.id;
-                text += `\`•\` **Command**: ${slotObject.command ? `\`${slotObject.command}\`` : `\`Unset!\``} → \`${realCommandText}\`\n`;
-            }
+            const newSlot = {};
+            const slotObject = serverConf.autoPost[`${slot}`];
             if (channel) {
                 newSlot.channel = channel.id;
                 text += `\`•\` **Channel**: ${slotObject.channel ? `<#${slotObject.channel}>` : `\`Unset!\``} → <#${channel.id}>\n`;
@@ -172,7 +218,7 @@ module.exports = {
                 newSlot.intervalType = interval;
                 text += `\`•\` **Interval**: ${slotObject.intervalType ? `\`${capitalize(slotObject.intervalType)}\`` : `\`Unset!\``} → \`${interval}\` (next <t:${Math.floor(getNextTime(interval) / 1000)}:R>)\n`;
             }
-            if (doEditMessage !== undefined) {
+            if (doEditMessage !== null) {
                 newSlot.doEditMessage = doEditMessage;
                 text += `\`•\` **Edit Last Message**: ${slotObject.doEditMessage ? `**Yes**` : `**No**`} → **${doEditMessage ? 'Yes' : 'No'}**\n`;
             }

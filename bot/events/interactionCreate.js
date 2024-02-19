@@ -23,6 +23,16 @@ module.exports = {
             if (command.permissions && !interaction.guild.me.permissions.has(command.permissions)) {
                 return bot.createErrorEmbed(interaction).setDescription(`The command \`${command.name}\` requires permissions that the bot does not have! **To fix this, please [reinvite the bot](https://discord.com/oauth2/authorize?client_id=684986294459564042&permissions=469888080&scope=bot)**.\n\nAlternatively, you add these permissions to the bot's role: \n• **${command.permissions.join('\n• **')}**`).send()
             }
+            // check autopost setcommand
+            const tempUserConfig = bot.tempUserConfig.get(interaction.user.id) || {};
+            // console.log(tempUserConfig)
+            if (tempUserConfig.autopost) {
+                // callback
+                tempUserConfig.autopost.callback(interaction);
+                tempUserConfig.autopost = null;
+                bot.tempUserConfig.set(interaction.user.id, tempUserConfig);
+                return;
+            }
             const now = Date.now();
             const cooldowns = bot.cooldowns;
             // console.log(cooldowns)

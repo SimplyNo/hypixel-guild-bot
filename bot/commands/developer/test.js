@@ -46,7 +46,38 @@ module.exports = {
      * @param {*} args 
      * @param {Discord.Client} bot 
      */
-    async execute(message, args, bot) {
-        message.reply("okay")
+    async execute(message, args_, bot) {
+        const args = {
+            query: "lucid",
+            count: 53,
+            period: "2 Months Ago"
+        }
+        const fakeInteraction = {
+            user: message.author,
+            guild: message.guild,
+            channel: message.channel,
+            deferReply: async () => { },
+            editReply: async () => { },
+            followUp: async () => { },
+            fetchReply: async () => { },
+            options: {
+                getString: (i) => { return args[i] },
+                getInteger: (i) => { return Number(args[i]) },
+                getBoolean: (i) => { return args[i] == "true" },
+                // getMember: (i) => { return message.mentions.members.first() },
+                // getRole: (i) => { return message.mentions.roles.first() },
+                // getChannel: (i) => { return message.mentions.channels.first() },
+                // getMentionable: (i) => { return message.mentions.roles.first() || message.mentions.members.first() || message.mentions.channels.first() },
+                getNumber: (i) => { return Number(args[i]) },
+            }, reply: async (...options) => {
+                const [{ components, ...restOptions }] = options;
+                return message.channel.send({ ...restOptions });
+            },
+            followUp: async (...options) => {
+                const [{ components, ...restOptions }] = options;
+                return message.channel.send({ ...restOptions });
+            }
+        }
+        bot.commands.get('monthly').run(fakeInteraction, args_, bot)
     }
 }

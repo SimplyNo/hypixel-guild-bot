@@ -1,5 +1,6 @@
 const { Client, Collection, Structures, TextChannel, Message } = require("discord.js");
 const messageCreateEvent = require('../../events/messageCreate');
+const interactionCreate = require('../../events/interactionCreate');
 // const Message = Structures.get('Message');
 module.exports = {
     /**
@@ -42,6 +43,7 @@ module.exports = {
 
 
                     if (!slotConfig.lastSent || (Math.abs(((currentDate.getTime() - slotConfig.lastSent)) / (60 * 1000)) > 10)) {
+                        // if (!slotConfig.lastSent || (Math.abs(((currentDate.getTime() - slotConfig.lastSent)) / (60 * 1000)) > 0)) {
 
                         /**
                          * @type {TextChannel}
@@ -57,48 +59,101 @@ module.exports = {
                         let user = await bot.users.fetch(slotConfig.author).catch(e => 0)
                         if (!user) return;
                         bot.log(`&5[AutoPost] sending post. ${!!serverConf.config.prefix}`)
-                        let command = slotConfig.command;
-                        if (command == 'leaderboard') return bot.log(`&4skipping leaderboard command`);
-                        let replaceMessage = slotConfig.doEditMessage && slotConfig.lastMessageID ? await channel.messages.fetch(slotConfig.lastMessageID).catch(e => false) : null;
-                        // console.log(replaceMessage)
-                        let fakeMessage = {
-                            autoPost: {
-                                replaceMessage: replaceMessage,
-                                callback(message) {
-                                    // console.log("CALL BACK RECEIVED!!!")
-                                    bot.config.autoPost.setSlot(serverConf.id, slot, { lastSent: currentDate.getTime(), lastMessageID: message.id })
+                        if (slotConfig.slashCommand) {
+                            const { slashCommand } = slotConfig;
+                            const q = slashCommand.split(' ');
+                            const command = q.shift().slice(1);
+                            const args = Object.fromEntries(slashCommand.split(' ').map(e => e.split(':')))
+                            console.log('args', args)
+                            console.log('command', command)
 
 
+                            let replaceMessage = slotConfig.doEditMessage && slotConfig.lastMessageID ? await channel.messages.fetch(slotConfig.lastMessageID).catch(e => false) : null;
+
+                            const fakeInteraction = {
+                                user,
+                                guild: channel.guild,
+                                channel,
+                                commandName: command,
+                                deferReply: async () => { },
+                                editReply: async () => { },
+                                fetchReply: async () => { },
+                                isCommand: async () => true,
+                                options: {
+                                    getString: (i) => { return args[i] },
+                                    getInteger: (i) => { return Number(args[i]) },
+                                    getBoolean: (i) => { return args[i] == "true" },
+                                    // getMember: (i) => { return message.mentions.members.first() },
+                                    // getRole: (i) => { return message.mentions.roles.first() },
+                                    // getChannel: (i) => { return message.mentions.channels.first() },
+                                    // getMentionable: (i) => { return message.mentions.roles.first() || message.mentions.members.first() || message.mentions.channels.first() },
+                                    getNumber: (i) => { return Number(args[i]) },
+                                }, reply: async (...options) => {
+                                    const [{ components, ...restOptions }] = options;
+                                    if (options && options[0].embeds) {
+                                        options[0].embeds.forEach(e => {
+                                            e.setFooter(`AutoPost Command`).setTimestamp()
+                                        })
+                                    }
+                                    return channel.send({ ...restOptions });
+                                },
+                                followUp: async (...options) => {
+                                    const [{ components, ...restOptions }] = options;
+                                    if (options && options[0].embeds) {
+                                        options[0].embeds.forEach(e => {
+                                            console.log(`embed`, e)
+                                            e.setFooter(`AutoPost Command`).setTimestamp()
+                                        })
+                                    } return channel.send({ ...restOptions });
                                 }
-                            },
-                            id: Math.random().toString(),
-                            type: 'text',
-                            content: `${serverConf.config.prefix || `${bot.CONFIG.PREFIX}`}${command}`,
-                            author: user,
-                            pinned: false,
-                            tts: false,
-                            embeds: [],
-                            attachments: new Collection,
-                            nonce: Math.random(),
-                            channel: channel,
-                            guild: channel.guild,
-                            reply: async (options) => {
-                                let msg;
-                                if (options.embeds) {
-                                    options.embeds.forEach(e => {
-                                        e.setFooter(`AutoPost Command`).setTimestamp()
-                                    })
-                                }
-                                if (replaceMessage) {
-                                    msg = await replaceMessage.edit(options).catch(e => console.log(e))
-                                } else {
-                                    msg = await channel.send(options).catch(e => console.log(e))
-                                }
-                                if (msg) fakeMessage.autoPost.callback(msg);
                             }
-                        }
+                            // bot.commands.get('monthly').run(fakeInteraction, args, bot)
+                            interactionCreate.execute(bot, fakeInteraction);
+                        } else if (slotConfig.command) {
+                            // old text commands 
+                            let command = slotConfig.command;
+                            if (command == 'leaderboard') return bot.log(`&4skipping leaderboard command`);
+                            let replaceMessage = slotConfig.doEditMessage && slotConfig.lastMessageID ? await channel.messages.fetch(slotConfig.lastMessageID).catch(e => false) : null;
+                            // console.log(replaceMessage)
+                            let fakeMessage = {
+                                autoPost: {
+                                    replaceMessage: replaceMessage,
+                                    callback(message) {
+                                        // console.log("CALL BACK RECEIVED!!!")
+                                        bot.config.autoPost.setSlot(serverConf.id, slot, { lastSent: currentDate.getTime(), lastMessageID: message.id })
 
-                        messageCreateEvent.execute(bot, fakeMessage)
+
+                                    }
+                                },
+                                id: Math.random().toString(),
+                                type: 'text',
+                                content: `${serverConf.config.prefix || `${bot.CONFIG.PREFIX}`}${command}`,
+                                author: user,
+                                pinned: false,
+                                tts: false,
+                                embeds: [],
+                                attachments: new Collection,
+                                nonce: Math.random(),
+                                channel: channel,
+                                guild: channel.guild,
+                                reply: async (options) => {
+                                    let msg;
+                                    if (options.embeds) {
+                                        options.embeds.forEach(e => {
+                                            e.setFooter(`AutoPost Command`).setTimestamp()
+                                        })
+                                    }
+                                    if (replaceMessage) {
+                                        msg = await replaceMessage.edit(options).catch(e => console.log(e))
+                                    } else {
+                                        msg = await channel.send(options).catch(e => console.log(e))
+                                    }
+                                    if (msg) fakeMessage.autoPost.callback(msg);
+                                }
+                            }
+
+                            messageCreateEvent.execute(bot, fakeMessage)
+                        }
                         bot.config.autoPost.setSlot(serverConf.id, slot, { lastSent: currentDate.getTime() })
 
                     }
