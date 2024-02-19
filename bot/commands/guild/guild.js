@@ -19,7 +19,8 @@ module.exports = {
             option
                 .setName('query')
                 .setRequired(false)
-                .setDescription('Guild name or player name'))
+                .setDescription('Guild name or player name')
+                .setAutocomplete(true))
         .addStringOption(option =>
             option
                 .setName('type')
@@ -35,6 +36,10 @@ module.exports = {
             const query = interaction.options.getString("query", false);
             let memberCount = interaction.options.getString('count', false) ?? 15;
             const type = interaction.options.getString('type', false) ?? 'guild';
+            if (type === 'guild' && query) {
+                // set recently searched
+                bot.addRecentSearch(interaction.user.id, query)
+            }
 
             let guild;
             if (!query && !user) return bot.createErrorEmbed(interaction).setDescription("To use this command without arguments, verify by doing `/verify [username]`!").send();
@@ -43,8 +48,8 @@ module.exports = {
             else if (type === "guild") guild = await bot.wrappers.hypixelGuild.get((query), 'name', true);
 
             if (guild.exists == false && !query) return bot.createErrorEmbed(interaction).setDescription("You are not in a guild!").send();
-            if (guild.exists == false && type === 'guild') return bot.sendErrorEmbed(interaction, `We couldn't find a guild with the information you gave us.`)
-            if (guild.exists == false && type === 'player') return bot.sendErrorEmbed(interaction, `This player is not in a guild!`)
+            if (guild.exists == false && type === 'guild') return bot.sendErrorEmbed(interaction, `No guild was found with the name \`${query}\`!`)
+            if (guild.exists == false && type === 'player') return bot.sendErrorEmbed(interaction, `The player \`${query}\` is not in a guild!`)
             if (guild.outage) return bot.sendErrorEmbed(interaction, `There is a Hypixel API Outage, please try again within a few minutes`)
 
             const guildMaster = (guild.members || []).find(m => m.rank.match(/^guild\s*master$/i))
@@ -159,10 +164,12 @@ module.exports = {
                 footer: true
             }
             const total = Object.values(guildExpByGameType).reduce((prev, curr) => prev + curr, 0)
-            const games = Constants.game_types.filter(g => guildExpByGameType[g.standard_name] === 0 || guildExpByGameType[g.standard_name]).map(game => ({
+            console.log(guildExpByGameType)
+            const games = Constants.game_types.filter(g => guildExpByGameType[g.standard_name] === 0 || guildExpByGameType[g.type_name]).map(game => ({
                 name: `${emotes[game.standard_name.toLowerCase()] || emotes[game.database_name.toLowerCase()] || ''} ${game.clean_name}`,
-                value: guildExpByGameType[game.standard_name]
+                value: guildExpByGameType[game.type_name]
             }))
+            console.log('games', games)
             // const games = [
             //     { name: `${emotes.quake} Quakecraft`, value: guildExpByGameType.QUAKECRAFT },
             //     { name: `${emotes.walls} Walls`, value: guildExpByGameType.WALLS },
@@ -197,8 +204,10 @@ module.exports = {
                         { name: "Level", value: guild.level },
                         { name: "GEXP to Next Level", value: `${(guild.expNeeded - guild.expToNextLevel).toLocaleString()} / ${guild.expNeeded.toLocaleString()}` },
                         { name: "Total Experience", value: guild.exp },
-                        { name: "GEXP History (Scaled | Raw | Member Average)", value: GEXPFormatted.join(""), options: { inline: false, escapeFormatting: true } },
-                        { name: "\u200b", value: `\`•\` Weekly: **${(Object.values(guild.scaledExpHistory).reduce((p, c) => p + c, 0) || 0).toLocaleString()}** | ${(Object.values(guild.expHistory).reduce((p, c) => p + c, 0) || 0).toLocaleString()}\n   `, options: { inline: true, escapeFormatting: true } },
+                        {
+                            name: "GEXP History (Scaled | Raw | Member Average)", value: `${GEXPFormatted.join("")}
+\`•\` Weekly: **\`${(Object.values(guild.scaledExpHistory).reduce((p, c) => p + c, 0) || 0).toLocaleString()}\`** | \`${(Object.values(guild.expHistory).reduce((p, c) => p + c, 0) || 0).toLocaleString()}\`\n   `, options: { inline: false, escapeFormatting: true }
+                        },
 
                     ]
                 },
