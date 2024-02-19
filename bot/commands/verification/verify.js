@@ -54,7 +54,7 @@ module.exports = {
         })
 
         if (!player.socialMedia || !player.socialMedia.links || !player.socialMedia.links.DISCORD) {
-            var embed = bot.createEmbed(interaction)
+            let embed = bot.createEmbed(interaction)
                 .setAuthor(`❌ Verification Error`)
                 .setColor(bot.color)
                 .setDescription(`This username does not have their Discord account linked on Hypixel!`)
@@ -62,11 +62,23 @@ module.exports = {
                     if (verificationDeleteTimeout) setTimeout(() => { msg.delete().catch();; }, verificationDeleteTimeout * 1000)
                 })
         } else if (Number(interaction.user?.discriminator) ? (player.socialMedia.links.DISCORD == interaction.user.tag) : (player.socialMedia.links.DISCORD.toLowerCase() == interaction.user.username)) {
+            const existingUser = await bot.getUser({ uuid: player.uuid });
+            // remove existing user
+            if (existingUser) {
+                console.log(`existing user:`, existingUser)
+                await bot.removeUser({ uuid: player.uuid })
+                const user = await bot.users.fetch(existingUser.id).catch(e => null);
+                await interaction.channel.send(`:warning: Looks like you had another discord account (\`${user.username}\`) linked to this minecraft account. I have unlinked the other account for you.`)
+            };
             await bot.addUser(interaction.user.id, player.uuid);
-            var embed = bot.createEmbed(interaction)
+
+
+            let embed = bot.createEmbed(interaction)
                 .setAuthor(`✅ Verification Successful`)
                 .setColor(bot.color)
-                .setDescription(`Successfully linked your account with ${player.emojiRank} **${player.displayname}**!`).send().then(async (msg) => {
+                .setDescription(`Successfully linked your account with ${player.emojiRank} **${player.displayname}**!`)
+                .send()
+                .then(async (msg) => {
                     if (verificationDeleteTimeout) setTimeout(() => { msg.delete().catch();; }, verificationDeleteTimeout * 1000)
 
 
@@ -83,7 +95,7 @@ module.exports = {
                     }
                 })
         } else {
-            var embed = bot.createEmbed(interaction)
+            let embed = bot.createEmbed(interaction)
                 .setAuthor(`❌ Verification Error`)
                 .setColor(bot.color)
                 .setDescription(`Your discord (\`${Number(interaction.user?.discriminator) ? (interaction.user.tag) : (interaction.user.username)}\`) does not match the one linked with your account! (\`${player.socialMedia.links.DISCORD}\`)`)

@@ -9,11 +9,11 @@ module.exports = {
     devOnly: true,
     async execute(message, args, bot) {
         if (!args[0] || !args[1]) return bot.createEmbed(message).setDescription(`Missing Arguments \`[DiscordID] [Username]\``).send()
-        const user = args[0]
+        const user = args[0];
         const player = await bot.wrappers.hypixelPlayer.get(args[1])
         const requestUser = await bot.getUser({ id: message.author.id }) || {} || {}
         if (!user) return bot.createEmbed(message).setDescription(`Invalid User ID`).send()
-        if (player.exists == false) return bot.sendErrorEmbed(message, "Please specifiy a valid username or uuid.")
+        if (player.exists == false) return bot.sendErrorEmbed(message, "Please specify a valid username or uuid.")
         else if (player.outage == true) return bot.sendErrorEmbed(message, "There is currently a Hypixel API Outage, responses may be slower or nonexistent")
 
         if (await bot.getUser({ id: user })) {
