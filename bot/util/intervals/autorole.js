@@ -89,11 +89,11 @@ module.exports = {
             // let statsifyData = bot.wrappers.slothpixelGuild.get(serverConf.config.autoRole.guild, "id");
 
             if (server) {
-                bot.log(`&6[AutoRole] &7(${currentServer}/${totalServers}) Retrieved guild data of &5${guildData.name}!`)
+                bot.log(`&6[AutoRole] &7(${currentServer}/${totalServers}) Retrieved guild data of &5${guildData?.name}!`)
             }
 
-            if (guildData.outage || !guildData) {
-                bot.log(`OUTAGE: ${guildData.outage}, ${serverConf.config.autoRole.guild}`)
+            if (guildData?.outage || !guildData) {
+                bot.log(`OUTAGE: ${guildData?.outage}, ${serverConf.config.autoRole.guild}`)
                 bot.log(`&6[AutoRole] &4Skipping because of API outage.`)
                 return;
             }
@@ -202,7 +202,7 @@ module.exports = {
                             force ? bot.log(`&6[AutoRole] ${verifiedUser.id} (${verifiedUser.uuid}) not in server?!`) : undefined;
                             continue;
                         }
-                        console.log(`verfication:`, serverConf.config.verification?.autoRoleExcludedRoles[0])
+                        console.log(`verfication:`, serverConf.config.verification?.autoRoleExcludedRoles)
                         // let memberRoles = new Set([...member.roles.cache.keys()]);
                         let memberRoles = new MemberRoles([...member.roles.cache.keys()])
 
@@ -529,7 +529,7 @@ module.exports = {
     async beginInterval(bot) {
         bot.log(`&6[SHARD ${bot.shard?.ids[0] || -1}] [AutoRole] Began AutoRole interval.`)
         while (true) {
-            this.interval(bot).catch(e => console.error(`-------------AutoRole ERROR------------\n${e}\n-------------------------------`))
+            this.interval(bot).catch(e => console.error(`-------------AutoRole ERROR------------\n`, e, `\n-------------------------------`))
             await new Promise(r => setTimeout(r, 5 * 60 * 1000))
         }
     }

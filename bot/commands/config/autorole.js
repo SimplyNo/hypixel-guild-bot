@@ -158,7 +158,7 @@ _Auto Role automatically syncs in-game Guild Ranks with their Discord Role count
 
                     })
             } else {
-                confirmSetGuild();
+                confirmSetGuild(interaction);
             }
             async function confirmSetGuild(button) {
                 serverConf.autoRole.guild = guildData._id;
@@ -166,7 +166,7 @@ _Auto Role automatically syncs in-game Guild Ranks with their Discord Role count
                 await bot.config.autoRole.setGuild(interaction.guild.id, guildData._id);
                 await bot.config.autoRole.assignGroup(interaction.guild.id);
                 await button.reply({
-                    embeds: [bot.createEmbed().setAuthor(interaction.guild.name, interaction.guild.iconURL()).setTitle("Success!").setDescription(`**${interaction.guild.name}**'s linked guild has been changed to **${guildData.name}**. Start configuring roles by using \`${serverConf.prefix}autorole\`!`).addField('\u200b', `\`${oldGuild.name || "No set guild"}\` → _**${guildData.name}**_`)
+                    embeds: [bot.createEmbed().setAuthor(interaction.guild.name, interaction.guild.iconURL()).setTitle("Success!").setDescription(`**${interaction.guild.name}**'s linked guild has been changed to **${guildData.name}**. Start configuring roles by using \`${serverConf.prefix}autorole setrole\`!`).addField('\u200b', `\`${oldGuild.name || "No set guild"}\` → _**${guildData.name}**_`)
                         .setThumbnail(`https://hypixel.net/data/guild_banners/100x200/${guildData._id}.png`)
                     ]
                 })
