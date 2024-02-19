@@ -23,7 +23,20 @@ module.exports = {
             option
                 .setName('query')
                 .setRequired(false)
+                .setAutocomplete(true)
                 .setDescription('Guild name or player name'))
+        .addStringOption(option =>
+            option
+                .setName("period")
+                .setDescription("The month period to show")
+                .addChoices(
+                    { name: "Last 30 Days", value: "0" },
+                    { name: "This Month", value: "1" },
+                    { name: "Last Month", value: "2" },
+                    { name: "2 Months Ago", value: "3" },
+                    { name: "3 Months Ago", value: "4" }
+
+                ))
         .addStringOption(option =>
             option
                 .setName("count")
@@ -49,11 +62,16 @@ module.exports = {
 
         let user = await bot.getUser({ id: interaction.user.id });
 
+        const period = Number(interaction.options.getString("period", false));
+        console.log(interaction.options.getString("period", false))
         const query = interaction.options.getString("query", false);
         let memberCount = interaction.options.getString('count', false) ?? 15;
         const type = interaction.options.getString('type', false) ?? 'guild';
         const filter = interaction.options.getString('filter', false) ?? ">=0";
-
+        if (type === 'guild' && query) {
+            // set recently searched
+            bot.addRecentSearch(interaction.user.id, query)
+        }
         const check = filter.match(/^([<=>]{1,2}) ?(\d+)$/);
         if (!check || ![">=", ">", "<", "<=", "=="].includes(check[1])) return bot.createErrorEmbed(interaction).setDescription(`Malformed filter: \`${filter}\``).send();
 
@@ -62,9 +80,9 @@ module.exports = {
 
         let guild;
         if (!query && !user) return bot.createErrorEmbed(interaction).setDescription("To use this command without arguments, verify by doing `/verify [username]`!").send();
-        else if (!query) guild = await bot.wrappers.guildTracker.get((user.uuid), true, 'player', true);
-        else if (type === "player") guild = await bot.wrappers.guildTracker.get((query), true, 'player', true);
-        else if (type === "guild") guild = await bot.wrappers.guildTracker.get((query), true, 'name', true);
+        else if (!query) guild = await bot.wrappers.trackerGuild.get((user.uuid), true, 'player', true);
+        else if (type === "player") guild = await bot.wrappers.trackerGuild.get((query), true, 'player', true);
+        else if (type === "guild") guild = await bot.wrappers.trackerGuild.get((query), true, 'name', true);
 
         if (guild?.error == 'notfound' && !query) return bot.createErrorEmbed(interaction).setDescription("You are not in a guild!").send();
         if (guild?.error == 'notfound' && type === 'guild') return bot.sendErrorEmbed(interaction, `No guild was found with the name \`${query}\`!`)
@@ -139,7 +157,7 @@ module.exports = {
                 pages[0].fields.push({ name: "⚠️ Not enough data!", value: `\`•\` Not enough data has been collected to show GEXP in this period (${period.replace('-', 'to')})!\n\`•\` Hang tight, collection will be complete <t:${Math.floor((Date.now() + missingGuildData.difference) / 1000)}:R>!`, options: { escapeFormatting: true } })
                 return bot.pageEmbedMaker(embed, pages)
             }
-            pages[0].description = `\`\`\`CSS\nShowing results for ${guild.name}${guild.tag ? ` [${guild.tag}] ` : " "}Top ${memberCount} Monthly GEXP\nFrom ${period.replace('-', 'to')}\`\`\`\n\`\`\`js\nTotal RAW Monthly GEXP: ${(guild.monthlyLast30Days || 0).toLocaleString()}\nTotal SCALED Monthly GEXP: ${(gexp["weeklyScaled"] || 0).toLocaleString()} (Approximated)\`\`\``
+            pages[0].description = `\`\`\`CSS\nShowing results for ${guild.name}${guild.tag ? ` [${guild.tag}] ` : " "}Top ${memberCount} Monthly GEXP\nFrom ${period.replace('-', 'to')} (${niceName})\`\`\`\n\`\`\`js\nTotal RAW Monthly GEXP: ${(guild.monthlyLast30Days || 0).toLocaleString()}\`\`\``
 
             guild.allMembers.sort((a, b) => b[monthLookup] - a[monthLookup])
             // console.log(guild)
@@ -175,8 +193,7 @@ module.exports = {
             const embeds = bot.pageEmbedMaker(embed, pages)
             return embeds
         }
-        const embeds = command("monthlyLast30Days", "Last 30 Days", `${moment(thirtyDaysAgo).format('MMMM D')} - Today`, memberCount)
-        let optionSelected = 0;
+        let optionSelected = period || 0;
         const selectMenu = () => {
             let menu = new Discord.MessageSelectMenu()
                 .setCustomId('monthly')
@@ -217,6 +234,7 @@ module.exports = {
             menu.options[optionSelected].default = true
             return menu;
         }
+        const embeds = command(...selectMenu().options.find(o => o.default).value.split(','), memberCount)
         const setCountBtn = new Discord.MessageButton()
             .setCustomId('setcount')
             .setLabel('Set Count')
@@ -246,7 +264,8 @@ module.exports = {
                         .addComponents(
                             new Discord.MessageActionRow().addComponents(new Discord.TextInputComponent().setCustomId('ct').setRequired(true).setPlaceholder('Enter a number').setStyle('SHORT').setLabel('Member Count').setValue(memberCount.toString()).setPlaceholder('15'))
                         ))
-                    const resp = await i.awaitModalSubmit({ time: 30000 });
+                    const resp = await i.awaitModalSubmit({ time: 30000 }).catch(e => null);
+                    if (resp === null) return;
                     let setMemberCount = Number(resp.components[0].components[0].value) && Number(resp.components[0].components[0].value) >= 0 ? Number(resp.components[0].components[0].value) : 125;
                     if (i.user.id !== interaction.user.id) return resp.reply({ embeds: command(...selectMenu().options[optionSelected].value.split(','), setMemberCount), ephemeral: true });
                     resp.deferUpdate()
