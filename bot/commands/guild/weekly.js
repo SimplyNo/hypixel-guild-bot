@@ -16,6 +16,7 @@ module.exports = {
             option
                 .setName('query')
                 .setRequired(false)
+                .setAutocomplete(true)
                 .setDescription('Guild name or player name'))
         .addStringOption(option =>
             option
@@ -41,7 +42,10 @@ module.exports = {
             let memberCount = interaction.options.getString('count', false) ?? 15;
             const type = interaction.options.getString('type', false) ?? 'guild';
             const filter = interaction.options.getString('filter', false) ?? ">=0";
-
+            if (type === 'guild' && query) {
+                // set recently searched
+                bot.addRecentSearch(interaction.user.id, query)
+            }
             const check = filter.match(/^([<=>]{1,2}) ?(\d+)$/);
             if (!check || ![">=", ">", "<", "<=", "=="].includes(check[1])) return bot.createErrorEmbed(interaction).setDescription(`Malformed filter: \`${filter}\``).send();
 

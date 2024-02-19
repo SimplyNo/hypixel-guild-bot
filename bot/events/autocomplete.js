@@ -10,6 +10,23 @@ module.exports = {
     async execute(bot, autocomplete) {
         if (!autocomplete.isAutocomplete()) return;
         const serverConf = await bot.config.getConfigAsObject(autocomplete.guild.id);
+        if (['guild', 'weekly', 'daily', 'monthly', 'list', 'leaderboard', 'compare'].includes(autocomplete.commandName)) {
+            const query = autocomplete.options.getFocused().trim();
+            if (query.length > 100) return;
+            if (!query.length) {
+                const guildLeaderboard = await bot.wrappers.trackerLeaderboard.get();
+                const recentlySearched = (await bot.userConfig.findOne({ id: autocomplete.user.id }))?.recentlySearched ?? [];
+                const resp = [
+                    ...(recentlySearched.filter(e => e).slice(0, 5).map(e => ({ name: e, value: e }))),
+                    ...guildLeaderboard.map(e => ({ name: e.name, value: e.name }))
+                ].slice(0, 25);
+                return autocomplete.respond(resp)
+            }
+            const search = await bot.wrappers.trackerSearch.get(query);
+
+            if (search && search.length) return autocomplete.respond([...search.map(e => ({ name: e.name, value: e.name }))].slice(0, 25));
+            return autocomplete.respond([{ name: query, value: query }])
+        }
         if (autocomplete.commandName === 'autorole' && autocomplete.options.getSubcommand() === 'setrole') {
             // console.log(serverConf.autoRole) 
             const resps = Object.values(serverConf.autoRole?.config ?? {}).map(role => {

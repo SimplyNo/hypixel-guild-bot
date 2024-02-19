@@ -16,6 +16,7 @@ module.exports = {
             option
                 .setName('query')
                 .setRequired(false)
+                .setAutocomplete(true)
                 .setDescription('Guild name or player name'))
         .addStringOption(option =>
             option
@@ -31,7 +32,10 @@ module.exports = {
             const query = interaction.options.getString("query", false);
             let memberCount = interaction.options.getString('count', false) ?? 15;
             const type = interaction.options.getString('type', false) ?? 'guild';
-
+            if (type === 'guild' && query) {
+                // set recently searched
+                bot.addRecentSearch(interaction.user.id, query)
+            }
             await interaction.deferReply();
 
             let guild;
