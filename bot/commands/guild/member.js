@@ -43,12 +43,12 @@ module.exports = {
 
         const memberLogs = (await bot.wrappers.trackerMember.get(player.uuid)).filter(e => e.leftEstimate);
         const memberLogsField = memberLogs.length ? {
-            name: 'Guild History',
+            name: '📜 Guild History',
             value: `${memberLogs.sort((a, b) => b.joined - a.joined).map(e => `\`•\` **${e.guild}** from ${getDiscordTimeFormat(Math.floor(e.joined))}${e.leftEstimate ? ` to ${getDiscordTimeFormat(Math.floor(e.leftEstimate.estimate))} (± \`${Math.floor(e.leftEstimate.error / (24 * 60 * 60 * 100)) / 10} days\`)` : ''}`).join("\n")}`
         } : null
         if (guild.exists == false) return bot.createErrorEmbed(interaction)
             .setDescription(`${player.emojiRank} ${player.displayname} is not in a guild.`)
-            .addFields([memberLogsField || { name: 'Guild History', value: 'No previous guilds found since **June 2023**.' }]).send()
+            .addFields([memberLogsField || { name: '📜 Guild History', value: 'No previous guilds found since **June 2023**.' }]).send()
         if (guild.outage) return bot.sendErrorEmbed(interaction, `There is a Hypixel API Outage, please try again within a few minutes`);
         let member = (guild.members || []).find(member => member.uuid == player.uuid)
         let rank = (guild.ranks || []).find(r => r.name == member.rank)
