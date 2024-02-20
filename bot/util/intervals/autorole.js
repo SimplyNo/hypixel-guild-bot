@@ -202,7 +202,7 @@ module.exports = {
                             force ? bot.log(`&6[AutoRole] ${verifiedUser.id} (${verifiedUser.uuid}) not in server?!`) : undefined;
                             continue;
                         }
-                        console.log(`verfication:`, serverConf.config.verification?.autoRoleExcludedRoles)
+                        // console.log(`verfication:`, serverConf.config.verification?.autoRoleExcludedRoles)
                         // let memberRoles = new Set([...member.roles.cache.keys()]);
                         let memberRoles = new MemberRoles([...member.roles.cache.keys()])
 
