@@ -142,7 +142,7 @@ module.exports = {
                 } else var guild = await bot.wrappers.hypixelGuild.get((args.join(" ")), "name", true)
             }
 
-            if (guild.exists == false) return bot.sendErrorEmbed(message, `We couldn't find a guild with the information you gave us.`)
+            if (!guild || guild.exists == false) return bot.sendErrorEmbed(message, `We couldn't find a guild with the information you gave us.`)
             if (guild.outage) return bot.sendErrorEmbed(message, `There is a Hypixel API Outage, please try again within a few minutes`)
 
             var guildRanks = guild.ranks || []
