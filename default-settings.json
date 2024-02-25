@@ -31,6 +31,24 @@
             "lastMessageID": null,
             "lastSent": false,
             "author": null
+        },
+        "4": {
+            "name": "Slot 4",
+            "command": null,
+            "intervalType": null,
+            "doEditMessage": false,
+            "lastMessageID": null,
+            "lastSent": false,
+            "author": null
+        },
+        "5": {
+            "name": "Slot 5",
+            "command": null,
+            "intervalType": null,
+            "doEditMessage": false,
+            "lastMessageID": null,
+            "lastSent": false,
+            "author": null
         }
     },
     "requirements": {},

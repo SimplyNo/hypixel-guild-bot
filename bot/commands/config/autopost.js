@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
-const { Message, Client, ApplicationCommand, Constants, Permissions, CommandInteraction, ApplicationCommandManager } = require("discord.js");
+const { Message, Client, ApplicationCommand, Constants, Permissions, CommandInteraction, ApplicationCommandManager, MessageActionRow, MessageSelectMenu } = require("discord.js");
 const { BulkWriteError } = require("mongodb");
 const { execute } = require("../../util/intervals/autoupdate");
 const validIntervals = ['weekly', 'daily', 'hourly'];
@@ -51,7 +51,7 @@ module.exports = {
                 .addIntegerOption(option =>
                     option
                         .setName('slot')
-                        .addChoices({ name: '1', value: 1 }, { name: '2', value: 2 }, { name: '3', value: 3 })
+                        .addChoices({ name: '1', value: 1 }, { name: '2', value: 2 }, { name: '3', value: 3 }, { name: '4', value: 4 }, { name: '5', value: 5 })
                         .setDescription('Slot to set.')
                         .setRequired(true))
 
@@ -63,7 +63,7 @@ module.exports = {
                 .addIntegerOption(option =>
                     option
                         .setName('slot')
-                        .addChoices({ name: '1', value: 1 }, { name: '2', value: 2 }, { name: '3', value: 3 })
+                        .addChoices({ name: '1', value: 1 }, { name: '2', value: 2 }, { name: '3', value: 3 }, { name: '4', value: 4 }, { name: '5', value: 5 })
                         .setDescription('Slot to set.')
                         .setRequired(true))
                 .addChannelOption(option =>
@@ -83,12 +83,11 @@ module.exports = {
         .addSubcommand(subcmd =>
             subcmd
                 .setName('delete')
-                .setDescription('Delete autopost.')
+                .setDescription('Delete autopost slot.')
                 .addIntegerOption(option =>
                     option
                         .setName('slot')
-                        .setMinValue(1)
-                        .setMaxValue(3)
+                        .addChoices({ name: '1', value: 1 }, { name: '2', value: 2 }, { name: '3', value: 3 }, { name: '4', value: 4 }, { name: '5', value: 5 })
                         .setDescription('Slot to delete.')
                         .setRequired(true)))
         .addSubcommand(subcmd =>
@@ -117,14 +116,37 @@ module.exports = {
 \`+\` Edit Last Message: ${autoPost.doEditMessage ? `**Yes** ✅` : `**No** ❌`}
 `, inline: false
                 })
-
             }
-            let embed = bot.createEmbed(interaction)
+            const embed = () => bot.createEmbed(interaction)
                 .setFancyGuild()
                 .setTitle(`Current AutoPost Config`)
                 .setDescription(description)
-                .addFields(fields)
-                .send()
+                .addFields([fields[0]])
+
+            const components = (slotName) => [
+                new MessageActionRow()
+                    .addComponents(
+                        new MessageSelectMenu()
+                            .setCustomId('autopost')
+                            .setOptions(Object.values(serverConf.autoPost).map(e => ({ default: slotName === e.name, label: `${e.name} ${e.command || e.slashCommand ? `: ${e.command || e.slashCommand}` : ''}`, value: e.name, description: e.slashCommand || e.command ? `Interval: ${e.intervalType ? `${e.intervalType}` : 'Unset'}` : 'Unset!' })))
+                    )
+            ]
+            const pages = await interaction.reply({
+                fetchReply: true,
+                embeds: [embed()],
+                components: components('Slot 1')
+            })
+            const collector = pages.createMessageComponentCollector({ filter: i => i.user.id === interaction.user.id, idle: 60000 });
+            collector.on('collect', async i => {
+                if (i.customId === 'autopost') {
+                    const slot = serverConf.autoPost[Object.keys(serverConf.autoPost).findIndex(key => serverConf.autoPost[key].name === i.values[0]) + 1];
+                    console.log(slot)
+                    await i.update({ embeds: [embed().setFields([fields[Object.keys(serverConf.autoPost).findIndex(key => serverConf.autoPost[key].name === i.values[0])]])], components: components(slot.name) })
+
+
+                }
+            })
+
         } else if (subcmd === 'info') {
             bot.createEmbed(interaction).setTitle(`AutoPost Info`).setFancyGuild().setDescription(
                 `Auto Post allows the bot to send a set command on a configurable interval.
@@ -176,7 +198,7 @@ module.exports = {
 
                 if (!validCommands.includes(commandName)) return bot.createErrorEmbed(cmd)
                     .setFancyGuild()
-                    .setDescription(`\`${commandName}\` is not a **valid AutoPost command**!\n\n**Valid Commands:**\n•${getCmdStr('guild')} - General guild stats.\n• ${getCmdStr('weekly')} - Weekly GEXP stats.\n• ${getCmdStr('daily')} - Daily GEXP stats.\n• ${getCmdStr('monthly')} - Monthly GEXP stats.\n• ${getCmdStr('member')} - GEXP stats of a given user.\n• ${getCmdStr('leaderboard')} - Leaderboard position of a guild (Must be top 1,000).\n• ${getCmdStr('list')} - A list of members in a guild.`)
+                    .setDescription(`\`${commandName}\` is not a **valid AutoPost command**!\n\n**Valid Commands:**\n•${getCmdStr('guild')} - General guild stats.\n• ${getCmdStr('weekly')} - Weekly GEXP stats.\n• ${getCmdStr('daily')} - Daily GEXP stats.\n• ${getCmdStr('monthly')} - Monthly GEXP stats.\n• ${getCmdStr('member')} - GEXP stats of a given user.\n• ${getCmdStr('list')} - A list of members in a guild.`)
                     .send()
 
                 let commandText = cmd.toString();
@@ -197,8 +219,9 @@ module.exports = {
             bot.tempUserConfig.set(interaction.user.id, tempConfig);
             bot.createEmbed(interaction)
                 .setTitle(`Slot ${slot}: Waiting for AutoPost command... `)
-                .setDescription(`*The next command you send will be set as your AutoPost command!*\n\n**Valid Commands:**\n•${getCmdStr('guild')} - General guild stats.\n• ${getCmdStr('weekly')} - Weekly GEXP stats.\n• ${getCmdStr('daily')} - Daily GEXP stats.\n• ${getCmdStr('monthly')} - Monthly GEXP stats.\n• ${getCmdStr('member')} - GEXP stats of a given user.\n• ${getCmdStr('leaderboard')} - Leaderboard position of a guild (Must be top 1,000).\n• ${getCmdStr('list')} - A list of members in a guild.`)
+                .setDescription(`*The next command you send will be set as your AutoPost command!*\n\n**Valid Commands:**\n•${getCmdStr('guild')} - General guild stats.\n• ${getCmdStr('weekly')} - Weekly GEXP stats.\n• ${getCmdStr('daily')} - Daily GEXP stats.\n• ${getCmdStr('monthly')} - Monthly GEXP stats.\n• ${getCmdStr('member')} - GEXP stats of a given user.\n• ${getCmdStr('list')} - A list of members in a guild.`)
                 .setFooter(`Please send the command you want the bot to post now:`)
+                .setColor('YELLOW')
                 .send();
 
         } else if (subcmd === 'set') {
