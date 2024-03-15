@@ -173,8 +173,8 @@ module.exports = {
                 await bot.config.verification.setAutoRoleExcludedRoles(interaction.guild.id, roles.map(r => r.role.id));
                 await bot.createEmbed(interaction).setTitle(`${bot.assets.emotes.other.check} Success!`).setDescription(`Server members who have ${roles.map(r => `<@&${r.role.id}>`).join(', ')} will be exempt from AutoRole.`).send();
             } else {
-                await bot.config.verification.setAutoNickExcludedRoles(interaction.guild.id, undefined);
-                await bot.createEmbed(interaction).setTitle(`${bot.assets.emotes.other.check} Success!`).setDescription(`**Everyone** will now be subject to autonick (if it's enabled).`).send()
+                await bot.config.verification.setAutoRoleExcludedRoles(interaction.guild.id, undefined);
+                await bot.createEmbed(interaction).setTitle(`${bot.assets.emotes.other.check} Success!`).setDescription(`**Everyone** will now be subject to autorole (if it's enabled).`).send()
                 showInfo(true)
             }
 
@@ -204,7 +204,7 @@ _Whether verified members of this server will be **renamed** to their Minecraft 
 📛 **Auto Nickname Excluded Roles** - ${vSettings.autoNickExcludedRoles ? `${vSettings.autoNickExcludedRoles.map(r => `<@&${r}>`).join(', ')}` : `\`None\``}
 _Roles that will be excluded from auto nick (if it's enabled)._
 
-⛔ **AutoRole Excluded Roles** - ${vSettings.autoNickExcludedRoles ? `${vSettings.autoNickExcludedRoles.map(r => `<@&${r}>`).join(', ')}` : `\`None\``}
+⛔ **AutoRole Excluded Roles** - ${vSettings.setAutoRoleExcludedRoles ? `${vSettings.setAutoRoleExcludedRoles.map(r => `<@&${r}>`).join(', ')}` : `\`None\``}
 _The bot will not edit roles of members with this role._
 
 #️⃣ **Verification Channel** - ${vSettings.channel ? `<#${vSettings.channel}>` : "`None`"}    
