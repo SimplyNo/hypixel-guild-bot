@@ -16,7 +16,7 @@ module.exports = {
             if (parseNames) url.searchParams.append('parseNames', parseNames)
             console.log(url.toString())
             let unparsed = await fetch(url).catch(e => null);
-            let data = await unparsed?.json().catch(e => { outage: true });
+            let data = await unparsed?.json().catch(e => ({ outage: true }));
             if (!data || data.error) {
                 if (data?.error === 'notfound') data.exists = false;
                 if (data?.error === 'outage') data.outage = true;

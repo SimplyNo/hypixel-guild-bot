@@ -298,7 +298,7 @@ module.exports = {
                             if (memberRoles.rolesToAdd.length || memberRoles.rolesToRemove.length) {
 
                                 console.log(`setting roles of ${member.user.tag}`)
-                                if (member.roles.cache.has(serverConf.config.verification?.autoRoleExcludedRoles[0])) {
+                                if (member.roles.cache.has(serverConf.config.verification?.autoRoleExcludedRoles?.[0])) {
                                     bot.log(`&6[AutoRole] autorole excluded role detected... skipping`)
                                 } else {
                                     await member.roles.set(memberRoles.array());
@@ -421,7 +421,7 @@ module.exports = {
                     }
                     memberRoles.rolesToRemove.length && bot.log(`&6${shardInfo} [AutoRole] &fremoving ${memberRoles.rolesToRemove.length} roles from ${member.user.tag}`);
                     try {
-                        if (member.roles.cache.has(serverConf.config.verification?.autoRoleExcludedRoles[0])) {
+                        if (member.roles.cache.has(serverConf.config.verification?.autoRoleExcludedRoles?.[0])) {
                             bot.log(`&6[AutoRole] autorole excluded role detected... skipping (left)`)
                         } else {
                             await member.roles.set(memberRoles.array());
