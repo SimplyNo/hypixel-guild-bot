@@ -141,6 +141,9 @@ module.exports = {
             })
             guild.monthlyThisMonth = guild.allMembers.reduce((prev, member) => prev + member.monthlyThisMonth, 0);
             guild.monthlyLast30Days = guild.allMembers.reduce((prev, member) => prev + member.monthlyLast30Days, 0);
+            guild.monthlyLastMonth = guild.allMembers.reduce((prev, member) => prev + member.monthlyLastMonth, 0);
+            guild.monthlyTwoMonthAgo = guild.allMembers.reduce((prev, member) => prev + member.monthlyTwoMonthAgo, 0);
+            guild.monthlyThreeMonthAgo = guild.allMembers.reduce((prev, member) => prev + member.monthlyThreeMonthAgo, 0);
             // people might leve and join back then bot counts wrong gexp [BUG]
             guild.allMembers = guild.allMembers.filter(member => eval(`${member[monthLookup]} ${gexpOperator} ${gexpReq}`))
             if (memberCount == "all" || memberCount > guild.allMembers.length) memberCount = guild.allMembers.length
@@ -157,7 +160,7 @@ module.exports = {
                 pages[0].fields.push({ name: "⚠️ Not enough data!", value: `\`•\` Not enough data has been collected to show GEXP in this period (${period.replace('-', 'to')})!\n\`•\` Hang tight, collection will be complete <t:${Math.floor((Date.now() + missingGuildData.difference) / 1000)}:R>!`, options: { escapeFormatting: true } })
                 return bot.pageEmbedMaker(embed, pages)
             }
-            pages[0].description = `\`\`\`CSS\nShowing results for ${guild.name}${guild.tag ? ` [${guild.tag}] ` : " "}Top ${memberCount} Monthly GEXP\nFrom ${period.replace('-', 'to')} (${niceName})\`\`\`\n\`\`\`js\nTotal RAW Monthly GEXP: ${(guild.monthlyLast30Days || 0).toLocaleString()}\`\`\``
+            pages[0].description = `\`\`\`CSS\nShowing results for ${guild.name}${guild.tag ? ` [${guild.tag}] ` : " "}Top ${memberCount} Monthly GEXP\nFrom ${period.replace('-', 'to')} (${niceName})\`\`\`\n\`\`\`js\nTotal RAW Monthly GEXP: ${((guild[monthLookup]) || 0).toLocaleString()}\`\`\``
 
             guild.allMembers.sort((a, b) => b[monthLookup] - a[monthLookup])
             // console.log(guild)
@@ -246,6 +249,7 @@ module.exports = {
                 new Discord.MessageActionRow().addComponents(setCountBtn)
             ]
         })
+        if (interaction.autoPost) return;
         const collector = msg.createMessageComponentCollector({ idle: 300000 });
         collector.on('end', () => {
             msg.edit({ components: [] })
