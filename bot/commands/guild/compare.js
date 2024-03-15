@@ -38,6 +38,7 @@ module.exports = {
                 .setAutocomplete(true)
         ),
     async run(interaction, { serverConf }, bot) {
+        await interaction.deferReply();
         const guild1 = interaction.options.getString('guild1', true);
         const guild2 = interaction.options.getString('guild2', true);
         if (!guild1 || !guild2) return bot.createErrorEmbed(interaction)
@@ -94,7 +95,7 @@ module.exports = {
             ])
             .setImage(`attachment://chart.png`)
 
-        interaction.reply({
+        interaction.followUp({
             embeds: [
                 embed
             ],
