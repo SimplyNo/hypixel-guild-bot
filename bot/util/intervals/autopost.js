@@ -61,9 +61,9 @@ module.exports = {
                         bot.log(`&5[AutoPost] sending post. ${!!serverConf.config.prefix}`)
                         if (slotConfig.slashCommand) {
                             const { slashCommand } = slotConfig;
-                            const q = slashCommand.split(' ');
+                            const q = slashCommand.split(/\s(?=[a-z]+:)/i);
                             const command = q.shift().slice(1);
-                            const args = Object.fromEntries(slashCommand.split(' ').map(e => e.split(':')))
+                            const args = Object.fromEntries(slashCommand.split(/\s(?=[a-z]+:)/i).map(e => e.split(':')))
                             console.log('args', args)
                             console.log('command', command)
 
@@ -75,6 +75,15 @@ module.exports = {
                                 guild: channel.guild,
                                 channel,
                                 commandName: command,
+                                autoPost: {
+                                    replaceMessage: replaceMessage,
+                                    callback(message) {
+                                        // console.log("CALL BACK RECEIVED!!!")
+                                        bot.config.autoPost.setSlot(serverConf.id, slot, { lastSent: currentDate.getTime(), lastMessageID: message.id })
+
+
+                                    }
+                                },
                                 deferReply: async () => { },
                                 editReply: async () => { },
                                 fetchReply: async () => { },
@@ -90,21 +99,28 @@ module.exports = {
                                     getNumber: (i) => { return Number(args[i]) },
                                 }, reply: async (...options) => {
                                     const [{ components, ...restOptions }] = options;
+                                    let msg;
                                     if (options && options[0].embeds) {
                                         options[0].embeds.forEach(e => {
                                             e.setFooter(`AutoPost Command`).setTimestamp()
                                         })
                                     }
-                                    return channel.send({ ...restOptions });
+                                    if (replaceMessage) msg = await replaceMessage.edit({ ...restOptions }).catch(e => console.error(`autopost editing ERROR`, e));
+                                    else msg = await channel.send({ ...restOptions }).catch(e => console.error(`autopost sending ERROR`, e));
+                                    if (msg) fakeInteraction.autoPost.callback(msg);
                                 },
                                 followUp: async (...options) => {
                                     const [{ components, ...restOptions }] = options;
+                                    let msg;
                                     if (options && options[0].embeds) {
                                         options[0].embeds.forEach(e => {
                                             console.log(`embed`, e)
                                             e.setFooter(`AutoPost Command`).setTimestamp()
                                         })
-                                    } return channel.send({ ...restOptions });
+                                    }
+                                    if (replaceMessage) msg = await replaceMessage.edit({ ...restOptions }).catch(e => console.error(`autopost editing ERROR`, e))
+                                    else msg = await channel.send({ ...restOptions }).catch(e => console.error(`autopost sending ERROR`, e));
+                                    if (msg) fakeInteraction.autoPost.callback(msg);
                                 }
                             }
                             // bot.commands.get('monthly').run(fakeInteraction, args, bot)
