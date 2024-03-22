@@ -50,6 +50,15 @@
             "lastMessageID": null,
             "lastSent": false,
             "author": null
+        },
+        "6": {
+            "name": "Slot 6",
+            "command": null,
+            "intervalType": null,
+            "doEditMessage": false,
+            "lastMessageID": null,
+            "lastSent": false,
+            "author": null
         }
     },
     "requirements": {},
