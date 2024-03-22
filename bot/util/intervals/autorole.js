@@ -107,7 +107,7 @@ module.exports = {
             if (!data) {
                 /**
                  * @todo make it so that bot makes sure ranks are sort by priority each time
-                 *
+                *
                 **/
 
                 let ranks = guildData.ranks ? guildData.ranks.sort((a, b) => b.priority - a.priority) : [];
@@ -196,7 +196,7 @@ module.exports = {
                         /**
                          * get member object from when earlier fetched members
                          * @type {GuildMember}
-                         */
+                        */
                         let member = members.get(verifiedUser.id);
                         if (!member) {
                             force ? bot.log(`&6[AutoRole] ${verifiedUser.id} (${verifiedUser.uuid}) not in server?!`) : undefined;
@@ -204,6 +204,7 @@ module.exports = {
                         }
                         // console.log(`verfication:`, serverConf.config.verification?.autoRoleExcludedRoles)
                         // let memberRoles = new Set([...member.roles.cache.keys()]);
+                        const excludedRole = member.roles.cache.has(serverConf.config.verification?.autoRoleExcludedRoles?.[0]);
                         let memberRoles = new MemberRoles([...member.roles.cache.keys()])
 
                         // Default Member role
@@ -298,7 +299,7 @@ module.exports = {
                             if (memberRoles.rolesToAdd.length || memberRoles.rolesToRemove.length) {
 
                                 console.log(`setting roles of ${member.user.tag}`)
-                                if (member.roles.cache.has(serverConf.config.verification?.autoRoleExcludedRoles?.[0])) {
+                                if (excludedRole) {
                                     bot.log(`&6[AutoRole] autorole excluded role detected... skipping`)
                                 } else {
                                     await member.roles.set(memberRoles.array());
@@ -339,7 +340,7 @@ module.exports = {
                             memberRoles.rolesToRemove.forEach((role) => str += `\`-\` <@&${role.id}> - ${role.reason}\n`);
                         }
 
-                        if (logChannel && (memberRoles.rolesToRemove.length || memberRoles.rolesToAdd.length)) {
+                        if (logChannel && !excludedRole && (memberRoles.rolesToRemove.length || memberRoles.rolesToAdd.length)) {
                             // bot.log(`&6[AutoRole] Guild Member New Roles: Added roles to ${member.user.tag}. &aRoles added: ${rolesToAdd.length} Roles removed: ${rolesToRemove.length}`);
                             // console.log("SENDING MESSAGE")
                             bot.createEmbed()
@@ -443,7 +444,7 @@ module.exports = {
                     memberRoles.rolesToRemove.length && (str += "**Roles Removed:**\n", memberRoles.rolesToRemove.forEach((role) => str += `\`-\` <@&${role.id}> - ${role.reason}\n`));;
                     memberRoles.rolesToAdd.length && (str += "**Roles Added:**\n", memberRoles.rolesToAdd.forEach((role) => str += `\`+\` <@&${role.id}> - ${role.reason}\n`));
 
-                    if (logChannel && (memberRoles.rolesToRemove.length || memberRoles.rolesToAdd.length)) {
+                    if (logChannel && !excludedRole && (memberRoles.rolesToRemove.length || memberRoles.rolesToAdd.length)) {
                         bot.log(`&6${shardInfo} [AutoRole] &cGuild Member Left/Unverified&6 Added roles to ${member.user.tag}. &aRoles added: ${memberRoles.rolesToAdd.length} Roles removed: ${memberRoles.rolesToRemove.length}`);
 
                         bot.createEmbed()
