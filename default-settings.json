@@ -1,5 +1,6 @@
 {
     "prefix": "g!",
+    "currentAutoRoleSlot": 0,
     "roles": {
         "blacklist": [],
         "whitelist": []
@@ -68,6 +69,17 @@
     "autoRole": {
         "updateGroup": null,
         "guild": null,
+        "guildName": null,
+        "logChannel": null,
+        "config": {},
+        "memberRole": null,
+        "guestRole": null,
+        "lastUsers": []
+    },
+    "autoRole2": {
+        "updateGroup": null,
+        "guild": null,
+        "guildName": null,
         "logChannel": null,
         "config": {},
         "memberRole": null,
