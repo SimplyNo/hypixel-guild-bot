@@ -241,7 +241,7 @@ module.exports = {
                             let time = parseInt(user.joined);
                             if (time && timeRoles) {
                                 let days = Math.floor((Date.now() - time) / 1000 / 60 / 60 / 24);
-                                let timeRoles = timeRoles.sort((a, b) => a.days - b.days);
+                                timeRoles = timeRoles.sort((a, b) => a.days - b.days);
                                 timeRoles.forEach((tr, index) => {
                                     let ahead = timeRoles[index + 1] || { days: 99999 };
                                     if ((days >= tr.days && days <= ahead.days) || (days >= tr.days && tr.pinned)) {
@@ -260,7 +260,7 @@ module.exports = {
                             // gxp role
                             if (gxpRoles) {
                                 let memberGXP = user.weekly;
-                                let gxpRoles = gxpRoles.sort((a, b) => a.gxp - b.gxp);
+                                gxpRoles = gxpRoles.sort((a, b) => a.gxp - b.gxp);
                                 gxpRoles.forEach((gxprole, index) => {
                                     let ahead = gxpRoles[index + 1] || { gxp: 1000000000 };
                                     if ((memberGXP >= gxprole.gxp && memberGXP <= ahead.gxp) || (memberGXP >= gxprole.gxp && gxprole.pinned)) {
