@@ -27,9 +27,22 @@ module.exports = {
             if (search && search.length) return autocomplete.respond([...search.map(e => ({ name: e.name, value: e.name }))].slice(0, 25));
             return autocomplete.respond([{ name: query, value: query }])
         }
+        if (autocomplete.commandName === 'discordcheck') {
+            const currentlyViewingSlot = serverConf.currentAutoRoleSlot ?? 0;
+            const autoRoleSlots = ['autoRole', 'autoRole1', 'autoRole2'];
+            const resps = autoRoleSlots.map((slot, pos) => {
+                return serverConf[slot].guild ? ({
+                    name: `(Guild ${pos + 1}) ${serverConf[slot].guild ? serverConf[slot].guildName : 'Not set'}`,
+                    value: pos + 1
+                }) : null
+            })
+            autocomplete.respond(resps.filter(e => e));
+        }
         if (autocomplete.commandName === 'autorole' && autocomplete.options.getSubcommand() === 'setrole') {
             // console.log(serverConf.autoRole) 
-            const resps = Object.values(serverConf.autoRole?.config ?? {}).map(role => {
+            const currentlyViewingSlot = serverConf.currentAutoRoleSlot ?? 0;
+            const autoRole = serverConf[`autoRole${currentlyViewingSlot === 0 ? '' : currentlyViewingSlot}`]
+            const resps = Object.values(autoRole?.config ?? {}).map(role => {
                 return {
                     name: `(${role.pos}) ${role.name} ${role.tag ? `[${role.tag}]` : ''}`,
                     value: role.pos,

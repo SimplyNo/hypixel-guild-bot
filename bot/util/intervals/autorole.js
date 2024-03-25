@@ -95,6 +95,7 @@ module.exports = {
             for (let slot = 0; slot < 3; slot++) {
                 // console.log(`slot: ${slot}`)
                 let autoRole = serverConf.config[`autoRole${slot === 0 ? '' : slot}`];
+                console.log(`Autorole: ${`autoRole${slot === 0 ? '' : slot}`}`)
                 if (!autoRole?.guild) continue;
                 let timeRoles = serverConf.config.timeRoles;
                 let gxpRoles = serverConf.config.gxpRoles;
@@ -102,29 +103,30 @@ module.exports = {
                 let joinLogs = serverConf.config.joinLogs;
 
                 // get log channel
-                let logChannel = serverConf.config.autoRole.logChannel ? await bot.channels.fetch(serverConf.config.autoRole.logChannel).catch(e => null) : null;
+                let logChannel = autoRole.logChannel ? await bot.channels.fetch(autoRole.logChannel).catch(e => null) : null;
                 // if ID exists, but channel couldnt be fetched, delete from db
-                if (serverConf.config.autoRole.logChannel && !logChannel) {
+                if (autoRole.logChannel && !logChannel) {
                     await bot.config.autoRole.setLogChannel(server.id, slot, undefined)
                 }
                 // get guild api data of this server (or use data if given manually)
-                let guildData = data ? data : await bot.wrappers.hypixelGuild.get(serverConf.config.autoRole.guild, "id");
-                // let statsifyData = bot.wrappers.slothpixelGuild.get(serverConf.config.autoRole.guild, "id");
+                let guildData = await bot.wrappers.hypixelGuild.get(autoRole.guild, "id");
+                // let statsifyData = bot.wrappers.slothpixelGuild.get(autoRole.guild, "id");
 
                 if (server) {
                     bot.log(`&6[AutoRole] &7(${currentServer}/${totalServers}) Retrieved guild data of &5${guildData?.name}!`)
                     if (guildData?.name) {
+                        console.log(`setting guild name of slot ${slot}: ${guildData.name}`)
                         bot.config.autoRole.setGuildName(server.id, slot, guildData.name);
                     }
                 }
 
                 if (guildData?.outage || !guildData) {
-                    bot.log(`OUTAGE: ${guildData?.outage}, ${serverConf.config.autoRole.guild}`)
+                    bot.log(`OUTAGE: ${guildData?.outage}, ${autoRole.guild}`)
                     bot.log(`&6[AutoRole] &4Skipping because of API outage.`)
                     return;
                 }
                 if (guildData.exists == false) {
-                    bot.log(`&4${serverConf.config.autoRole.guild} does not exist.`)
+                    bot.log(`&4${autoRole.guild} does not exist.`)
                     // logChannel && bot.createEmbed().setTitle("⚠️ No guild found").setDescription("The previous guild linked to this server no longer exists, and has been deleted from the database.").send(logChannel)
                     // await bot.config.autoRole.delete(serverConf.id)
                     continue;
@@ -139,7 +141,7 @@ module.exports = {
 
                     let ranks = guildData.ranks ? guildData.ranks.sort((a, b) => b.priority - a.priority) : [];
 
-                    let guildConfig = serverConf.config.autoRole.config ? JSON.parse(JSON.stringify(serverConf.config.autoRole.config)) : {};
+                    let guildConfig = autoRole.config ? JSON.parse(JSON.stringify(autoRole.config)) : {};
                     ranks.forEach((rank, i) => {
                         if (!guildConfig[rank.created]) {
                             guildConfig[rank.created] = {
@@ -158,7 +160,7 @@ module.exports = {
                             delete guildConfig[rank[0]]
                         }
                     })
-                    if (!deepEqual(guildConfig, serverConf.config.autoRole.config)) {
+                    if (!deepEqual(guildConfig, autoRole.config)) {
                         await bot.config.autoRole.setAutoRoleConfig(serverConf.id, slot, guildConfig);
                     }
                 }
@@ -178,7 +180,7 @@ module.exports = {
                         const user = guildData.members[index];
                         // bot.log(`&6[AutoRole] guild members loop: ${user.uuid}`)
                         // check if guild member is verified
-                        if (force) bot.log(`check - ${user.uuid}`);
+                        // if (force) bot.log(`check - ${user.uuid}`);
                         let verifiedUser = verified.find((User) => User.uuid == user.uuid)
 
                         if (verifiedUser) {
@@ -191,7 +193,7 @@ module.exports = {
                             // rank not in ranks list e.g. guild master rank
                             if (!rankID && !["Guild Master", "GUILDMASTER"].includes(rankName)) return console.log(`Rank not in ranks list??? + [${rankName}]`);
 
-                            // console.log(rankID, serverConf.config.autoRole.config)
+                            // console.log(rankID, autoRole.config)
 
                             // somehow this rank is not in the autorole rank config, which is weird cuz above code should have updated ranks...
                             if (rankID && !autoRole?.config[rankID]) return bot.log(`this rank isn't in the autorole config? ${rankID}`)

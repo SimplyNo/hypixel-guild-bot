@@ -85,6 +85,16 @@
         "guestRole": null,
         "lastUsers": []
     },
+    "autoRole1": {
+        "updateGroup": null,
+        "guild": null,
+        "guildName": null,
+        "logChannel": null,
+        "config": {},
+        "memberRole": null,
+        "guestRole": null,
+        "lastUsers": []
+    },
     "autoRole2": {
         "updateGroup": null,
         "guild": null,

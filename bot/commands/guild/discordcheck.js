@@ -8,7 +8,12 @@ module.exports = {
     description: "View who members who are in the discord based on your autorole guild.",
     slash: new SlashCommandBuilder()
         .setName('discordcheck')
-        .setDescription("View who members who are in the discord based on your autorole guild."),
+        .setDescription("View who members who are in the discord based on your autorole guild.")
+        .addIntegerOption(option =>
+            option.setName('slot')
+                .setDescription('The autorole guild to use.')
+                .setAutocomplete(true)
+                .setRequired(true)),
     /**
      * 
      * @param {CommandInteraction} interaction 
@@ -17,9 +22,10 @@ module.exports = {
      * @returns 
      */
     async run(interaction, { serverConf }, bot) {
-        let autoRole = serverConf.autoRole;
         await interaction.deferReply();
-
+        const slot = (interaction.options.getInteger('slot') ?? 1) - 1;
+        let autoRole = serverConf[`autoRole${slot === 0 ? '' : slot}`];
+        if (!autoRole) return bot.createErrorEmbed(interaction).setDescription(`AutoRole slot \`${slot}\` does not have a guild set up.`).send()
         if (!autoRole.guild) return bot.createErrorEmbed(interaction).setDescription(`You need to set an autorole guild to do this!`).send()
         let data = await bot.wrappers.hypixelGuild.get(autoRole.guild, 'id', true);
         // let data = await bot.wrappers.slothpixelGuild.get('HypixelDuck', 'name');

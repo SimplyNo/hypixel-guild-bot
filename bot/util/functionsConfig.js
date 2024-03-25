@@ -301,7 +301,7 @@ module.exports = {
                 }
             },
             autoRole: {
-                async delete(serverID) {
+                async delete(serverID, slot) {
 
                     // get server object (without filling)
                     let server = await settings.getConfig(serverID);
@@ -310,7 +310,7 @@ module.exports = {
                         server = new serverConf({ id: serverID, config: {} });
                     }
                     // delete autoRole from map
-                    server.config.delete('autoRole');
+                    server.config.delete(`autoRole${slot === 0 ? '' : slot}`);
                     // save to mongo
                     return await server.save();
 
@@ -323,66 +323,69 @@ module.exports = {
                         })
                     })
                 },
-                async assignGroup(serverID) {
+                async assignGroup(serverID, slot = 0) {
                     // random 0-5
                     let group = Math.floor(Math.random() * 6);
                     let server = await settings.getConfig(serverID);
                     if (server.doesNotExist) {
                         server = new serverConf({ id: serverID, config: {} });
                     }
-                    server.config.set('autoRole', { ...server.config.get('autoRole'), updateGroup: group });
+                    server.config.set(`autoRole${slot === 0 ? '' : slot}`, { ...server.config.get(`autoRole${slot === 0 ? '' : slot}`), updateGroup: group });
                     return await server.save();
                 },
-                async setLastUsers(serverID, users = []) {
+                async setLastUsers(serverID, slot, users = []) {
                     let server = await settings.getConfig(serverID);
                     if (server.doesNotExist) {
                         server = new serverConf({ id: serverID, config: {} });
                     }
-                    server.config.set('autoRole', { ...server.config.get('autoRole'), lastUsers: users })
+                    server.config.set(`autoRole${slot === 0 ? '' : slot}`, { ...server.config.get(`autoRole${slot === 0 ? '' : slot}`), lastUsers: users })
                     return await server.save();
                 },
-                async setMemberRole(serverID, roleID) {
+                async setMemberRole(serverID, slot, roleID) {
                     let server = await settings.getConfig(serverID);
                     if (server.doesNotExist) {
                         server = new serverConf({ id: serverID, config: {} });
                     }
-                    server.config.set('autoRole', { ...server.config.get('autoRole'), memberRole: roleID });
+                    server.config.set(`autoRole${slot === 0 ? '' : slot}`, { ...server.config.get(`autoRole${slot === 0 ? '' : slot}`), memberRole: roleID });
                     return await server.save();
 
                 },
-                async setGuestRole(serverID, roleID) {
+                async setGuestRole(serverID, slot, roleID) {
                     let server = await settings.ensure(serverID);
-                    server.config.set('autoRole', { ...server.config.get('autoRole'), guestRole: roleID })
+                    server.config.set(`autoRole${slot === 0 ? '' : slot}`, { ...server.config.get(`autoRole${slot === 0 ? '' : slot}`), guestRole: roleID })
                     return await server.save();
                 },
-                async setAutoRoleConfig(serverID, config) {
+                async setAutoRoleConfig(serverID, slot, config) {
 
                     let server = await settings.getConfig(serverID);
                     if (server.doesNotExist) {
                         server = new serverConf({ id: serverID, config: {} });
                     }
-                    server.config.set('autoRole', { ...server.config.get('autoRole'), config: config });
+                    server.config.set(`autoRole${slot === 0 ? '' : slot}`, { ...server.config.get(`autoRole${slot === 0 ? '' : slot}`), config: config });
                     return await server.save();
                 },
-                async setGuild(serverID, guild) {
-
-                    let server = await settings.getConfig(serverID);
-                    if (server.doesNotExist) {
-                        server = new serverConf({ id: serverID, config: {} });
-                    }
-                    server.config.set('autoRole', { ...server.config.get('autoRole'), guild: guild });
-                    return await server.save();
-
-
-                },
-                async setLogChannel(serverID, channelID) {
+                async setGuild(serverID, slot, guild) {
+                    console.log(`setting guild ${guild} for slot ${slot}`)
                     let server = await settings.ensure(serverID);
-
-                    server.config.set('autoRole', { ...server.config.get('autoRole'), logChannel: channelID });
+                    server.config.set(`autoRole${slot === 0 ? '' : slot}`, { ...server.config.get(`autoRole${slot === 0 ? '' : slot}`), guild: guild });
+                    return await server.save();
+                },
+                async setGuildName(serverID, slot, guildName) {
+                    let server = await settings.ensure(serverID);
+                    server.config.set(`autoRole${slot === 0 ? '' : slot}`, { ...server.config.get(`autoRole${slot === 0 ? '' : slot}`), guildName: guildName });
                     return server.save();
+                },
+                async setLogChannel(serverID, slot, channelID) {
+                    let server = await settings.ensure(serverID);
 
-
-                }
+                    server.config.set(`autoRole${slot === 0 ? '' : slot}`, { ...server.config.get(`autoRole${slot === 0 ? '' : slot}`), logChannel: channelID });
+                    return server.save();
+                },
+                async setCurrentSlot(serverID, slot) {
+                    let server = await settings.ensure(serverID);
+                    server.config.set('currentAutoRoleSlot', slot);
+                    return server.save();
+                },
             },
             joinLogs: {
                 async delete(serverID) {
