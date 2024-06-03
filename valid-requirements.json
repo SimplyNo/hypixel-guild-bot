@@ -260,6 +260,47 @@
         ]
     },
     {
+        "name": "Build Battle",
+        "apiType": "player",
+        "reqs": [
+            {
+                "path": "player.stats.BuildBattle.wins",
+                "id": "build_battle_wins",
+                "name": "Build Battle Wins"
+            },
+            {
+                "path": "player.stats.BuildBattle.score",
+                "id": "build_battle_score",
+                "name": "Build Battle Score"
+            },
+            {
+                "path": "player.stats.BuildBattle.wins_guess_the_build",
+                "id": "build_battle_wins_gtb",
+                "name": "Build Battle Guess The Build Wins"
+            },
+            {
+                "path": "player.stats.BuildBattle.wins_solo_normal",
+                "id": "build_battle_wins_solo",
+                "name": "Build Battle Solo Wins"
+            },
+            {
+                "path": "player.stats.BuildBattle.wins_solo_normal_latest",
+                "id": "build_battle_wins_latest",
+                "name": "Build Battle 1.14 Wins"
+            },
+            {
+                "path": "player.stats.BuildBattle.wins_solo_pro",
+                "id": "build_battle_wins_pro",
+                "name": "Build Battle Pro Wins"
+            },
+            {
+                "path": "player.stats.BuildBattle.wins_teams_normal",
+                "id": "build_battle_wins_teams",
+                "name": "Build Battle Teams Wins"
+            }
+        ]
+    },
+    {
         "name": "Pit",
         "apiType": "player",
         "reqs": [
