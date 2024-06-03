@@ -92,6 +92,14 @@ module.exports = {
             // if (force) bot.log(`&6[AutoRole] &a${members.size} members fetched.`)
             bot.log(`&6[AutoRole] &a${members.size} members fetched.`)
 
+            // get log channel and guest role cuz they arent changed by slots
+            const logChannel = serverConf.config.autoRole?.logChannel ? await bot.channels.fetch(serverConf.config.autoRole.logChannel).catch(e => null) : null;
+            const guestRole = serverConf.config.autoRole?.guestRole;
+            // if ID exists, but channel couldnt be fetched, delete from db
+            if (serverConf.config.autoRole?.logChannel && !logChannel) {
+                await bot.config.autoRole.setLogChannel(server.id, 0, undefined)
+            }
+
             for (let slot = 0; slot < 3; slot++) {
                 // console.log(`slot: ${slot}`)
                 let autoRole = serverConf.config[`autoRole${slot === 0 ? '' : slot}`];
@@ -102,12 +110,6 @@ module.exports = {
                 let verification = serverConf.config.verification;
                 let joinLogs = serverConf.config.joinLogs;
 
-                // get log channel
-                let logChannel = autoRole.logChannel ? await bot.channels.fetch(autoRole.logChannel).catch(e => null) : null;
-                // if ID exists, but channel couldnt be fetched, delete from db
-                if (autoRole.logChannel && !logChannel) {
-                    await bot.config.autoRole.setLogChannel(server.id, slot, undefined)
-                }
                 // get guild api data of this server (or use data if given manually)
                 let guildData = await bot.wrappers.hypixelGuild.get(autoRole.guild, "id");
                 // let statsifyData = bot.wrappers.slothpixelGuild.get(autoRole.guild, "id");
@@ -201,8 +203,6 @@ module.exports = {
                             let rankRole = rankID ? autoRole.config[rankID].role : null;
                             // get the member role linked to the guild
                             let memberRole = autoRole.memberRole;
-                            // get the guest role linked to the guild
-                            let guestRole = autoRole.guestRole;
                             // get the rank position (todo: remove editable rank position)
                             let rankPos = rankID ? autoRole.config[rankID].pos : null;
                             // the rank does not have a position value...?
