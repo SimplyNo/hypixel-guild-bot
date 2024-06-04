@@ -108,7 +108,8 @@ module.exports = {
                 let timeRoles = serverConf.config.timeRoles;
                 let gxpRoles = serverConf.config.gxpRoles;
                 let verification = serverConf.config.verification;
-                let joinLogs = serverConf.config.joinLogs;
+                let joinLogs = autoRole.joinLogs;
+                let joinLogsOld = serverConf.config.joinLogs;
 
                 // get guild api data of this server (or use data if given manually)
                 let guildData = await bot.wrappers.hypixelGuild.get(autoRole.guild, "id");
@@ -458,7 +459,7 @@ module.exports = {
                         console.log(memberRoles.rolesToAdd)
                         memberRoles.rolesToRemove.length && (str += "**Roles Removed:**\n", memberRoles.rolesToRemove.forEach((role) => str += `\`-\` <@&${role.id}> - ${role.reason}\n`));;
                         memberRoles.rolesToAdd.length && (str += "**Roles Added:**\n", memberRoles.rolesToAdd.forEach((role) => str += `\`+\` <@&${role.id}> - ${role.reason}\n`));
-
+                        const excludedRole = member.roles.cache.has(serverConf.config.verification?.autoRoleExcludedRoles?.[0]);
                         if (logChannel && !excludedRole && (memberRoles.rolesToRemove.length || memberRoles.rolesToAdd.length)) {
                             bot.log(`&6${shardInfo} [AutoRole] &cGuild Member Left/Unverified&6 Added roles to ${member.user.tag}. &aRoles added: ${memberRoles.rolesToAdd.length} Roles removed: ${memberRoles.rolesToRemove.length}`);
 
@@ -476,14 +477,16 @@ module.exports = {
                 await bot.config.autoRole.setLastUsers(server.id, slot, verifiedUsers);
                 // console.log(joinLogs)
                 // join logs
-                if (joinLogs && joinLogs.channel) {
-                    let joinLogsChannel = await bot.channels.fetch(joinLogs.channel).catch(e => null);
-                    let lastMembers = joinLogs.lastMembers;
+
+                if ((joinLogs && joinLogs.channel) || (joinLogsOld && joinLogsOld.channel)) {
+                    if (!joinLogs) joinLogs = {};
+                    let joinLogsChannel = await bot.channels.fetch(joinLogs.channel).catch(e => null) || await bot.channels.fetch(joinLogsOld.channel).catch(e => null);
+                    let lastMembers = joinLogs.lastMembers || guildData.members.map(m => m.uuid);
                     let lastUpdate = joinLogs.lastUpdate || 0;
-                    let lastGuild = joinLogs.lastGuild;
+                    let lastGuild = joinLogs.lastGuild || guildData._id;
                     // bot.log(`&e(${currentServer}/${totalServers}) Join logs check starting...`)
-                    if (joinLogsChannel && lastMembers && (((Date.now() - lastUpdate) / 1000 / 60) < 30) && lastGuild == guildData._id) {
-                        // console.log("Checking join logs.")
+                    if (joinLogsChannel && lastMembers && lastGuild == guildData._id) {
+                        console.log(`Checking join logs.`, guildData.name);
 
                         let joined = guildData.members.sort((a, b) => parseInt(a.joined) - parseInt(b.joined)).filter(m => !lastMembers.includes(m.uuid)).map(e => e.uuid);
                         let left = lastMembers.filter(m => !guildData.members.find(e => e.uuid == m));
@@ -491,7 +494,7 @@ module.exports = {
                         let changed = [...joined.map(m => ({ uuid: m, join: true })), ...left.map(m => ({ uuid: m, left: true }))].sort((a, b) => parseInt(a.joined) - parseInt(b.joined))
 
                         if (joined.length || left.length) {
-                            console.log(joined, left)
+                            console.log('joined,left:', joined, left)
 
                         }
                         let totalMembers = lastMembers.length;
@@ -505,7 +508,7 @@ module.exports = {
                                 console.log(`&e(${currentServer}/${totalServers}) Leave Detected: ${m}`)
                                 await bot.createEmbed()
                                     .setTitle(`${guildData.name} → Member Left!`)
-                                    .setDescription(`${playerData.emojiRank} **${playerData.displayname}** left (or was kicked) from the guild!`)
+                                    .setDescription(`${playerData.emojiRank} **${playerData.displayname}** left (or was kicked) from **${guildData.name}**!`)
                                     .setFooter(`New Member Count - ${totalMembers}`)
                                     .setThumbnail(bot.skin(m.uuid))
                                     .setColor('FF0000')
@@ -532,7 +535,7 @@ module.exports = {
                         }
 
                     }
-                    await bot.config.joinLogs.setLastMembers(server.id, slot, guildData.members.map(e => e.uuid), guildData._id);
+                    await bot.config.autoRole.setJoinLogs(server.id, slot, { lastMembers: guildData.members.map(e => e.uuid), lastGuild: guildData._id });
                 }
                 // currentServer++;
             }

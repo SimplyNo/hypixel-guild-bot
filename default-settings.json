@@ -83,7 +83,12 @@
         "config": {},
         "memberRole": null,
         "guestRole": null,
-        "lastUsers": []
+        "lastUsers": [],
+        "joinLogs": {
+            "channel": null,
+            "lastMembers": null,
+            "lastUpdate": null
+        }
     },
     "autoRole1": {
         "updateGroup": null,
@@ -93,7 +98,12 @@
         "config": {},
         "memberRole": null,
         "guestRole": null,
-        "lastUsers": []
+        "lastUsers": [],
+        "joinLogs": {
+            "channel": null,
+            "lastMembers": null,
+            "lastUpdate": null
+        }
     },
     "autoRole2": {
         "updateGroup": null,
@@ -103,13 +113,12 @@
         "config": {},
         "memberRole": null,
         "guestRole": null,
-        "lastUsers": []
-    },
-    "joinLogs": {
-        "channel": null,
-        "lastMembers": null,
-        "lastUpdate": null,
-        "lastGuild": null
+        "lastUsers": [],
+        "joinLogs": {
+            "channel": null,
+            "lastMembers": null,
+            "lastUpdate": null
+        }
     },
     "rankRoles": {
         "ADMIN": {

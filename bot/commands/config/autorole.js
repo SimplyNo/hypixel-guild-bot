@@ -143,7 +143,7 @@ _Auto Role automatically syncs in-game Guild Ranks with their Discord Role count
             let guild = interaction.options.getString('guild', true);
             let oldGuild = currentAutoRole.guild ? await bot.wrappers.hypixelGuild.get(currentAutoRole.guild, 'id') : { exists: false };
 
-            if (oldGuild.name && guild == oldGuild.name.toLowerCase()) return bot.createErrorEmbed().setDescription(`The server is already linked to **${oldGuild.name}**!`).send(interaction);
+            if (oldGuild?.name && guild == oldGuild.name.toLowerCase()) return bot.createErrorEmbed().setDescription(`The server is already linked to **${oldGuild.name}**!`).send(interaction);
             let guildData = await bot.wrappers.hypixelGuild.get(guild, 'name');
 
             if (guildData.exists == false) {
@@ -286,7 +286,7 @@ _Auto Role automatically syncs in-game Guild Ranks with their Discord Role count
             let oldGuild = currentAutoRole.guild;
             if (oldGuild) {
 
-                let col = await bot.createEmbed(interaction).setAuthor(interaction.guild.name, interaction.guild.iconURL).setTitle(":warning: Confirmation :warning:").setDescription(`Are you sure you want to reset ALL AutoRole configuration for **Slot ${serverConf.currentAutoRoleSlot}: ${currentAutoRole.guildName}**? This action and can NOT be undone! \n\nReact ☑️ to this interaction to proceed!`)
+                let col = await bot.createEmbed(interaction).setAuthor(interaction.guild.name, interaction.guild.iconURL).setTitle(":warning: Confirmation :warning:").setDescription(`Are you sure you want to reset ALL AutoRole __and__ JoinLogs configuration for **Slot ${serverConf.currentAutoRoleSlot}: ${currentAutoRole.guildName}**? This action and can NOT be undone! \n\nReact ☑️ to this interaction to proceed!`)
                     .sendAsConfirmation();
 
                 col.on('confirm', async (button) => {
