@@ -222,14 +222,7 @@ module.exports = {
                             // let memberRoles = new Set([...member.roles.cache.keys()]);
                             const excludedRole = member.roles.cache.has(serverConf.config.verification?.autoRoleExcludedRoles?.[0]);
                             let memberRoles = new MemberRoles([...member.roles.cache.keys()])
-                            // remove all the ranks from other old guilds...
-                            const allRankRoles1 = slot === 0 ? [] : serverConf.config.autoRole?.config ? Object.entries(serverConf.config.autoRole.config).map(e => ({ r: e[1].role, name: serverConf.config.autoRole.guildName })) : [];
-                            const allRankRoles2 = slot === 1 ? [] : serverConf.config.autoRole2?.config ? Object.entries(serverConf.config.autoRole2.config).map(e => ({ r: e[1].role, name: serverConf.config.autoRole2.guildName })) : [];
-                            const allRankRoles3 = slot === 2 ? [] : serverConf.config.autoRole3?.config ? Object.entries(serverConf.config.autoRole3.config).map(e => ({ r: e[1].role, name: serverConf.config.autoRole3.guildName })) : [];
 
-                            [...allRankRoles1, ...allRankRoles2, ...allRankRoles3].forEach(r => {
-                                memberRoles.removeRole(r.r, `For not being in **${r.name}**`);
-                            });
                             // Default Member role
                             // bot.log(`&6[AutoRole] OK we've made it this far, gonna try and see if they have a member role`)
                             if (memberRole) {
@@ -312,7 +305,14 @@ module.exports = {
                                     memberRoles.removeRole(ROLE[1].role, `For not having rank **${ROLE[1].name}**`);
                                 }
                             })
+                            // remove all the ranks from other old guilds...
+                            const allRankRoles1 = slot === 0 ? [] : serverConf.config.autoRole?.config ? Object.entries(serverConf.config.autoRole.config).map(e => ({ r: e[1].role, name: serverConf.config.autoRole.guildName })) : [];
+                            const allRankRoles2 = slot === 1 ? [] : serverConf.config.autoRole2?.config ? Object.entries(serverConf.config.autoRole2.config).map(e => ({ r: e[1].role, name: serverConf.config.autoRole2.guildName })) : [];
+                            const allRankRoles3 = slot === 2 ? [] : serverConf.config.autoRole3?.config ? Object.entries(serverConf.config.autoRole3.config).map(e => ({ r: e[1].role, name: serverConf.config.autoRole3.guildName })) : [];
 
+                            [...allRankRoles1, ...allRankRoles2, ...allRankRoles3].forEach(r => {
+                                memberRoles.removeRole(r.r, `For not being in **${r.name}**`);
+                            });
                             let str = `${member.toString()} received the following role changes:\n\n`;
 
                             if (force) bot.log(`trying to set the roles of ${member.user.tag} (${member.id}). ${index}/${guildData.members.length}`, memberRoles.rolesToAdd, memberRoles.rolesToRemove);
