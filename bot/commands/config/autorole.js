@@ -129,7 +129,7 @@ _Auto Role automatically syncs in-game Guild Ranks with their Discord Role count
         } else if (subcommand === 'logchannel') {
             let oldChannel = serverConf.autoRole.logChannel;
             const channel = interaction.options.getChannel('channel');
-            currentAutoRole.logChannel = channel.id;
+            currentAutoRole.logChannel = channel?.id;
             bot.config.autoRole.setLogChannel(interaction.guild.id, serverConf.currentAutoRoleSlot, channel?.id)
             await bot.createEmbed(interaction)
                 // .setAuthor(interaction.guild.name, interaction.guild.iconURL())
@@ -243,7 +243,7 @@ _Auto Role automatically syncs in-game Guild Ranks with their Discord Role count
                 currentAutoRole.memberRole = role.id;
             }
 
-            await bot.config.autoRole.setMemberRole(interaction.guild.id, serverConf.currentAutoRoleSlot, currentAutoRole.memberRole);
+            await bot.config.autoRole.setMemberRole(interaction.guild.id, 0, currentAutoRole.memberRole);
             await bot.createEmbed(interaction)
                 .setTitle("Success!")
                 .setDescription(role ? `Verified guild members will now receive the role ${role.toString()}.` : `Reset the default guild member role!`)
@@ -273,7 +273,7 @@ _Auto Role automatically syncs in-game Guild Ranks with their Discord Role count
                 currentAutoRole.guestRole = role.id;
             }
 
-            await bot.config.autoRole.setGuestRole(interaction.guild.id, serverConf.currentAutoRoleSlot, currentAutoRole.guestRole);
+            await bot.config.autoRole.setGuestRole(interaction.guild.id, 0, currentAutoRole.guestRole);
             await bot.createEmbed(interaction)
                 .setTitle("Success!")
                 .setDescription(role ? `Discord members who are either not verified or not in the guild will now receive the role ${role.toString()}.` : `Reset the guest role!`)
@@ -321,9 +321,9 @@ _Auto Role automatically syncs in-game Guild Ranks with their Discord Role count
                 .setDescription(`Use **${serverConf.prefix}autorole info** for a list of valid subcommands.
 ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
 Server Guild: **${guildData ? guildData.name : "No Guild Set!"}**
-Log Channel: **${replyInteraction.guild.channels.cache.get(autoRole.logChannel) || "No Log Channel Set!"}**
+Log Channel: **${replyInteraction.guild.channels.cache.get(serverConf.autoRole.logChannel) || "No Log Channel Set!"}**
+Guest Role: **${serverConf.autoRole.guestRole ? '<@&' + serverConf.autoRole.guestRole + '>' : "No Role Set"}**
 Default Guild Member Role: **${autoRole.memberRole ? '<@&' + autoRole.memberRole + '>' : "No Role Set"}**
-Guest Role: **${autoRole.guestRole ? '<@&' + autoRole.guestRole + '>' : "No Role Set"}**
 ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯`)
                 .setThumbnail(`https://hypixel.net/data/guild_banners/200x400/${guildData ? guildData._id : null}.png`);
             if (guildData && guildData.exists == false) {

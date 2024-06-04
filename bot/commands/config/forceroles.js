@@ -84,7 +84,7 @@ Updating the following roles for server members:
 \`•\` **Unverified Role** (\`${interaction.prefix}verifyconfig\`) ${possibleRoles.unverified ? `- <@&${possibleRoles.unverified}>` : ``}
 \`•\` **Guest Role** (\`${interaction.prefix}autorole\`) ${possibleRoles.guestRole ? `- <@&${possibleRoles.guestRole}>` : ``}
 
-Members Checked: \`${currentAdded}/${interaction.guild.memberCount}\`
+Members Checked: \`${currentAdded}/${interaction.guild.memberCount}\` (does not include bots)
 Members Updated: \`${totalUpdated}\`
 Elapsed Time: \`${Math.floor((Date.now() - startTime) / 1000 / 60)}m ${Math.floor((Date.now() - startTime) / 1000 % 60)}s\`
 `)]
@@ -104,13 +104,21 @@ Elapsed Time: \`${Math.floor((Date.now() - startTime) / 1000 / 60)}m ${Math.floo
 
                 verifiedUsersSize = verifiedUsersInServer.size;
                 const guildData = serverConf.autoRole.guild ? await bot.wrappers.hypixelGuild.get(serverConf.autoRole.guild, "id") : {};
+
+                const autoRole = serverConf.autoRole;
+                const autoRole1 = serverConf.autoRole1;
+                const autoRole2 = serverConf.autoRole2;
+                const allLastUsers = autoRole.lastUsers.concat(autoRole1.lastUsers, autoRole2.lastUsers);
+
+
+
                 for (const member of [...allMembers.values()]) {
                     let memberRoles = new MemberRoles([...member.roles.cache.keys()]);
                     let verified = allUsers.find(u => u.id == member.id);
                     if (verified) {
                         // verified: remove unverified role
                         if (memberRoles.array().includes(possibleRoles.unverified)) memberRoles.removeRole(possibleRoles.unverified);
-                        let inGuild = guildData.members?.find(m => m.uuid == verified.uuid);
+                        let inGuild = allLastUsers.find(e => e.uuid == verified.uuid) || guildData.members.find(e => e.uuid == verified.uuid);
                         if (inGuild) {
                             // verified: remove guest role if in guild
                             if (memberRoles.array().includes(possibleRoles.guestRole)) memberRoles.removeRole(possibleRoles.guestRole);

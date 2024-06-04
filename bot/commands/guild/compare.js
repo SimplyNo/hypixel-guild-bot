@@ -55,7 +55,7 @@ module.exports = {
                 .setDescription(`Guild \`${guild2}\` not found.`)
                 .send()
         }
-        const diffStr = (guild1, guild2) => guild1 - guild2 > 0 ? `⬆️ \`${(guild1 - guild2).toLocaleString()}\`` : `🔻 \`${Math.abs(guild1 - guild2).toLocaleString()}\``;
+        const diffStr = (guild1, guild2) => guild1 - guild2 > 0 ? `<:greenarrow:1238706774987636746> \`${(guild1 - guild2).toLocaleString()}\`` : `🔻 \`${Math.abs(guild1 - guild2).toLocaleString()}\``;
         const diffLevelStr = diffStr(guildData1.level, guildData2.level);
         const diffTotalGEXPStr = diffStr(guildData1.exp, guildData2.exp);
         const diffMemberCountStr = diffStr(guildData1.members.length, guildData2.members.length);

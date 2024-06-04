@@ -17,7 +17,9 @@ module.exports = {
         const doRankCheck = Object.values(serverConf.rankRoles).some(e => e.id);
         const requirements = Object.entries(serverConf.requirements).filter(e => [e[1].role, e[1].min, e[1].max].some(el => el !== null));
         const autoRole = serverConf.autoRole;
-
+        const autoRole1 = serverConf.autoRole1;
+        const autoRole2 = serverConf.autoRole2;
+        const allLastUsers = autoRole.lastUsers.concat(autoRole1.lastUsers, autoRole2.lastUsers);
         // const doReqCheck = requirements.length;
 
 
@@ -33,7 +35,7 @@ module.exports = {
                 let verified = await bot.getUser({ id: member.user.id });
                 if (verified) {
                     // add guest role!
-                    if ((autoRole.guestRole && autoRole.guild && autoRole.lastUsers?.length && !autoRole.lastUsers.find(e => e.uuid == verified.uuid))) {
+                    if ((autoRole.guestRole && autoRole.guild && allLastUsers.length && !allLastUsers.find(e => e.uuid == verified.uuid))) {
                         memberRoles.addRole(autoRole.guestRole)
                         bot.log(`&5[AutoUpdate] adding guest role!`)
                     } else if (autoRole.guestRole && autoRole.guild && autoRole.lastUsers?.length) {

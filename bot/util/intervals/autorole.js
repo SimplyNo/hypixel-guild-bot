@@ -92,6 +92,14 @@ module.exports = {
             // if (force) bot.log(`&6[AutoRole] &a${members.size} members fetched.`)
             bot.log(`&6[AutoRole] &a${members.size} members fetched.`)
 
+            // get log channel and guest role cuz they arent changed by slots
+            const logChannel = serverConf.config.autoRole?.logChannel ? await bot.channels.fetch(serverConf.config.autoRole.logChannel).catch(e => null) : null;
+            const guestRole = serverConf.config.autoRole?.guestRole;
+            // if ID exists, but channel couldnt be fetched, delete from db
+            if (serverConf.config.autoRole?.logChannel && !logChannel) {
+                await bot.config.autoRole.setLogChannel(server.id, 0, undefined)
+            }
+
             for (let slot = 0; slot < 3; slot++) {
                 // console.log(`slot: ${slot}`)
                 let autoRole = serverConf.config[`autoRole${slot === 0 ? '' : slot}`];
@@ -102,12 +110,6 @@ module.exports = {
                 let verification = serverConf.config.verification;
                 let joinLogs = serverConf.config.joinLogs;
 
-                // get log channel
-                let logChannel = autoRole.logChannel ? await bot.channels.fetch(autoRole.logChannel).catch(e => null) : null;
-                // if ID exists, but channel couldnt be fetched, delete from db
-                if (autoRole.logChannel && !logChannel) {
-                    await bot.config.autoRole.setLogChannel(server.id, slot, undefined)
-                }
                 // get guild api data of this server (or use data if given manually)
                 let guildData = await bot.wrappers.hypixelGuild.get(autoRole.guild, "id");
                 // let statsifyData = bot.wrappers.slothpixelGuild.get(autoRole.guild, "id");
@@ -201,8 +203,6 @@ module.exports = {
                             let rankRole = rankID ? autoRole.config[rankID].role : null;
                             // get the member role linked to the guild
                             let memberRole = autoRole.memberRole;
-                            // get the guest role linked to the guild
-                            let guestRole = autoRole.guestRole;
                             // get the rank position (todo: remove editable rank position)
                             let rankPos = rankID ? autoRole.config[rankID].pos : null;
                             // the rank does not have a position value...?
@@ -241,7 +241,7 @@ module.exports = {
                             let time = parseInt(user.joined);
                             if (time && timeRoles) {
                                 let days = Math.floor((Date.now() - time) / 1000 / 60 / 60 / 24);
-                                let timeRoles = timeRoles.sort((a, b) => a.days - b.days);
+                                timeRoles = timeRoles.sort((a, b) => a.days - b.days);
                                 timeRoles.forEach((tr, index) => {
                                     let ahead = timeRoles[index + 1] || { days: 99999 };
                                     if ((days >= tr.days && days <= ahead.days) || (days >= tr.days && tr.pinned)) {
@@ -260,7 +260,7 @@ module.exports = {
                             // gxp role
                             if (gxpRoles) {
                                 let memberGXP = user.weekly;
-                                let gxpRoles = gxpRoles.sort((a, b) => a.gxp - b.gxp);
+                                gxpRoles = gxpRoles.sort((a, b) => a.gxp - b.gxp);
                                 gxpRoles.forEach((gxprole, index) => {
                                     let ahead = gxpRoles[index + 1] || { gxp: 1000000000 };
                                     if ((memberGXP >= gxprole.gxp && memberGXP <= ahead.gxp) || (memberGXP >= gxprole.gxp && gxprole.pinned)) {

@@ -125,7 +125,7 @@ module.exports = {
                 title: `Top ${memberCount} Monthly GEXP ${guild.name} ${guild.tag ? `[${guild.tag}]` : ""}`,
                 url: `https://plancke.io/hypixel/guild/name/${encodeURI(guild.name)}`,
                 icon: bot.assets.hypixel.guild,
-                color: guild.tagColor.hex,
+                color: colorMap[guild?.tagColor || "GRAY"].hex,
                 footer: true
             }
 
@@ -320,3 +320,23 @@ function hasMissingData(guild, startingDay, firstUpdated) {
     }
     return null;
 }
+
+
+const colorMap = {
+    WHITE: { code: "§f", hex: "#F2F2F2", color: "WHITE" },
+    YELLOW: { code: "§e", hex: "#FFFF55", color: "YELLOW" },
+    LIGHT_PURPLE: { code: "§d", hex: "#FF55FF", color: "LIGHT_PURPLE" },
+    RED: { code: "§c", hex: "#FF5555", color: "RED" },
+    AQUA: { code: "§b", hex: "#55FFFF", color: "AQUA" },
+    GREEN: { code: "§a", hex: "#55FF55", color: "GREEN" },
+    BLUE: { code: "§9", hex: "#5555FF", color: "BLUE" },
+    DARK_GRAY: { code: "§8", hex: "#555555", color: "DARK_GRAY" },
+    GRAY: { code: "§7", hex: "#BAB6B6", color: "GRAY" },
+    GOLD: { code: "§6", hex: "#FFAA00", color: "GOLD" },
+    DARK_PURPLE: { code: "§5", hex: "#AA00AA", color: "DARK_PURPLE" },
+    DARK_RED: { code: "§4", hex: "#AA0000", color: "DARK_RED" },
+    DARK_AQUA: { code: "§3", hex: "#00AAAA", color: "DARK_AQUA" },
+    DARK_GREEN: { code: "§2", hex: "#00AA00", color: "DARK_GREEN" },
+    DARK_BLUE: { code: "§1", hex: "#0000AA", color: "DARK_BLUE" },
+    BLACK: { code: "§0", hex: "#000000", color: "BLACK" },
+};
