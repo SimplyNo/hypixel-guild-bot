@@ -77,6 +77,27 @@
         ]
     },
     {
+        "name": "WoolGames",
+        "apiType": "player",
+        "reqs": [
+            {
+                "path": "player.stats.WoolGames.wool_wars.stats.wins",
+                "id": "wool_wars_wins",
+                "name": "Woolwars Wins"
+            },
+            {
+                "path": "player.stats.WoolGames.wool_wars.stats.kills",
+                "id": "wool_wars_kills",
+                "name": "Woolwars Kills"
+            },
+            {
+                "path": "player.stats.Woolgames.wool_wars.stats.wool_placed",
+                "id": "wool_wars_wool_placed",
+                "name": "Woolwars Placed"
+            }
+        ]
+    },
+    {
         "name": "Skywars",
         "apiType": "player",
         "reqs": [
