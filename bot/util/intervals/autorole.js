@@ -222,7 +222,14 @@ module.exports = {
                             // let memberRoles = new Set([...member.roles.cache.keys()]);
                             const excludedRole = member.roles.cache.has(serverConf.config.verification?.autoRoleExcludedRoles?.[0]);
                             let memberRoles = new MemberRoles([...member.roles.cache.keys()])
+                            // remove all the ranks from other old guilds...
+                            const allRankRoles1 = slot === 0 ? [] : serverConf.config.autoRole?.config ? Object.entries(serverConf.config.autoRole.config).map(e => ({ r: e[1].role, name: serverConf.config.autoRole.guildName })) : [];
+                            const allRankRoles2 = slot === 1 ? [] : serverConf.config.autoRole2?.config ? Object.entries(serverConf.config.autoRole2.config).map(e => ({ r: e[1].role, name: serverConf.config.autoRole2.guildName })) : [];
+                            const allRankRoles3 = slot === 2 ? [] : serverConf.config.autoRole3?.config ? Object.entries(serverConf.config.autoRole3.config).map(e => ({ r: e[1].role, name: serverConf.config.autoRole3.guildName })) : [];
 
+                            [...allRankRoles1, ...allRankRoles2, ...allRankRoles3].forEach(r => {
+                                memberRoles.removeRole(r.r, `For not being in **${r.name}**`);
+                            });
                             // Default Member role
                             // bot.log(`&6[AutoRole] OK we've made it this far, gonna try and see if they have a member role`)
                             if (memberRole) {
@@ -360,7 +367,7 @@ module.exports = {
                                 // bot.log(`&6[AutoRole] Guild Member New Roles: Added roles to ${member.user.tag}. &aRoles added: ${rolesToAdd.length} Roles removed: ${rolesToRemove.length}`);
                                 // console.log("SENDING MESSAGE")
                                 bot.createEmbed()
-                                    .setAuthor(`Auto Role → Role Changes`, member.user.avatarURL())
+                                    .setAuthor(`Auto Role (${guildData.name}) → Role Changes`, member.user.avatarURL())
                                     .setDescription(str)
                                     .setTimestamp()
                                     .setThumbnail(genThumbnail(verifiedUser.uuid))
