@@ -108,7 +108,7 @@ module.exports = {
             /**
              * @type {Message}
              */
-            const msg = await sendConfigEmbed();
+            const msg = await sendConfigEmbed(false, interaction, true)
 
         } else if (subcommand === "info") {
             bot.createEmbed(interaction)
@@ -129,8 +129,8 @@ _Auto Role automatically syncs in-game Guild Ranks with their Discord Role count
         } else if (subcommand === 'logchannel') {
             let oldChannel = serverConf.autoRole.logChannel;
             const channel = interaction.options.getChannel('channel');
-            currentAutoRole.logChannel = channel?.id;
-            bot.config.autoRole.setLogChannel(interaction.guild.id, serverConf.currentAutoRoleSlot, channel?.id)
+            serverConf.autoRole.logChannel = channel?.id;
+            bot.config.autoRole.setLogChannel(interaction.guild.id, 0, channel?.id)
             await bot.createEmbed(interaction)
                 // .setAuthor(interaction.guild.name, interaction.guild.iconURL())
                 .setTitle("Success!")
@@ -243,7 +243,7 @@ _Auto Role automatically syncs in-game Guild Ranks with their Discord Role count
                 currentAutoRole.memberRole = role.id;
             }
 
-            await bot.config.autoRole.setMemberRole(interaction.guild.id, 0, currentAutoRole.memberRole);
+            await bot.config.autoRole.setMemberRole(interaction.guild.id, serverConf.currentAutoRoleSlot, currentAutoRole.memberRole);
             await bot.createEmbed(interaction)
                 .setTitle("Success!")
                 .setDescription(role ? `Verified guild members will now receive the role ${role.toString()}.` : `Reset the default guild member role!`)
@@ -266,14 +266,14 @@ _Auto Role automatically syncs in-game Guild Ranks with their Discord Role count
                     .setDescription(`Unable to assign the role ${role} to guest role because it is higher than your highest role.\n\nTo fix this either move **your role** above ${role}, or move the role under you.`)
                     .send()
             }
-            let oldrole = currentAutoRole.guestRole;
+            let oldrole = serverConf.autoRole.guestRole;
             if (!role) {
-                delete currentAutoRole.guestRole;
+                delete serverConf.autoRole.guestRole;
             } else {
-                currentAutoRole.guestRole = role.id;
+                serverConf.autoRole.guestRole = role?.id;
             }
 
-            await bot.config.autoRole.setGuestRole(interaction.guild.id, 0, currentAutoRole.guestRole);
+            await bot.config.autoRole.setGuestRole(interaction.guild.id, 0, role.id);
             await bot.createEmbed(interaction)
                 .setTitle("Success!")
                 .setDescription(role ? `Discord members who are either not verified or not in the guild will now receive the role ${role.toString()}.` : `Reset the guest role!`)
@@ -305,7 +305,7 @@ _Auto Role automatically syncs in-game Guild Ranks with their Discord Role count
             }
 
         }
-        async function getConfigEmbed(ephemeral = false, replyInteraction = interaction) {
+        async function getConfigEmbed(ephemeral = false, replyInteraction = interaction, runRankChecks = false) {
             const serverConfig = await bot.config.getConfigAsObject(replyInteraction.guild.id);
             let autoRole = serverConfig[`autoRole${currentlyViewingSlot === 0 ? '' : currentlyViewingSlot}`];
             // update guild (see if new ranks added, removed, if guild name changed, if guild doesnt exist anymore, etc)
@@ -362,7 +362,7 @@ Default Guild Member Role: **${autoRole.memberRole ? '<@&' + autoRole.memberRole
                     str += `\`${Pos}\` **${Rank}** ${Tag ? `[${Tag}]` : ""} - ${Pin ? ":pushpin: " : ""}${Role || "`No Role Set`"}\n`
                 })
                 if (!str.length) str = "This guild has no ranks! Set them up by doing `/g ranks` on Hypixel!"
-                if (!deepEqual(guildConfig, autoRole.config)) {
+                if (runRankChecks && !deepEqual(guildConfig, autoRole.config)) {
                     await bot.config.autoRole.setAutoRoleConfig(replyInteraction.guild.id, serverConf.currentAutoRoleSlot, guildConfig);
                 }
                 Embed.addField("Pos. | Rank Name | Role", str)
@@ -414,11 +414,11 @@ Default Guild Member Role: **${autoRole.memberRole ? '<@&' + autoRole.memberRole
                 ephemeral: ephemeral
             };
         }
-        async function sendConfigEmbed(ephemeral = false, replyInteraction = interaction) {
+        async function sendConfigEmbed(ephemeral = false, replyInteraction = interaction, runRankChecks) {
             /**
              * @type {Message}
              */
-            const msg = await replyInteraction.followUp({ ...(await getConfigEmbed(ephemeral, replyInteraction)) });
+            const msg = await replyInteraction.followUp({ ...(await getConfigEmbed(ephemeral, replyInteraction, runRankChecks)) });
             const collector = msg.createMessageComponentCollector({ idle: 600000, filter: (i) => i.user.id === interaction.user.id });
             collector.on('end', async (_, reason) => {
                 // i want to delete the buttons when it ends but nothing ive tried works 😭    
@@ -429,13 +429,13 @@ Default Guild Member Role: **${autoRole.memberRole ? '<@&' + autoRole.memberRole
                         const slot = i.values[0];
                         currentlyViewingSlot = parseInt(slot);
                         // await i.deferUpdate();
-                        await i.update(await getConfigEmbed(ephemeral, replyInteraction));
+                        await i.update(await getConfigEmbed(ephemeral, replyInteraction, false));
 
                     } else if (i.isButton()) {
                         serverConf.currentAutoRoleSlot = currentlyViewingSlot;
                         await bot.config.autoRole.setCurrentSlot(interaction.guild.id, currentlyViewingSlot);
                         let autoRole = serverConf[`autoRole${currentlyViewingSlot === 0 ? '' : currentlyViewingSlot}`];
-                        await i.update(await getConfigEmbed(ephemeral, replyInteraction));
+                        await i.update(await getConfigEmbed(ephemeral, replyInteraction, false));
                         i.followUp({ ephemeral: true, content: `🔄 You are now configuring AutoRole for **Guild ${currentlyViewingSlot + 1}: ${autoRole.guild ? autoRole.guildName : `No Guild Set`}**!\n\n*AutoRole commands that are ran will now apply to this guild.*` })
                     }
                 })
@@ -793,7 +793,7 @@ _Auto Role automatically syncs in-game Guild Ranks with their Discord Role count
                 let channel = await bot.parseChannel(args[1], message.guild)
 
                 if (channel && channel.type == "GUILD_TEXT") {
-                    bot.config.autoRole.setLogChannel(message.guild.id, channel.id)
+                    bot.config.autoRole.setLogChannel(message.guild.id, 0, channel.id)
                     bot.createEmbed(message).setAuthor(message.guild.name, message.guild.iconURL()).setTitle("Success!").setDescription(`The bot will now log actions in ${channel}.`)
                         .addField('\u200b', `${oldChannel ? "<#" + oldChannel + ">" : "\`No log channel\`"} → _**${channel}**_`)
                         .send(message)
