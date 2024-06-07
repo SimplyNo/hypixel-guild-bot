@@ -66,8 +66,8 @@ module.exports = {
             data.player.mcPlusColor = getPlusColorMC(data.player.rank, data.player.rankPlusColor);
             data.player.formattedRank = getFormattedRank(data.player.rank, data.player.mcPlusColor);
             data.player.level = Math.floor(playerUtil.getLevel(data.player.networkExp));
-            if (data.player.stats.SkyWars) data.player.stats.SkyWars.level = util.getSkywarsLevel(data.player.stats.SkyWars.skywars_experience || 0);
-            if (data.player.stats.Pit?.profile?.prestiges) data.player.stats.Pit.prestige = data.player.stats.Pit.profile.prestiges.length;
+            if (data.player.stats?.SkyWars) data.player.stats.SkyWars.level = util.getSkywarsLevel(data.player.stats.SkyWars.skywars_experience || 0);
+            if (data.player.stats?.Pit?.profile?.prestiges) data.player.stats.Pit.prestige = data.player.stats.Pit.profile.prestiges.length;
             redis.setex(`player:${query}`, cacheSaveTime, JSON.stringify(data.player))
 
             res(data.player)
