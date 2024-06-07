@@ -42,7 +42,7 @@ module.exports = {
                         ]
                     }
                 }
-                let currentChannel = autoRole.joinLogs.channel || serverConf.joinLogs.channel || null;
+                let currentChannel = autoRole.joinLogs.channel || serverConf.joinLogs?.channel || null;
 
 
                 return {
@@ -124,7 +124,7 @@ module.exports = {
 
         } else if (subcommand === "reset") {
             bot.config.joinLogs.delete(interaction.guild.id);
-            await bot.config.autoRole.delete(interaction.guild.id);
+            await bot.config.autoRole.deleteJoinLogs(interaction.guild.id, currentlyViewingSlot);
             return interaction.reply(`**Success!** Join logs reset!`);
         } else if (subcommand === "set") {
             const channel = interaction.options.getChannel('channel');

@@ -386,10 +386,16 @@ module.exports = {
                     server.config.set('currentAutoRoleSlot', slot);
                     return server.save();
                 },
+                async deleteJoinLogs(serverID, slot) {
+                    let server = await settings.ensure(serverID);
+                    const autorole = server.config.get(`autoRole${slot === 0 ? '' : slot}`);
+                    server.config.set(`autoRole${slot === 0 ? '' : slot}`, { ...autorole, joinLogs: {} });
+                    return server.save();
+                },
                 async setJoinLogs(serverID, slot, joinLogs) {
                     let server = await settings.ensure(serverID);
                     const autorole = server.config.get(`autoRole${slot === 0 ? '' : slot}`);
-                    server.config.set(`autoRole${slot === 0 ? '' : slot}`, { ...autorole, joinLogs: { ...autorole.joinLogs, ...joinLogs } });
+                    server.config.set(`autoRole${slot === 0 ? '' : slot}`, { ...autorole, joinLogs: { ...autorole?.joinLogs, ...joinLogs } });
                     return server.save();
                 }
             },
