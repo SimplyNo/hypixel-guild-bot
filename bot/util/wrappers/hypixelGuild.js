@@ -3,14 +3,13 @@ const { hypixel_key } = require("../../../config.json");
 const main = `http://api.hypixel.net/guild?key=${hypixel_key}`;
 const { colorCodeToColor } = require("../rankFunctions");
 const { Response } = require("node-fetch");
-const mojangPlayer = require("./mojangPlayer");
 
 const endpoints = {
     player: main + "&player=",
     id: main + "&id=",
     name: main + "&name=",
 };
-const mojang = require("./mojangProfile");
+const playerDB = require("./playerDB");
 const { tracker_api } = require('../../../config.json');
 const guildTracker = require("./trackerGuild");
 
@@ -26,9 +25,9 @@ module.exports = {
             let data = { throttle: true };
             if (type === 'player') {
                 if (query.length <= 16) {
-                    let $uuid = await mojangPlayer.get(query).catch(e => null)
-                    if (!$uuid) return res(null);
-                    query = $uuid.id;
+                    let $uuid = await playerDB.get(query).catch(e => null)
+                    if (!$uuid?.data?.player?.id) return res(null);
+                    query = $uuid?.data?.player?.id;
                 } else {
                     query = query.replace(/-/g, "");
                 }
@@ -93,7 +92,7 @@ module.exports = {
                 data.guild.tagColor = colorMap[data.guild?.tagColor || "GRAY"];
                 let parsedNames = [];
                 if (parseNames) {
-                    parsedNames = await Promise.all(members.map(async m => (({ uuid: m.uuid, ...await mojang.get(m.uuid, "uuid") }))));
+                    parsedNames = await Promise.all(members.map(async m => (({ uuid: m.uuid, ...((await playerDB.get(m.uuid))?.data?.player) }))));
 
                 }
                 console.log(`parsed names: `, parsedNames)
@@ -103,8 +102,8 @@ module.exports = {
                         (prev, current) => prev + parseInt(current[1]), 0);
                     data.guild.members[index].weekly = weekly;
                     if (parseNames) {
-                        let name = parsedNames.find(e => e.uuid == member.uuid);
-                        if (name) data.guild.members[index].username = name.name;
+                        let name = parsedNames.find(e => e.raw_id == member.uuid);
+                        if (name) data.guild.members[index].username = name.username;
                     }
 
                     // fill rnkas

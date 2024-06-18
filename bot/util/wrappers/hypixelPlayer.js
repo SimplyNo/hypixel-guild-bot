@@ -2,12 +2,12 @@
 const fetch = require("node-fetch");
 const { hypixel_key } = require('../../../config.json');
 const { Response } = require("node-fetch");
-const mojangPlayer = require("./mojangPlayer");
+const playerDB = require("./playerDB.js");
 const redis = require("../../../index").redis;
 const util = require('../../util/gameFunctions.js');
 const playerUtil = require('../../util/playerFunctions');
 const main = (uuid) => `http://api.hypixel.net/player?key=${hypixel_key}&uuid=${uuid}`;
-const mojang = `https://api.mojang.com/users/profiles/minecraft/`;
+
 let lastTimeReset = 30;
 let cacheSaveTime = 300;
 function wait(ms) {
@@ -19,9 +19,9 @@ module.exports = {
         const { getRank, getPlusColor, getEmojiRank, getFormattedRank, getPlusColorMC } = require('../functions.js')
         return new Promise(async res => {
             if (query.length <= 16) {
-                let $uuid = await mojangPlayer.get(query).catch(e => null)
-                if (!$uuid) return res(null);
-                query = $uuid.id;
+                let $uuid = await playerDB.get(query).catch(e => null)
+                if (!$uuid?.data?.player?.id) return res(null);
+                query = $uuid?.data?.player?.id;
             } else {
                 query = query.replace(/-/g, "");
             }
