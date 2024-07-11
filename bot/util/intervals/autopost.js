@@ -27,7 +27,8 @@ module.exports = {
 
 
         servers = await bot.config.autoPost.findByType(types).then(s => { return s.filter(e => bot.guilds.cache.has(e.id)) })
-        if (servers) {
+        if (servers && servers.length) {
+            console.log(`[Running Autopost]`, servers.length, types);
             for (const serverConf of servers) {
                 let autoPost = serverConf.config.autoPost;
 
@@ -54,7 +55,7 @@ module.exports = {
                             await bot.config.autoPost.deleteSlot(serverConf.id, slot);
                             return bot.log(`&4 it has been done !`)
                         }
-                        console.log(slotConfig);
+                        // console.log(slotConfig);
 
                         let user = await bot.users.fetch(slotConfig.author).catch(e => 0)
                         if (!user) return;
@@ -114,7 +115,7 @@ module.exports = {
                                     let msg;
                                     if (options && options[0].embeds) {
                                         options[0].embeds.forEach(e => {
-                                            console.log(`embed`, e)
+                                            // console.log(`embed`, e)
                                             e.setFooter(`AutoPost Command`).setTimestamp()
                                         })
                                     }

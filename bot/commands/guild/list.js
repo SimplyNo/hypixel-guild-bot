@@ -71,7 +71,7 @@ module.exports = {
 
             var ranksArray = Object.keys(ranks).map(key => ranks[key]);
             ranksArray.sort((a, b) => b.priority - a.priority)
-            console.log(ranks)
+            // console.log(ranks)
 
             const embed = {
                 title: `${Discord.Util.escapeMarkdown(`${guild.name} ${guild.tag ? `[${guild.tag}]` : ""}`)}`,
@@ -167,7 +167,7 @@ module.exports = {
 
             var ranksArray = Object.keys(ranks).map(key => ranks[key]);
             ranksArray.sort((a, b) => b.priority - a.priority)
-            console.log(ranks)
+            // console.log(ranks)
 
             const embed = {
                 title: `${Discord.Util.escapeMarkdown(`${guild.name} ${guild.tag ? `[${guild.tag}]` : ""}`)}`,

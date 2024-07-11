@@ -611,7 +611,7 @@ module.exports = {
 
                 if (embed.footer && pages.length > 1) embeded.setFooter(`『 Page ${pageIndex + 1}/${pages.length}』 ${config.footer.text}`)
                 else if (embed.footer) embeded.setFooter(`${config.footer.text}`)
-                console.log(page.fields)
+                // console.log(page.fields)
                 page.fields = page?.fields?.filter(p => p.value || p.name) || null;
                 if (page.fields) {
                     let blanks = 0
@@ -1112,8 +1112,8 @@ module.exports = {
             let result = '';
             const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
             for (var i = 0; i < idLength; i++) result += characters.charAt(Math.floor(Math.random() * characters.length));
-            //return `https://crafatar.com/avatars/${uuid}?overlay&size=128`
-            return `https://mc-heads.net/avatar/${uuid}/128`;
+            return `https://crafatar.com/avatars/${uuid}?overlay&size=128`
+            // return `https://mc-heads.net/avatar/${uuid}/128`;
         }
 
 

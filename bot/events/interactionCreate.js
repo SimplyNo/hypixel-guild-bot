@@ -11,7 +11,7 @@ module.exports = {
         const command = bot.commands.get(interaction.commandName) || bot.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
         if (!interaction.guild) return interaction.reply(`Commands don't work in DMs please use them in a server.`)
         if (command) {
-            bot.log(`&a[COMMAND] ${interaction.guild.name} &7>>> &3${interaction.user.tag}&7 used &3/${command.name}&7 in &3#${interaction.channel.name}`);
+            bot.log(`&a[COMMAND] ${interaction.guild.name} &7>>> &3${interaction.user.tag}&7 used &3/${interaction.toString()}&7 in &3#${interaction.channel.name}`);
 
 
             if (bot.isInMaintenance() && !bot.hasDev(interaction.user.id)) {

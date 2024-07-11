@@ -18,7 +18,7 @@ module.exports = {
         return new Promise(async (res) => {
             if (tracker_api) {
                 // using Tracker API
-                console.log(`Using tracker!`)
+                // console.log(`Using tracker!`)
                 return res(guildTracker.get(query, false, type, parseNames))
             }
 

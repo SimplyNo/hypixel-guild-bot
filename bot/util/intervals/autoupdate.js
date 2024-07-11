@@ -133,8 +133,8 @@ module.exports = {
                 }
                 if ((memberRoles.rolesToAdd.length || memberRoles.rolesToRemove.length) && !autoRoleExcludedRoles?.some(e => member.roles.cache.has(e))) {
                     bot.log(`&5[AutoUpdate] [${member.user.tag}] Roles added: ${memberRoles.rolesToAdd.map(e => e.id)} Roles removed: ${memberRoles.rolesToRemove.map(e => e.id)}`);
-                    await member.roles.remove(memberRoles.rolesToRemove.map(r => r.id), 'Hypixel Guild Bot Rank Roles');
-                    await member.roles.add(memberRoles.rolesToAdd.map(r => r.id), 'Hypixel Guild Bot Rank Roles');
+                    await member.roles.remove(memberRoles.rolesToRemove.map(r => r.id), 'Hypixel Guild Bot Rank Roles').catch(e => null);
+                    await member.roles.add(memberRoles.rolesToAdd.map(r => r.id), 'Hypixel Guild Bot Rank Roles').catch(e => null);
                     console.log(`roles to remove: ${memberRoles.rolesToRemove}`)
                     // await member.roles.set(memberRoles.array(), "Hypixel Guild Bot Rank Roles").catch(e => bot.log(`&4[${member.user.tag}] AutoUpdate error - permissions error.`))
                 }

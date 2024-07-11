@@ -273,7 +273,7 @@ _Auto Role automatically syncs in-game Guild Ranks with their Discord Role count
                 serverConf.autoRole.guestRole = role?.id;
             }
 
-            await bot.config.autoRole.setGuestRole(interaction.guild.id, 0, role.id);
+            await bot.config.autoRole.setGuestRole(interaction.guild.id, 0, role?.id || null);
             await bot.createEmbed(interaction)
                 .setTitle("Success!")
                 .setDescription(role ? `Discord members who are either not verified or not in the guild will now receive the role ${role.toString()}.` : `Reset the guest role!`)

@@ -14,7 +14,8 @@ module.exports = class MemberRoles {
         if (!role) return;
         this.newMemberRoles.add(role);
         if (role && !this.memberRoles.has(role)) {
-            // console.log(`roles: adding role, ${role}`, reason)
+            console.log(`This person's roles`, [...this.memberRoles.keys()])
+            console.log(`roles: adding role, ${role}`, reason)
 
             this.memberRoles.add(role);
 
@@ -30,7 +31,7 @@ module.exports = class MemberRoles {
          * remove, and if so, just don't remove it.
          */
         if (role && this.memberRoles.has(role) && !this.newMemberRoles.has(role)) {
-            // console.log(`roles: removing role, ${role}`, reason)
+            console.log(`roles: removing role, ${role}`, reason)
 
             this.memberRoles.delete(role);
 
