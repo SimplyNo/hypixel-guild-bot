@@ -5,7 +5,7 @@ module.exports = {
         users.forEach(async user => {
             let status = await bot.wrappers.hypixelStatus.get(user.uuid);
             if (status.outage) return;
-            if (status.success && (!status.session.online || status.session.mode.toLowerCase() == "lobby" || status.session.mode.toLowerCase() == "hub")) {
+            if (status.success && (!status.session.online || status.session.mode?.toLowerCase() == "lobby" || status.session.mode?.toLowerCase() == "hub")) {
                 await bot.removeAfk({ id: user.id })
                 console.log(user)
 
@@ -18,7 +18,7 @@ module.exports = {
                 var hours = diff % 24;
                 diff = Math.floor(diff / 24);
                 let User = await bot.users.fetch(user.id);
-                User.send({embeds: [bot.createEmbed().setTitle(":warning: Session stopped!", User.avatarURL()).setDescription(`Current Gamemode: **${status.session.online ? status.session.mode : "OFFLINE"}**\nYou are no longer in game!\n\n:stopwatch: Your session lasted **${hours} hours, ${mins} minutes, and ${secs} seconds**!`)]})
+                User.send({ embeds: [bot.createEmbed().setTitle(":warning: Session stopped!", User.avatarURL()).setDescription(`Current Gamemode: **${status.session.online ? status.session.mode : "OFFLINE"}**\nYou are no longer in game!\n\n:stopwatch: Your session lasted **${hours} hours, ${mins} minutes, and ${secs} seconds**!`)] })
                     .catch(e => {
                         console.log("[Error] Unable to AFK warning messages to " + User.tag)
                     })
