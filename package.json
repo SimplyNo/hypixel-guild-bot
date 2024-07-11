@@ -9,7 +9,7 @@
   "dependencies": {
     "@discordjs/builders": "^1.7.0",
     "@discordjs/rest": "^1.0.1",
-    "better-sqlite3": "^7.4.1",
+    "better-sqlite3": "^7.6.2",
     "canvas": "^2.11.2",
     "chalk": "^4.1.1",
     "chartjs-node-canvas": "^4.1.6",
