@@ -22,7 +22,21 @@ module.exports = {
                 if (data?.error === 'outage') data.outage = true;
                 return res(data)
             };
+
+            // do hacky fix for duplicate rank ids/rank creation dates
+            if (!tracked && data.ranks) {
+                data.ranks = getHackyFixedRanks(data.ranks);
+            }
             return res(data)
         })
     }
+}
+
+function getHackyFixedRanks(ranks) {
+    let newRanks = ranks;
+    ranks.filter(rank => ranks.filter(r => r.created === rank.created).length > 1).sort((a, b) => a.name - b.name).forEach((rank, i) => {
+        const index = ranks.indexOf(rank);
+        newRanks[index] = { ...rank, created: rank.created + i }
+    })
+    return newRanks;
 }
