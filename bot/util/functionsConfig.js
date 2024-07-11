@@ -397,6 +397,18 @@ module.exports = {
                     const autorole = server.config.get(`autoRole${slot === 0 ? '' : slot}`);
                     server.config.set(`autoRole${slot === 0 ? '' : slot}`, { ...autorole, joinLogs: { ...autorole?.joinLogs, ...joinLogs } });
                     return server.save();
+                },
+                async setMemberCountChannel(serverID, slot, channelID, format) {
+                    let server = await settings.ensure(serverID);
+                    const autorole = server.config.get(`autoRole${slot === 0 ? '' : slot}`);
+                    server.config.set(`autoRole${slot === 0 ? '' : slot}`, { ...autorole, memberCountChannel: { channelID, format } });
+                    return server.save();
+                },
+                async deleteMemberCountChannel(serverID, slot) {
+                    let server = await settings.ensure(serverID);
+                    const autorole = server.config.get(`autoRole${slot === 0 ? '' : slot}`);
+                    server.config.set(`autoRole${slot === 0 ? '' : slot}`, { ...autorole, memberCountChannel: null });
+                    return server.save();
                 }
             },
             joinLogs: {
@@ -465,7 +477,7 @@ module.exports = {
                     } else return (defaultSettings.verifyMessage);
 
                 }
-            },
+            }
         }
         return settings
     }

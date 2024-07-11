@@ -45,8 +45,7 @@ module.exports = {
         if (server) servers = [servers];
         if (server) {
             bot.log(`&5FORCE checking autorole on ${server.name}`)
-        }
-        else bot.slog(`&6--------------------------------------------\n${shardInfo} [AutoRole] &aBeginning AutoRole check on ${servers.length} guilds. Group: ${currentGroup}\n&a--------------------------------------------`);
+        } else bot.slog(`&6--------------------------------------------\n${shardInfo} [AutoRole] &aBeginning AutoRole check on ${servers.length} guilds. Group: ${currentGroup}\n&a--------------------------------------------`);
 
         const verified = await bot.getAllUsers();
         let totalServers = servers.length - 1;
@@ -84,8 +83,8 @@ module.exports = {
             //     user: verifiedUsers.map(el => el.id).length ? verifiedUsers.map(el => el.id) : [],
             //     // force: true
             let members = await server.members.fetch().catch(e => {
-                bot.log(`&4unknown member maybe??? amount of users: ${(verifiedUsers.map(el => el.id).length ? verifiedUsers.map(el => el.id) : []).length}`)
-                console.log(e);
+                // bot.log(`&4unknown member maybe??? amount of users: ${(verifiedUsers.map(el => el.id).length ? verifiedUsers.map(el => el.id) : []).length}`)
+                console.error(`error while fetching server members.`, e);
                 return null;
             })
             if (!members) continue;
@@ -103,7 +102,7 @@ module.exports = {
             for (let slot = 0; slot < 3; slot++) {
                 // console.log(`slot: ${slot}`)
                 let autoRole = serverConf.config[`autoRole${slot === 0 ? '' : slot}`];
-                console.log(`Autorole: ${`autoRole${slot === 0 ? '' : slot}`}`)
+                // console.log(`Autorole: ${`autoRole${slot === 0 ? '' : slot}`}`)
                 if (!autoRole?.guild) continue;
                 let timeRoles = serverConf.config.timeRoles;
                 let gxpRoles = serverConf.config.gxpRoles;
@@ -176,7 +175,12 @@ module.exports = {
 
 
                 // loop through guild members, update each member
-                updateGuildMembers();
+                // update the guild member count channel
+                if (autoRole?.memberCountChannel?.channelID) {
+                    const channel = await server.channels.fetch(autoRole.memberCountChannel.channelID).catch(e => null);
+                    if (channel) channel.setName(autoRole.memberCountChannel.format.replaceAll("{members}", guildData.members.length)).catch(e => console.error(`Failed to update member count channel name`, e))
+                }
+                await updateGuildMembers();
                 // ---- MAIN AUTOROLE LOOP THROUGH GUILD MEMBERS ----
                 async function updateGuildMembers() {
                     for (let index = 0; index < guildData.members.length; index++) {
