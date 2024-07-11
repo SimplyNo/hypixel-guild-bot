@@ -14,7 +14,7 @@ function wait(ms) {
     return new Promise(res => setTimeout(res, ms));
 }
 module.exports = {
-    get(query) {
+    get(query, force = false) {
         console.log(`q: `, query)
         const { getRank, getPlusColor, getEmojiRank, getFormattedRank, getPlusColorMC } = require('../functions.js')
         return new Promise(async res => {
@@ -26,7 +26,7 @@ module.exports = {
                 query = query.replace(/-/g, "");
             }
             let cached = await redis.get(`player:${query}`);
-            if (cached) return res(JSON.parse(cached));
+            if (cached && !force) return res(JSON.parse(cached));
             let unparsed = await fetch(main(query)).catch(e => ({ outage: true }));
             if (unparsed.outage) return res(unparsed);
 

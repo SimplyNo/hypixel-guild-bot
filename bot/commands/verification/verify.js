@@ -61,7 +61,7 @@ module.exports = {
                 .setImage(`https://i.imgur.com/8ILZ3LX.gif`).send().then(msg => {
                     if (verificationDeleteTimeout) setTimeout(() => { msg.delete().catch();; }, verificationDeleteTimeout * 1000)
                 })
-        } else if (Number(interaction.user?.discriminator) ? (player.socialMedia.links.DISCORD == interaction.user.tag) : (player.socialMedia.links.DISCORD.toLowerCase() == interaction.user.username)) {
+        } else if (Number(interaction.user?.discriminator) ? (player.socialMedia.links.DISCORD == interaction.user.tag) : (player.socialMedia.links.DISCORD.toLowerCase().replace(/#\d+$/g, '') == interaction.user.username)) {
             const existingUser = await bot.getUser({ uuid: player.uuid });
             // remove existing user
             if (existingUser) {
