@@ -68,7 +68,10 @@ module.exports = {
                 console.log(`existing user:`, existingUser)
                 await bot.removeUser({ uuid: player.uuid })
                 const user = await bot.users.fetch(existingUser.id).catch(e => null);
-                await interaction.channel.send(`:warning: Looks like you had another discord account (\`${user.username}\`) linked to this minecraft account. I have unlinked the other account for you.`)
+                await interaction.channel.send(`:warning: Looks like you had another discord account (\`${user.username}\`) linked to this minecraft account. I have unlinked the other account for you.`).then(msg => {
+                    if (verificationDeleteTimeout) setTimeout(() => { msg.delete().catch();; }, verificationDeleteTimeout * 1000)
+
+                })
             };
             await bot.addUser(interaction.user.id, player.uuid);
 
