@@ -409,6 +409,24 @@ module.exports = {
                     const autorole = server.config.get(`autoRole${slot === 0 ? '' : slot}`);
                     server.config.set(`autoRole${slot === 0 ? '' : slot}`, { ...autorole, memberCountChannel: null });
                     return server.save();
+                },
+                async setLevelUpMessage(serverID, slot, channelID, message) {
+                    let server = await settings.ensure(serverID);
+                    const autorole = server.config.get(`autoRole${slot === 0 ? '' : slot}`);
+                    server.config.set(`autoRole${slot === 0 ? '' : slot}`, { ...autorole, levelUpMessage: { channelID, message } });
+                    return server.save();
+                },
+                async setLastLevel(serverID, slot, level) {
+                    let server = await settings.ensure(serverID);
+                    const autorole = server.config.get(`autoRole${slot === 0 ? '' : slot}`);
+                    server.config.set(`autoRole${slot === 0 ? '' : slot}`, { ...autorole, lastLevel: level });
+                    return server.save();
+                },
+                async deleteLevelUpMessage(serverID, slot) {
+                    let server = await settings.ensure(serverID);
+                    const autorole = server.config.get(`autoRole${slot === 0 ? '' : slot}`);
+                    server.config.set(`autoRole${slot === 0 ? '' : slot}`, { ...autorole, levelUpMessage: null });
+                    return server.save();
                 }
             },
             joinLogs: {

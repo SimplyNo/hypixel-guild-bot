@@ -3,37 +3,37 @@ const { MessageActionRow, MessageSelectMenu, MessageButton } = require("discord.
 const autorole = require("../../util/intervals/autorole");
 
 module.exports = {
-    name: "membercountchannel",
+    name: "levelupmessage",
     adminOnly: true,
-    description: "Set a channel which will show the amount of members in the guild.",
+    description: "Set a message to send when the guild level ups!",
     type: "config",
     usage: "<#Channel | \"reset\">",
     cooldown: 5,
     slash: new SlashCommandBuilder()
-        .setName('membercountchannel')
-        .setDescription("Set a channel which will display the member count of your guild in the channel's name.")
+        .setName('levelupmessage')
+        .setDescription("Set a message to send when the guild levels up!")
         .addSubcommand(subcmd =>
             subcmd
                 .setName('view')
-                .setDescription('View current member count channel config'))
+                .setDescription('View level up message config'))
         .addSubcommand(subcmd =>
             subcmd
                 .setName('reset')
-                .setDescription('Reset member count channel config.'))
+                .setDescription('Reset level up message config.'))
         .addSubcommand(subcmd =>
             subcmd
                 .setName('set')
-                .setDescription('Set the channel which will be edited with the member count.')
+                .setDescription('Set the channel and message that will send when the guild levels up.')
                 .addChannelOption(option =>
                     option
                         .setName("channel")
-                        .setDescription("The channel to set as the member count channel.")
-                        .addChannelTypes(2)
+                        .setDescription("The channel to send the message in.")
+                        .addChannelTypes(0)
                         .setRequired(true))
                 .addStringOption(option =>
                     option
-                        .setName("format")
-                        .setDescription("Use {member} to display the member count. Example: \"Members: {members}/125\"")
+                        .setName("message")
+                        .setDescription("Use {level} to display the new guild level. Example: \"Lucid is now **level {level}**!\"")
                         .setRequired(true))),
     async run(interaction, { serverConf }, bot) {
         let currentlyViewingSlot = serverConf.currentAutoRoleSlot;
@@ -47,18 +47,18 @@ module.exports = {
                         ]
                     }
                 }
-                let currentChannel = autoRole.memberCountChannel?.channelID || null;
-                let currentFormat = autoRole.memberCountChannel?.format || null;
-                let testChannelName = currentFormat ? currentFormat.replaceAll("{members}", Math.floor(Math.random() * 125)) : null;
+                let currentChannel = autoRole.levelUpMessage?.channelID || null;
+                let currentMessage = autoRole.levelUpMessage?.message || null;
+                let previewMessage = currentMessage ? currentMessage.replaceAll("{level}", Math.floor(Math.random() * 100)) : null;
                 return {
                     embeds: [bot.createEmbed(replyInteraction)
-                        .setAuthor(`Guild Member Count Channel`, interaction.guild.iconURL())
+                        .setAuthor(`Guild Level Up Message`, interaction.guild.iconURL())
                         .setFancyGuild()
                         .setDescription(`
                         `)
-                        .addField('» Guild Member Count Channel', `Current Channel: ${currentChannel ? `<#${currentChannel}>.` : `**No Channel Set!**`}\nCurrent Format: ${currentFormat ? `\`${currentFormat}\`.` : `**No Format Set!**`}` + (currentFormat ? `\n\nPreview: ${testChannelName ? `${testChannelName}` : `**No Format Set!**`}` : ``))
-                        // .addField('» Leave Logs', `\`Current Channel\`: ${currentChannel ? `<#${currentChannel}>.` : `**No Channel Set!**`}`)
-                        .setFooter(`${interaction.prefix}membercountchannel set <channel> <format>`)],
+                        .addField('» Guild Level Up Message', `Current Channel: ${currentChannel ? `<#${currentChannel}>.` : `**No Channel Set!**`}\nCurrent Message: ${currentMessage ? `\`${currentMessage}\`.` : `**No Message Set!**`}`)
+                        .addField('Preview', `${previewMessage ? `${previewMessage}` : `*No Message Set!*`}`)
+                        .setFooter(`${interaction.prefix}levelupmessage set <channel> <message>`)],
                     components: [
                         new MessageActionRow()
                             .setComponents(
@@ -121,21 +121,21 @@ module.exports = {
                         await bot.config.autoRole.setCurrentSlot(interaction.guild.id, currentlyViewingSlot);
                         let autoRole = serverConf[`autoRole${currentlyViewingSlot === 0 ? '' : currentlyViewingSlot}`];
                         await i.update(await getConfigEmbed(i));
-                        i.followUp({ ephemeral: true, content: `🔄 You are now configuring AutoRole for **Guild ${currentlyViewingSlot + 1}: ${autoRole.guild ? autoRole.guildName : `No Guild Set`}**!\n\n*Member count channel commands that are ran will now apply to this guild.*` })
+                        i.followUp({ ephemeral: true, content: `🔄 You are now configuring AutoRole for **Guild ${currentlyViewingSlot + 1}: ${autoRole.guild ? autoRole.guildName : `No Guild Set`}**!\n\n*Level up message commands that are ran will now apply to this guild.*` })
                     }
                 })
 
 
 
         } else if (subcommand === "reset") {
-            await bot.config.autoRole.deleteMemberCountChannel(interaction.guild.id, currentlyViewingSlot);
-            return interaction.reply(`**Success!** Member count channel reset!`);
+            await bot.config.autoRole.deleteLevelUpMessage(interaction.guild.id, currentlyViewingSlot);
+            return interaction.reply(`**Success!** Level up message reset!`);
         } else if (subcommand === "set") {
             const channel = interaction.options.getChannel('channel');
-            const format = interaction.options.getString('format');
-            await bot.config.autoRole.setMemberCountChannel(interaction.guild.id, currentlyViewingSlot, channel.id, format);
+            const message = interaction.options.getString('message');
+            await bot.config.autoRole.setLevelUpMessage(interaction.guild.id, currentlyViewingSlot, channel.id, message);
             autorole.interval(bot, interaction.guild)
-            return interaction.reply(`**Success!** Member count channel set to ${channel}!`);
+            return interaction.reply(`**Success!** Level up message set to ${channel}!`);
         }
     }
 }

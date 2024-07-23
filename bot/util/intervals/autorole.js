@@ -180,6 +180,18 @@ module.exports = {
                     const channel = await server.channels.fetch(autoRole.memberCountChannel.channelID).catch(e => null);
                     if (channel) channel.setName(autoRole.memberCountChannel.format.replaceAll("{members}", guildData.members.length)).catch(e => console.error(`Failed to update member count channel name`, e))
                 }
+                if (autoRole?.levelUpMessage?.channelID) {
+                    const lastLevel = autoRole.lastLevel || 0;
+                    const currentLevel = guildData.level;
+                    if ((lastLevel + 1) === currentLevel) {
+                        const channel = await server.channels.fetch(autoRole.levelUpMessage.channelID).catch(e => null);
+                        if (channel) {
+                            const message = autoRole.levelUpMessage.message.replaceAll("{level}", currentLevel);
+                            channel.send(message).catch(e => console.error(`Failed to send level up message`, e))
+                        }
+                    }
+                    await bot.config.autoRole.setLastLevel(server.id, slot, currentLevel);
+                }
                 await updateGuildMembers();
                 // ---- MAIN AUTOROLE LOOP THROUGH GUILD MEMBERS ----
                 async function updateGuildMembers() {
@@ -486,6 +498,7 @@ module.exports = {
                 }
                 // update users in db
                 await bot.config.autoRole.setLastUsers(server.id, slot, verifiedUsers);
+
                 // console.log(joinLogs)
                 // join logs
 
