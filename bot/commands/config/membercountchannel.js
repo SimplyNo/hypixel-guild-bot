@@ -129,7 +129,7 @@ module.exports = {
 
 
         } else if (subcommand === "reset") {
-            await bot.config.autoROle.deleteMemberCountChannel(interaction.guild.id, currentlyViewingSlot);
+            await bot.config.autoRole.deleteMemberCountChannel(interaction.guild.id, currentlyViewingSlot);
             return interaction.reply(`**Success!** Member count channel reset!`);
         } else if (subcommand === "set") {
             const channel = interaction.options.getChannel('channel');
