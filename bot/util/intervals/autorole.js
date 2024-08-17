@@ -301,7 +301,7 @@ module.exports = {
                                 memberRoles.addRole(rankRole, `For having rank **${rankName}**`);
                             }
                             // handle pinned roles, remove roles etc
-                            Object.entries(autoRole.config).forEach((ROLE) => {
+                            Object.entries(autoRole.config || {}).forEach((ROLE) => {
                                 if (ROLE[1].pos >= rankPos && ROLE[1].pinned && ROLE[1].role) {
                                     //console.log(`Added Role: ${member.guild.roles.cache.get(ROLE[1].role).name} (Pinned!)`)
                                     memberRoles.addRole(ROLE[1].role, `Persistant rank.`)
