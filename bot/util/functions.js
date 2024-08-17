@@ -308,7 +308,7 @@ module.exports = {
         bot.createEmbed = (message) => {
             let MessageEmbed = new Discord.MessageEmbed().setColor(rankFunctions.genRandomColor());
             let footerText = !bot.isInMaintenance() ? config.footer.text : "Hypixel Guild Bot | %VERSION%-MAINTENANCE";
-            MessageEmbed.setFooter(footerText.replace(/%VERSION%/g, version));
+            MessageEmbed.setFooter({ text: footerText.replace(/%VERSION%/g, version), iconURL: config.footer.icon });
             MessageEmbed.send = async (channelOrOptions) => {
                 if (channelOrOptions instanceof Discord.Interaction || channelOrOptions instanceof Discord.Message) {
                     message = channelOrOptions;
@@ -609,8 +609,8 @@ module.exports = {
                 if (page.color) embeded.setColor(page.color)
                 else if (embed.color) embeded.setColor(embed.color)
 
-                if (embed.footer && pages.length > 1) embeded.setFooter(`『 Page ${pageIndex + 1}/${pages.length}』 ${config.footer.text}`)
-                else if (embed.footer) embeded.setFooter(`${config.footer.text}`)
+                if (embed.footer && pages.length > 1) embeded.setFooter({ text: `『 Page ${pageIndex + 1}/${pages.length}』 ${config.footer.text}`, iconURL: config.footer.icon })
+                else if (embed.footer) embeded.setFooter({ text: `${config.footer.text}`, iconURL: config.footer.icon })
                 // console.log(page.fields)
                 page.fields = page?.fields?.filter(p => p.value || p.name) || null;
                 if (page.fields) {
