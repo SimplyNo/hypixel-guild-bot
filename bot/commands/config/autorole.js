@@ -109,7 +109,6 @@ module.exports = {
              * @type {Message}
              */
             const msg = await sendConfigEmbed(false, interaction, true)
-
         } else if (subcommand === "info") {
             bot.createEmbed(interaction)
                 .setTitle("Auto Role Info")
@@ -415,10 +414,12 @@ Default Guild Member Role: **${autoRole.memberRole ? '<@&' + autoRole.memberRole
             };
         }
         async function sendConfigEmbed(ephemeral = false, replyInteraction = interaction, runRankChecks) {
+            const configEmbed = await getConfigEmbed(ephemeral, replyInteraction, runRankChecks);
+            if (configEmbed instanceof Message) return;
             /**
              * @type {Message}
              */
-            const msg = await replyInteraction.followUp({ ...(await getConfigEmbed(ephemeral, replyInteraction, runRankChecks)) });
+            const msg = await replyInteraction.followUp({ ...(configEmbed) });
             const collector = msg.createMessageComponentCollector({ idle: 600000, filter: (i) => i.user.id === interaction.user.id });
             collector.on('end', async (_, reason) => {
                 // i want to delete the buttons when it ends but nothing ive tried works 😭    
