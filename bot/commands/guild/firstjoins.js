@@ -48,7 +48,7 @@ module.exports = {
             if (guild.exists == false && type === 'player') return bot.sendErrorEmbed(interaction, `This player is not in a guild!`)
             if (guild.outage) return bot.sendErrorEmbed(interaction, `There is a Hypixel API Outage, please try again within a few minutes`)
 
-            const members = guild.members.sort((a, b) => a.joined - b.joined).map((m, i) => `${i + 1}. **${m.username}** <t:${Math.floor(m.joined / 1000)}:R>`)
+            const members = guild.members.sort((a, b) => a.joined - b.joined).map((m, i) => `${i + 1}. **${m.username}** <t:${Math.floor(m.joined / 1000)}:f>`)
             const usersPerPage = 30;
             const pages = Math.ceil(members.length / usersPerPage);
             let pageNumber = 0;
