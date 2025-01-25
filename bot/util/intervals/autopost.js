@@ -32,16 +32,9 @@ module.exports = {
             for (const serverConf of servers) {
                 let autoPost = serverConf.config.autoPost;
 
-                Object.entries(autoPost).forEach(async _v => {
-                    const slot = _v[0];
-                    const slotConfig = _v[1];
-                    // console.log(slotConfig.intervalType, types)
-                    if (!slotConfig || !slotConfig.channel || !types.includes(slotConfig.intervalType)) return;
-                    // console.log((((currentDate.getTime() - slotConfig.lastSent) / (10 * 60 * 1000))))
-                    // console.log(`current date: ` + currentDate.toLocaleTimeString())
-                    // console.log(`last sent: ` + new Date(slotConfig.lastSent).toLocaleTimeString())
-                    // console.log(`diff: ` + ((currentDate.getTime() - slotConfig.lastSent) / (60 * 1000)))
+                Object.entries(autoPost).forEach(async ([slot, slotConfig]) => {
 
+                    if (!slotConfig || !slotConfig.channel || !types.includes(slotConfig.intervalType)) return;
 
                     if (!slotConfig.lastSent || (Math.abs(((currentDate.getTime() - slotConfig.lastSent)) / (60 * 1000)) > 10)) {
                         // if (!slotConfig.lastSent || (Math.abs(((currentDate.getTime() - slotConfig.lastSent)) / (60 * 1000)) > 0)) {
@@ -60,6 +53,7 @@ module.exports = {
                         let user = await bot.users.fetch(slotConfig.author).catch(e => 0)
                         if (!user) return;
                         bot.log(`&5[AutoPost] sending post. ${!!serverConf.config.prefix}`)
+                        bot.config.autoPost.setSlot(serverConf.id, slot, { lastSent: currentDate.getTime() })
                         if (slotConfig.slashCommand) {
                             const { slashCommand } = slotConfig;
                             const q = slashCommand.split(/\s(?=[a-z]+:)/i);
@@ -171,7 +165,6 @@ module.exports = {
 
                             messageCreateEvent.execute(bot, fakeMessage)
                         }
-                        bot.config.autoPost.setSlot(serverConf.id, slot, { lastSent: currentDate.getTime() })
 
                     }
 
