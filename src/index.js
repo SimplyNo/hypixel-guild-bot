@@ -23,9 +23,9 @@ let intents = new Discord.Intents([
 
 const enmap = require('enmap');
 const fs = require('fs');
-const util = require('./bot/util/functions.js');
+const util = require('./util/functions.js');
 
-const { token, version } = require('./config.json');
+const { token, version } = require('../config.json');
 let bot = new Discord.Client({ shards: "auto", presence: { activities: [{ name: `/help | /autorole`, type: "WATCHING" }] }, intents: intents, partials: ["REACTION", "MESSAGE"], failIfNotExists: false, allowedMentions: { repliedUser: false, parse: ["users"] } });
 
 // load commands
@@ -36,19 +36,19 @@ util.init(bot).then(() => {
     bot.cooldowns = new Discord.Collection();
     bot.autoUpdateCache = new Discord.Collection();
 
-    const files = bot.getAllFiles("./bot/commands")
+    const files = bot.getAllFiles("./src/commands")
     for (const file of files) {
         if (!file.endsWith(".js")) continue;
-        let commands = require(`./${file}`);
+        let commands = require(`../${file}`);
         bot.commands.set(commands.name, commands);
         if (!commands.name) console.log(file)
     }
 
 
-    const eventFiles = fs.readdirSync('./bot/events').filter(file => file.endsWith('.js'));
+    const eventFiles = fs.readdirSync('./src/events').filter(file => file.endsWith('.js'));
 
     for (const file of eventFiles) {
-        const event = require(`./bot/events/${file}`);
+        const event = require(`./events/${file}`);
         if (event.once) {
             bot.once(event.name, (...args) => event.execute(bot, ...args));
         } else {

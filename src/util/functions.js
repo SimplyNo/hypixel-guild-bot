@@ -277,10 +277,10 @@ module.exports = {
 
 
         bot.defaultSettings = config.defaultSettings;
-        bot.autoRoleInterval = require("./intervals/autorole");
+        bot.autoRoleInterval = require("./intervals/autorole.js");
         bot.afkInterval = require("./intervals/afk.js");
         bot.autoPostInterval = require("./intervals/autopost.js");
-        bot.autoUpdateInterval = require("./intervals/autoupdate");
+        bot.autoUpdateInterval = require("./intervals/autoupdate.js");
 
         bot.toggleMaintenance = (reason) => {
             botEnmap.ensure('maintenance', { maintenance: false, reason: "No reason specified.", start: 0 })
@@ -1118,15 +1118,15 @@ module.exports = {
 
 
         bot.wrappers = {
-            hypixelPlayer: require('./wrappers/hypixelPlayer'),
-            hypixelPlayers: require('./wrappers/hypixelPlayers'),
-            hypixelGuild: require('./wrappers/hypixelGuild'),
-            hypixelStatus: require('./wrappers/hypixelStatus'),
-            sk1erLb: require('./wrappers/sk1erLb'),
-            mojangPlayer: require('./wrappers/mojangPlayer'),
-            slothpixelGuild: require('./wrappers/slothpixelGuild'),
-            slothpixelPlayer: require('./wrappers/slothpixelPlayer'),
-            slothpixelPlayers: require('./wrappers/slothpixelPlayers'),
+            hypixelPlayer: require('./wrappers/hypixelPlayer.js'),
+            hypixelPlayers: require('./wrappers/hypixelPlayers.js'),
+            hypixelGuild: require('./wrappers/hypixelGuild.js'),
+            hypixelStatus: require('./wrappers/hypixelStatus.js'),
+            sk1erLb: require('./wrappers/sk1erLb.js'),
+            mojangPlayer: require('./wrappers/mojangPlayer.js'),
+            slothpixelGuild: require('./wrappers/slothpixelGuild.js'),
+            slothpixelPlayer: require('./wrappers/slothpixelPlayer.js'),
+            slothpixelPlayers: require('./wrappers/slothpixelPlayers.js'),
             trackerGuild: require('./wrappers/trackerGuild.js'),
             trackerSearch: require('./wrappers/trackerSearch.js'),
             trackerLeaderboard: require('./wrappers/trackerLeaderboard.js'),

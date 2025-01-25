@@ -5,7 +5,7 @@ const fetch = require("node-fetch");
 /**
  * @type {ioredis.Redis}
  */
-const redis = require("../../../index").redis;
+const redis = require("../../index.js").redis;
 module.exports = {
     async get(query) {
         return new Promise(async (res) => {

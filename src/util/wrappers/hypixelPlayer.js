@@ -1,11 +1,10 @@
-
 const fetch = require("node-fetch");
 const { hypixel_key } = require('../../../config.json');
 const { Response } = require("node-fetch");
 const playerDB = require("./playerDB.js");
-const redis = require("../../../index").redis;
-const util = require('../../util/gameFunctions.js');
-const playerUtil = require('../../util/playerFunctions');
+const redis = require("../../index").redis;
+const util = require('../gameFunctions.js');
+const playerUtil = require('../playerFunctions.js');
 const main = (uuid) => `http://api.hypixel.net/player?key=${hypixel_key}&uuid=${uuid}`;
 
 let lastTimeReset = 30;
