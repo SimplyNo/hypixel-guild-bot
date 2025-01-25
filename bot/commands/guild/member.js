@@ -162,7 +162,11 @@ module.exports = {
             color: player.plusColor.hex,
             footer: true
         }
-
+        const GEXPFormattedSplit = Discord.Util.splitMessage(GEXPFormatted.join(''), {
+            char: '\n',
+            maxLength: 900
+        })
+        console.log(`LENGTH OF GGEXP FORMATETED: `, GEXPFormatted.join('').length)
         let pages = [
             {
                 author: "Guild Overall Stats",
@@ -172,7 +176,8 @@ module.exports = {
                     { name: "Guild Rank", value: `${member.rank}${rank.tag ? ` [${rank.tag}]` : ""}` },
                     { name: "Total Quest Participation", value: member.quest_participation },
                     // { options: { blank: true, inline: true } },
-                    { name: "Daily Experience History", value: GEXPFormatted.join(""), options: { inline: true, escapeFormatting: true }, },
+                    { name: "Daily Experience History", value: GEXPFormattedSplit[0], options: { inline: true, escapeFormatting: true }, },
+                    ...(GEXPFormattedSplit.length > 1 ? [{ name: "\u200B", value: GEXPFormattedSplit[1] }] : []),
                     { name: "\u200B", value: weeklyGEXP.join(""), options: { inline: true, escapeFormatting: true } },
                     { name: "Join Date", value: `<t:${Math.floor(member.joined / 1000)}:f> (<t:${Math.floor(member.joined / 1000)}:R>)`, options: { inline: false, escapeFormatting: true } },
                 ]
