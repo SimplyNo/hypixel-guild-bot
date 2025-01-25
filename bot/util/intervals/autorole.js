@@ -1,5 +1,5 @@
 let genThumbnail = (uuid) => {
-    return `https://crafatar.com/avatars/${uuid}?overlay&size=128`;
+    return `https://mc-heads.net/avatar/${uuid}`;
 }
 const { ifError } = require("assert");
 const assert = require("assert");
