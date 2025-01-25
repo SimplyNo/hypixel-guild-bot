@@ -15,7 +15,7 @@
     "chartjs-node-canvas": "^4.1.6",
     "discord.js": "^13.17.1",
     "enmap": "^5.8.5",
-    "google-spreadsheet": "^3.1.15",
+    "google-spreadsheet": "^4.1.4",
     "html-table-to-json": "^1.0.0",
     "ioredis": "^5.3.2",
     "moment": "^2.29.1",
