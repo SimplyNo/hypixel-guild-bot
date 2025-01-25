@@ -23,7 +23,7 @@ module.exports = {
         let verificationRole = await bot.parseRole(serverConf.verification.role, member.guild);
         if (user && verificationRole) {
             let logChannel = await bot.parseChannel(serverConf.autoRole.logChannel, member.guild);
-
+            await member.roles.fetch();
             await member.roles.add(serverConf.verification.role);
             bot.autoUpdateInterval.execute(member, serverConf, bot, true)
             if (logChannel) {
