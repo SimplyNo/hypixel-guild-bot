@@ -25,11 +25,19 @@ module.exports = {
             let logChannel = await bot.parseChannel(serverConf.autoRole.logChannel, member.guild);
             await member.roles.fetch();
             await member.roles.add(serverConf.verification.role);
-            bot.autoUpdateInterval.execute(member, serverConf, bot, true)
+            bot.autoUpdateInterval.execute(member, serverConf, bot, true);
             if (logChannel) {
                 const player = await bot.wrappers.hypixelPlayer.get(user.uuid);
 
                 logChannel.send({ embeds: [bot.createEmbed().setAuthor(`Verification → Role Changes`, member.user.avatarURL()).setDescription(`${member} joined and was already verified as ${player.emojiRank} **${player.displayname}** and was given the <@&${serverConf.verification.role}> role.`).setTimestamp()] })
+            }
+            // update autoroles
+            if (serverConf?.autoRole?.guild) {
+                let guild = await bot.wrappers.hypixelGuild.get(serverConf.autoRole.guild, "id");
+                if (guild?.name) {
+                    // run autorole interval if guild data exists.
+                    bot.autoRoleInterval.interval(bot, member.guild, guild);
+                }
             }
         }
     }
