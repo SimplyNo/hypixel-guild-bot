@@ -165,7 +165,7 @@ module.exports = {
             guild.allMembers.sort((a, b) => b[monthLookup] - a[monthLookup])
             // console.log(guild)
             guild.allMembers.forEach((member, index) => {
-                if (index < memberCount) players.push(`\`#${index + 1}\` ${(user && user.uuid == member.uuid) ? "**" : ""}${(Date.now() - parseInt(member.joined)) < (7 * 24 * 60 * 60 * 1000) ? ' 🆕 ' : ''}${Discord.Util.escapeMarkdown(member.username || "Error")}: ${(member[monthLookup] || 0).toLocaleString()}${(user && user.uuid == member.uuid) ? "**" : ""}\n`)
+                if (index < memberCount) players.push(`\`#${index + 1}\` ${(user && user.uuid == member.uuid && !interaction.autoPost) ? "**" : ""}${(Date.now() - parseInt(member.joined)) < (7 * 24 * 60 * 60 * 1000) ? ' 🆕 ' : ''}${Discord.Util.escapeMarkdown(member.username || "Error")}: ${(member[monthLookup] || 0).toLocaleString()}${(user && user.uuid == member.uuid && !interaction.autoPost) ? "**" : ""}\n`)
             })
 
             let sliceSize = memberCount / 3;

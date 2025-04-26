@@ -94,7 +94,7 @@ module.exports = {
 
                 guild.members.sort((a, b) => Object.values(b.expHistory)[n] - Object.values(a.expHistory)[n])
                 guild.members.forEach((member, index) => {
-                    if (index < memberCount) players.push(`\`#${index + 1}\` ${(user && user.uuid == member.uuid) ? "**" : ""}${(Date.now() - parseInt(member.joined)) < (7 * 24 * 60 * 60 * 1000) ? ' 🆕 ' : ''}${Discord.Util.escapeMarkdown(member.username || "Error")}: ${(Object.values(member.expHistory)[n] || 0).toLocaleString()}${(user && user.uuid == member.uuid) ? "**" : ""}\n`)
+                    if (index < memberCount) players.push(`\`#${index + 1}\` ${(user && user.uuid == member.uuid) && !interaction.autoPost ? "**" : ""}${(Date.now() - parseInt(member.joined)) < (7 * 24 * 60 * 60 * 1000) ? ' 🆕 ' : ''}${Discord.Util.escapeMarkdown(member.username || "Error")}: ${(Object.values(member.expHistory)[n] || 0).toLocaleString()}${(user && user.uuid == member.uuid && !interaction.autoPost) ? "**" : ""}\n`)
                 })
 
                 const sliceSize = memberCount / 3;
@@ -199,7 +199,7 @@ module.exports = {
 
                 guild.members.sort((a, b) => Object.values(b.expHistory)[n] - Object.values(a.expHistory)[n])
                 guild.members.forEach((member, index) => {
-                    if (index < memberCount) players.push(`\`#${index + 1}\` ${(user && user.uuid == member.uuid) ? "**" : ""}${(Date.now() - parseInt(member.joined)) < (7 * 24 * 60 * 60 * 1000) ? ' 🆕 ' : ''}${Discord.Util.escapeMarkdown(member.username || "Error")}: ${(Object.values(member.expHistory)[n] || 0).toLocaleString()}${(user && user.uuid == member.uuid) ? "**" : ""}\n`)
+                    if (index < memberCount) players.push(`\`#${index + 1}\` ${(user && user.uuid == member.uuid && !interaction.autoPost) ? "**" : ""}${(Date.now() - parseInt(member.joined)) < (7 * 24 * 60 * 60 * 1000) ? ' 🆕 ' : ''}${Discord.Util.escapeMarkdown(member.username || "Error")}: ${(Object.values(member.expHistory)[n] || 0).toLocaleString()}${(user && user.uuid == member.uuid && !interaction.autoPost) ? "**" : ""}\n`)
                 })
 
                 const sliceSize = memberCount / 3;

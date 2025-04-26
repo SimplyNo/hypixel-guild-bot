@@ -48,6 +48,12 @@ module.exports = {
             let replaceMessage = slotConfig.doEditMessage && slotConfig.lastMessageID ? await channel.messages.fetch(slotConfig.lastMessageID).catch(e => false) : null;
 
             const fakeInteraction = {
+                autoPost: {
+                    replaceMessage: replaceMessage,
+                    callback(message) {
+                        // console.log("CALL BACK RECEIVED!!!")
+                    }
+                },
                 user: message.author,
                 guild: message.guild,
                 channel: message.channel,
