@@ -504,7 +504,7 @@ module.exports = {
 
                 if ((joinLogs && joinLogs.channel) || (joinLogsOld && joinLogsOld.channel)) {
                     if (!joinLogs) joinLogs = {};
-                    let joinLogsChannel = await bot.channels.fetch(joinLogs.channel).catch(e => null) || await bot.channels.fetch(joinLogsOld.channel).catch(e => null);
+                    let joinLogsChannel = await bot.channels.fetch(joinLogs.channel).catch(e => null) || await bot.channels.fetch(joinLogsOld?.channel).catch(e => null);
                     let lastMembers = joinLogs.lastMembers || guildData.members.map(m => m.uuid);
                     let lastUpdate = joinLogs.lastUpdate || 0;
                     let lastGuild = joinLogs.lastGuild || guildData._id;
