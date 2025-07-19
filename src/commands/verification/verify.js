@@ -43,7 +43,7 @@ module.exports = {
         // if (!args.length) return bot.createErrorEmbed(interaction).setDescription("You need to provide a username to verify as!").send().then(msg => {
         //     if (verificationDeleteTimeout) setTimeout(() => { msg.delete().catch(); ; }, verificationDeleteTimeout * 1000)
         // });
-        const player = await bot.wrappers.hypixelPlayer.get(username);
+        const player = await bot.wrappers.hypixelPlayer.get(username, true);
         const requestUser = await bot.getUser({ id: interaction.user.id }) || {}
 
         if (!player || player.exists == false) return bot.sendErrorEmbed(interaction, "Please specify a valid username or uuid.").then(msg => {
