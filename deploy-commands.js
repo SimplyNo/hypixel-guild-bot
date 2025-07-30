@@ -8,7 +8,7 @@ const path = require('path')
 const { token, client_id } = require('./config.json')
 
 const commands = [];
-const commandFiles = getAllFiles('./bot/commands').filter(file => file.endsWith('.js'));
+const commandFiles = getAllFiles('./src/commands').filter(file => file.endsWith('.js'));
 
 for (const file of commandFiles) {
     const command = require(`./${file}`);

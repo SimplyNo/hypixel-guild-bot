@@ -26,8 +26,8 @@
     "nodemon": "^2.0.7"
   },
   "scripts": {
-    "start-dev": "nodemon index.js",
-    "start": "node index.js",
+    "start-dev": "nodemon src/index.js",
+    "start": "node src/index.js",
     "deploy": "node deploy-commands.js"
   },
   "repository": {
