@@ -3,8 +3,8 @@ const fetch = require("node-fetch");
 const { tracker_api } = require('../../../config.json');
 
 const main = (query, parseNames = true) => ({
-    guild: `/api/guild/${query}`,
-    tracked: `/api/tracked/${query}?fetch=true&currentMembersOnly=true`,
+    guild: `api/guild/${query}`,
+    tracked: `api/tracked/${query}?fetch=true&currentMembersOnly=true`,
 })
 module.exports = {
     get(query, tracked = false, type = "name", parseNames = false) {

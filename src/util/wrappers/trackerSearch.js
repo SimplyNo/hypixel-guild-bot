@@ -2,7 +2,7 @@
 const fetch = require("node-fetch");
 const { tracker_api } = require('../../../config.json');
 
-const main = (query) => `/api/search/${query}`;
+const main = (query) => `api/search/${query}`;
 module.exports = {
     get(query) {
         return new Promise(async res => {
