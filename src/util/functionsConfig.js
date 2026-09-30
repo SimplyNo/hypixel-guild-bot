@@ -33,6 +33,16 @@ module.exports = {
      * @param {mongoose.Model} serverConf 
      */
     init(serverConf) {
+        // Update only the changed fields so concurrent settings saves cannot restore old join history.
+        function updateAutoRole(serverID, slot, fields) {
+            const update = {};
+            for (const [field, value] of Object.entries(fields)) {
+                const operation = value === undefined ? '$unset' : '$set';
+                if (!update[operation]) update[operation] = {};
+                update[operation][`config.autoRole${slot === 0 ? '' : slot}.${field}`] = value === undefined ? 1 : value;
+            }
+            return serverConf.updateOne({ id: serverID }, update, { upsert: !!update.$set });
+        }
 
         let settings = {
 
@@ -316,70 +326,48 @@ module.exports = {
 
 
                 },
-                findByGroup(group) {
-                    return new Promise(async res => {
-                        serverConf.find({ 'config.autoRole.updateGroup': group }, (err, servers) => {
-                            res(servers)
-                        })
-                    })
+                async findByGroup(group) {
+                    return await serverConf.find({
+                        $or: [
+                            { 'config.autoRole.updateGroup': group },
+                            {
+                                'config.autoRole.updateGroup': null,
+                                'config.autoRole1.updateGroup': group
+                            },
+                            {
+                                'config.autoRole.updateGroup': null,
+                                'config.autoRole1.updateGroup': null,
+                                'config.autoRole2.updateGroup': group
+                            }
+                        ]
+                    });
                 },
                 async assignGroup(serverID, slot = 0) {
                     // random 0-5
                     let group = Math.floor(Math.random() * 6);
-                    let server = await settings.getConfig(serverID);
-                    if (server.doesNotExist) {
-                        server = new serverConf({ id: serverID, config: {} });
-                    }
-                    server.config.set(`autoRole${slot === 0 ? '' : slot}`, { ...server.config.get(`autoRole${slot === 0 ? '' : slot}`), updateGroup: group });
-                    return await server.save();
+                    return updateAutoRole(serverID, slot, { updateGroup: group });
                 },
                 async setLastUsers(serverID, slot, users = []) {
-                    let server = await settings.getConfig(serverID);
-                    if (server.doesNotExist) {
-                        server = new serverConf({ id: serverID, config: {} });
-                    }
-                    server.config.set(`autoRole${slot === 0 ? '' : slot}`, { ...server.config.get(`autoRole${slot === 0 ? '' : slot}`), lastUsers: users })
-                    return await server.save();
+                    return updateAutoRole(serverID, slot, { lastUsers: users });
                 },
                 async setMemberRole(serverID, slot, roleID) {
-                    let server = await settings.getConfig(serverID);
-                    if (server.doesNotExist) {
-                        server = new serverConf({ id: serverID, config: {} });
-                    }
-                    server.config.set(`autoRole${slot === 0 ? '' : slot}`, { ...server.config.get(`autoRole${slot === 0 ? '' : slot}`), memberRole: roleID });
-                    return await server.save();
-
+                    return updateAutoRole(serverID, slot, { memberRole: roleID });
                 },
                 async setGuestRole(serverID, slot, roleID) {
-                    let server = await settings.ensure(serverID);
-                    server.config.set(`autoRole${slot === 0 ? '' : slot}`, { ...server.config.get(`autoRole${slot === 0 ? '' : slot}`), guestRole: roleID })
-                    return await server.save();
+                    return updateAutoRole(serverID, slot, { guestRole: roleID });
                 },
                 async setAutoRoleConfig(serverID, slot, config) {
-
-                    let server = await settings.getConfig(serverID);
-                    if (server.doesNotExist) {
-                        server = new serverConf({ id: serverID, config: {} });
-                    }
-                    server.config.set(`autoRole${slot === 0 ? '' : slot}`, { ...server.config.get(`autoRole${slot === 0 ? '' : slot}`), config: config });
-                    return await server.save();
+                    return updateAutoRole(serverID, slot, { config });
                 },
                 async setGuild(serverID, slot, guild) {
                     console.log(`setting guild ${guild} for slot ${slot}`)
-                    let server = await settings.ensure(serverID);
-                    server.config.set(`autoRole${slot === 0 ? '' : slot}`, { ...server.config.get(`autoRole${slot === 0 ? '' : slot}`), guild: guild });
-                    return await server.save();
+                    return updateAutoRole(serverID, slot, { guild });
                 },
                 async setGuildName(serverID, slot, guildName) {
-                    let server = await settings.ensure(serverID);
-                    server.config.set(`autoRole${slot === 0 ? '' : slot}`, { ...server.config.get(`autoRole${slot === 0 ? '' : slot}`), guildName: guildName });
-                    return server.save();
+                    return updateAutoRole(serverID, slot, { guildName });
                 },
                 async setLogChannel(serverID, slot, channelID) {
-                    let server = await settings.ensure(serverID);
-
-                    server.config.set(`autoRole${slot === 0 ? '' : slot}`, { ...server.config.get(`autoRole${slot === 0 ? '' : slot}`), logChannel: channelID });
-                    return server.save();
+                    return updateAutoRole(serverID, slot, { logChannel: channelID });
                 },
                 async setCurrentSlot(serverID, slot) {
                     let server = await settings.ensure(serverID);
@@ -387,46 +375,27 @@ module.exports = {
                     return server.save();
                 },
                 async deleteJoinLogs(serverID, slot) {
-                    let server = await settings.ensure(serverID);
-                    const autorole = server.config.get(`autoRole${slot === 0 ? '' : slot}`);
-                    server.config.set(`autoRole${slot === 0 ? '' : slot}`, { ...autorole, joinLogs: {} });
-                    return server.save();
+                    return updateAutoRole(serverID, slot, { joinLogs: {} });
                 },
                 async setJoinLogs(serverID, slot, joinLogs) {
-                    let server = await settings.ensure(serverID);
-                    const autorole = server.config.get(`autoRole${slot === 0 ? '' : slot}`);
-                    server.config.set(`autoRole${slot === 0 ? '' : slot}`, { ...autorole, joinLogs: { ...autorole?.joinLogs, ...joinLogs } });
-                    return server.save();
+                    return updateAutoRole(serverID, slot, Object.fromEntries(
+                        Object.entries(joinLogs).map(([key, value]) => [`joinLogs.${key}`, value])
+                    ));
                 },
                 async setMemberCountChannel(serverID, slot, channelID, format) {
-                    let server = await settings.ensure(serverID);
-                    const autorole = server.config.get(`autoRole${slot === 0 ? '' : slot}`);
-                    server.config.set(`autoRole${slot === 0 ? '' : slot}`, { ...autorole, memberCountChannel: { channelID, format } });
-                    return server.save();
+                    return updateAutoRole(serverID, slot, { memberCountChannel: { channelID, format } });
                 },
                 async deleteMemberCountChannel(serverID, slot) {
-                    let server = await settings.ensure(serverID);
-                    const autorole = server.config.get(`autoRole${slot === 0 ? '' : slot}`);
-                    server.config.set(`autoRole${slot === 0 ? '' : slot}`, { ...autorole, memberCountChannel: null });
-                    return server.save();
+                    return updateAutoRole(serverID, slot, { memberCountChannel: null });
                 },
                 async setLevelUpMessage(serverID, slot, channelID, message) {
-                    let server = await settings.ensure(serverID);
-                    const autorole = server.config.get(`autoRole${slot === 0 ? '' : slot}`);
-                    server.config.set(`autoRole${slot === 0 ? '' : slot}`, { ...autorole, levelUpMessage: { channelID, message } });
-                    return server.save();
+                    return updateAutoRole(serverID, slot, { levelUpMessage: { channelID, message } });
                 },
                 async setLastLevel(serverID, slot, level) {
-                    let server = await settings.ensure(serverID);
-                    const autorole = server.config.get(`autoRole${slot === 0 ? '' : slot}`);
-                    server.config.set(`autoRole${slot === 0 ? '' : slot}`, { ...autorole, lastLevel: level });
-                    return server.save();
+                    return updateAutoRole(serverID, slot, { lastLevel: level });
                 },
                 async deleteLevelUpMessage(serverID, slot) {
-                    let server = await settings.ensure(serverID);
-                    const autorole = server.config.get(`autoRole${slot === 0 ? '' : slot}`);
-                    server.config.set(`autoRole${slot === 0 ? '' : slot}`, { ...autorole, levelUpMessage: null });
-                    return server.save();
+                    return updateAutoRole(serverID, slot, { levelUpMessage: null });
                 }
             },
             joinLogs: {

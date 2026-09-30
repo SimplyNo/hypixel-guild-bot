@@ -22,7 +22,18 @@ function deepEqual(a, b) {
     return true;
 };
 let currentGroup = 0;
-let running = false;
+const serverChecks = new Map();
+
+async function queueServerCheck(serverID, check) {
+    const previous = serverChecks.get(serverID) || Promise.resolve();
+    const current = previous.catch(() => {}).then(check);
+    serverChecks.set(serverID, current);
+    try {
+        return await current;
+    } finally {
+        if (serverChecks.get(serverID) === current) serverChecks.delete(serverID);
+    }
+}
 
 module.exports = {
     /**
@@ -34,8 +45,6 @@ module.exports = {
      */
     async interval(bot, server, data) {
         const force = !!server;
-        if (running && !force) return;
-        // running = true;
         // wait 60 seconds if this is not a forced check
         let currentShardID = bot.shard?.ids[0] || -1;
         let totalShards = bot.shard?.count || -1;
@@ -51,16 +60,21 @@ module.exports = {
         let totalServers = servers.length - 1;
 
         // loop through servers in this update group
-        for (let serverConf of servers) {
-            const currentServer = servers.indexOf(serverConf);
-            // make copy of server conf (so that we can compare them later)
-            serverConf = JSON.parse(JSON.stringify(serverConf))
+        for (const [currentServer, serverConf] of servers.entries()) {
+            const result = await queueServerCheck(serverConf.id, () => checkServer(serverConf.id, currentServer));
+            if (result === false) return; // Retry the same update group after an API outage.
+        }
+
+        async function checkServer(serverID, currentServer) {
+            // Reload after waiting: another check may have saved newer membership history.
+            const serverConf = JSON.parse(JSON.stringify(await bot.config.getConfig(serverID)));
+            if (serverConf.doesNotExist) return;
 
             // check if the guild is on this shard
             let onThisShard = bot.guilds.cache.get(serverConf.id);
             // if not, skip
             if (!onThisShard) {
-                continue;
+                return;
             }
             // console.log(serverConf.id);
 
@@ -75,7 +89,7 @@ module.exports = {
             if (!server) {
                 bot.log(`&4Deleting the server (${serverConf.id})`);
                 // await bot.config.deleteServer(serverConf.id);
-                continue;
+                return;
             }
             // console.log(verifiedUsers.map(el => el.id).length ? verifiedUsers.map(el => el.id) : [])
             // fetch the members from verified users
@@ -87,7 +101,7 @@ module.exports = {
                 console.error(`error while fetching server members.`, e);
                 return null;
             })
-            if (!members) continue;
+            if (!members) return;
             // if (force) bot.log(`&6[AutoRole] &a${members.size} members fetched.`)
             bot.log(`&6[AutoRole] &a${members.size} members fetched.`)
 
@@ -118,14 +132,14 @@ module.exports = {
                     bot.log(`&6[AutoRole] &7(${currentServer}/${totalServers}) Retrieved guild data of &5${guildData?.name}!`)
                     if (guildData?.name) {
                         console.log(`setting guild name of slot ${slot}: ${guildData.name}`)
-                        bot.config.autoRole.setGuildName(server.id, slot, guildData.name);
+                        await bot.config.autoRole.setGuildName(server.id, slot, guildData.name);
                     }
                 }
 
                 if (guildData?.outage || !guildData) {
                     bot.log(`OUTAGE: ${guildData?.outage}, ${autoRole.guild}`)
                     bot.log(`&6[AutoRole] &4Skipping because of API outage.`)
-                    return;
+                    return false;
                 }
                 if (guildData.exists == false) {
                     bot.log(`&4${autoRole.guild} does not exist.`)
@@ -159,7 +173,9 @@ module.exports = {
                     // Check for removed ranks
                     Object.entries(guildConfig).forEach((rank, i) => {
                         if (!ranks.reduce((prev, current) => [...prev, current.created], []).includes(parseInt(rank[0]))) {
-                            delete guildConfig[rank[0]]
+                            // delete guildConfig[rank[0]]
+                            // don't delete the ranks (temporary fix)
+
                         }
                     })
                     if (!deepEqual(guildConfig, autoRole.config)) {
@@ -522,9 +538,10 @@ module.exports = {
 
                         }
                         let totalMembers = lastMembers.length;
-                        for (m of changed) {
+                        for (const m of changed) {
                             // let i = left.indexOf(m);
-                            let playerData = await bot.wrappers.hypixelPlayer.get(m.uuid);
+                            const playerData = await bot.wrappers.hypixelPlayer.get(m.uuid).catch(() => null);
+                            const playerName = `${playerData?.emojiRank || ''} **${playerData?.displayname || m.uuid}**`.trim();
                             // let memberNum = lastMembers.length - i - 1;
                             if (m.left) {
 
@@ -532,7 +549,7 @@ module.exports = {
                                 console.log(`&e(${currentServer}/${totalServers}) Leave Detected: ${m}`)
                                 await bot.createEmbed()
                                     .setTitle(`${guildData.name} → Member Left!`)
-                                    .setDescription(`${playerData.emojiRank} **${playerData.displayname}** left (or was kicked) from **${guildData.name}**!`)
+                                    .setDescription(`${playerName} left (or was kicked) from **${guildData.name}**!`)
                                     .setFooter(`New Member Count - ${totalMembers}`)
                                     .setThumbnail(bot.skin(m.uuid))
                                     .setColor('FF0000')
@@ -542,13 +559,12 @@ module.exports = {
                             } else {
                                 // let i = joined.indexOf(m);
                                 // console.log(m)
-                                let playerData = await bot.wrappers.hypixelPlayer.get(m.uuid);
                                 // let memberNum = lastMembers.length - left.length + i + 1;
                                 totalMembers++;
                                 bot.log(`&e(${currentServer}/${totalServers}) Join Detected: ${m}`)
                                 await bot.createEmbed()
                                     .setTitle(`${guildData.name} → New Member!`)
-                                    .setDescription(`${playerData.emojiRank} **${playerData.displayname}** joined the guild!`)
+                                    .setDescription(`${playerName} joined the guild!`)
                                     .setFooter(`New Member Count - ${totalMembers}`)
                                     .setThumbnail(bot.skin(m.uuid))
                                     .setColor('00FF00')
@@ -565,7 +581,6 @@ module.exports = {
             }
         }
         if (updateGroup) {
-            running = false;
             currentGroup++;
             if (currentGroup > 5) currentGroup = 0;
         }
@@ -573,7 +588,7 @@ module.exports = {
     async beginInterval(bot) {
         bot.log(`&6[SHARD ${bot.shard?.ids[0] || -1}] [AutoRole] Began AutoRole interval.`)
         while (true) {
-            this.interval(bot).catch(e => console.error(`-------------AutoRole ERROR------------\n`, e, `\n-------------------------------`))
+            await this.interval(bot).catch(e => console.error(`-------------AutoRole ERROR------------\n`, e, `\n-------------------------------`))
             await new Promise(r => setTimeout(r, 5 * 60 * 1000))
         }
     }
