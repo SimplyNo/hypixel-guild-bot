@@ -158,7 +158,7 @@ module.exports = {
         const embed = {
             description: `**${Discord.Util.escapeMarkdown(`${emoji} ${player.emojiRank} ${player.displayname}${guild.tag ? ` [${guild.tag}]` : ""}`)}**`,
             thumbnail: bot.skin(player.uuid),
-            icon: bot.assets.hypixel.guild,
+            icon: message.author.displayAvatarURL({ dynamic: true }),
             color: player.plusColor.hex,
             footer: true
         }

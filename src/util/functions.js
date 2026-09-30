@@ -1112,8 +1112,9 @@ module.exports = {
             let result = '';
             const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
             for (var i = 0; i < idLength; i++) result += characters.charAt(Math.floor(Math.random() * characters.length));
-            return `https://crafatar.com/avatars/${uuid}?overlay&size=128`
+            // return `https://crafatar.com/avatars/${uuid}?overlay&size=128`
             // return `https://mc-heads.net/avatar/${uuid}/128`;
+            return `https://mineskin.eu/helm/${uuid}/128`;
         }
 
 

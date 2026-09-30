@@ -20,11 +20,12 @@ module.exports = {
         const autoRole1 = serverConf.autoRole1;
         const autoRole2 = serverConf.autoRole2;
         const allLastUsers = autoRole.lastUsers.concat(autoRole1.lastUsers, autoRole2.lastUsers);
+       
         // const doReqCheck = requirements.length;
 
 
         // Update user
-        if (autoNick || role || unverified || doRankCheck) {
+        if (autoNick || role || unverified || doRankCheck || autoRole.guestRole) {
             let memberRoles = new MemberRoles([...member.roles.cache.keys()]);
             if (force || !bot.autoUpdateCache.has(member.user.id)) {
                 if (!force) {
